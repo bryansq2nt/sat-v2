@@ -1,0 +1,791 @@
+2021.04.13, 18:11:35.0242 UTC -> 
+archivo: login-user.controller
+ruta: config/passport
+funcion: login-user
+error: error: una cadena de caracteres entre comillas está inconclusa en o cerca de «' AND active = 1»
+--------------------------------------------------------------------------------------------
+
+2021.04.14, 17:44:09.0740 UTC -> 
+archivo: reset-password.controller
+ruta: routes/front
+funcion: reset-password
+error: error: no existe la relación «employees»
+--------------------------------------------------------------------------------------------
+
+2021.04.14, 17:52:22.0937 UTC -> 
+archivo: reset-password.controller
+ruta: routes/front
+funcion: reset-password
+error: error: la sintaxis de entrada no es válida para tipo timestamp: «2021-abr-14 11:52:22»
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 20:02:46.0375 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: createTypeFont
+error: error: el valor nulo en la columna «cod_usu_ing» de la relación «sat_tipo_fuente» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 20:16:18.0815 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: createTypeFont
+error: error: INSERT tiene más expresiones que columnas de destino
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 20:17:49.0798 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: createTypeFont
+error: error: no existe la columna «cod_usu_reg» en la relación «sat_tipo_fuente»
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 20:20:23.0519 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: createTypeFont
+error: error: no existe la columna «cod_usu_reg» en la relación «sat_tipo_fuente»
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 20:23:47.0093 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: createTypeFont
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 20:27:41.0672 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: createTypeFont
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 21:15:30.0992 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: viewTypeFonts
+error: error: la sintaxis de entrada no es válida para tipo numeric: «:2»
+--------------------------------------------------------------------------------------------
+
+2021.04.21, 21:16:51.0042 UTC -> 
+archivo: type_fonts.controller
+ruta: src/controllers/front
+funcion: viewTypeFonts
+error: error: la sintaxis de entrada no es válida para tipo numeric: «:2»
+--------------------------------------------------------------------------------------------
+
+2021.04.22, 22:18:24.0829 UTC -> 
+archivo: alerts_type.controller
+ruta: src/controllers/front
+funcion: createAlertType
+error: ReferenceError: nombre_fuente is not defined
+--------------------------------------------------------------------------------------------
+
+2021.04.23, 20:36:28.0365 UTC -> 
+archivo: alerts_type.controller
+ruta: src/controllers/front
+funcion: updateAlertType
+error: ReferenceError: nombre_alerta is not defined
+--------------------------------------------------------------------------------------------
+
+2021.04.26, 20:53:44.0807 UTC -> 
+archivo: fonts-type.controller
+ruta: src/controllers/front
+funcion: updateFontType
+error: error: el valor nulo en la columna «nombre_tipo_fuente» de la relación «sat_tipo_fuente» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 01:59:24.0482 UTC -> 
+archivo: fonts-type.controller
+ruta: src/controllers/front
+funcion: updateFontType
+error: error: la sintaxis de entrada no es válida para tipo numeric: «:id_tipo_fuente»
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 02:07:58.0040 UTC -> 
+archivo: fonts-type.controller
+ruta: src/controllers/front
+funcion: updateFontType
+error: error: la sintaxis de entrada no es válida para tipo numeric: «Habilitado»
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 02:11:48.0385 UTC -> 
+archivo: fonts-type.controller
+ruta: src/controllers/front
+funcion: updateFontType
+error: error: la sintaxis de entrada no es válida para tipo numeric: «Habilitado»
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 02:12:14.0289 UTC -> 
+archivo: fonts-type.controller
+ruta: src/controllers/front
+funcion: updateFontType
+error: error: el valor nulo en la columna «nombre_tipo_fuente» de la relación «sat_tipo_fuente» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 06:20:22.0641 UTC -> 
+archivo: source.controller
+ruta: src/controllers/front
+funcion: createSource
+error: error: el valor nulo en la columna «nombre_fuente» de la relación «sat_fuente» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 06:33:47.0829 UTC -> 
+archivo: scenario.controller
+ruta: src/controllers/front
+funcion: updateScenario
+error: error: el valor nulo en la columna «nombre_escenario» de la relación «sat_escenario» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.27, 20:10:17.0126 UTC -> 
+archivo: conflict-phases.controller
+ruta: src/controllers/front
+funcion: updateConflictPhase
+error: error: el valor nulo en la columna «nombre_fase» de la relación «sat_fase_conflicto» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 04:21:56.0635 UTC -> 
+archivo: alerts-type.controller
+ruta: src/controllers/front
+funcion: updateAlertType
+error: error: el mensaje de enlace (bind) entrega 4 parámetros, pero la sentencia preparada «» requiere 3
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 04:22:27.0626 UTC -> 
+archivo: alerts-type.controller
+ruta: src/controllers/front
+funcion: updateAlertType
+error: error: el valor nulo en la columna «nombre_alerta» de la relación «sat_tipo_alerta» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 05:18:19.0208 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: ReferenceError: nombre_fase is not defined
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 17:24:46.0018 UTC -> 
+archivo: aggression-type.controller
+ruta: src/controllers/front
+funcion: aggressionTypeList
+error: error: no existe la columna «id_agresion»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 17:26:56.0809 UTC -> 
+archivo: aggression-type.controller
+ruta: src/controllers/front
+funcion: aggressionTypeList
+error: error: no existe la columna «id_agresion»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 17:27:40.0107 UTC -> 
+archivo: aggression-type.controller
+ruta: src/controllers/front
+funcion: aggressionTypeList
+error: error: no existe la columna «id_agresion»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 17:27:50.0075 UTC -> 
+archivo: aggression-type.controller
+ruta: src/controllers/front
+funcion: aggressionTypeList
+error: error: no existe la columna «id_agresion»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 17:28:52.0532 UTC -> 
+archivo: aggression-type.controller
+ruta: src/controllers/front
+funcion: aggressionTypeList
+error: error: no existe la columna «id_agresion»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 19:09:10.0768 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: el valor nulo en la columna «nombre_accion» de la relación «sat_accion_pddh» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 19:12:06.0694 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: el valor nulo en la columna «nombre_accion» de la relación «sat_accion_pddh» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 19:13:37.0393 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: el valor nulo en la columna «nombre_accion» de la relación «sat_accion_pddh» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 19:15:44.0074 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: la sintaxis de entrada no es válida para tipo numeric: «10%»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 19:25:54.0812 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: la sintaxis de entrada no es válida para tipo numeric: «5_»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 20:29:53.0587 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: la sintaxis de entrada no es válida para tipo numeric: «bjh»
+--------------------------------------------------------------------------------------------
+
+2021.04.28, 22:01:29.0201 UTC -> 
+archivo: aggression-type.controller
+ruta: src/controllers/front
+funcion: updateAggressionType
+error: error: el mensaje de enlace (bind) entrega 4 parámetros, pero la sentencia preparada «» requiere 5
+--------------------------------------------------------------------------------------------
+
+2021.04.30, 19:42:07.0039 UTC -> 
+archivo: source.controller
+ruta: src/controllers/front
+funcion: updateSource
+error: error: el valor nulo en la columna «cod_usu_mod» de la relación «sat_fuente» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.05, 18:26:56.0355 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+
+2021.05.05, 18:29:20.0596 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+
+2021.05.05, 18:50:16.0839 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: createConflictPhase
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+
+2021.05.05, 19:23:25.0596 UTC -> 
+archivo: conflict-situation.controller
+ruta: src/controllers/front
+funcion: conflictSituationList
+error: error: no existe la columna «nombre_conflicto»
+--------------------------------------------------------------------------------------------
+
+2021.05.06, 14:32:55.0959 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la relación «segd_usuario»
+--------------------------------------------------------------------------------------------
+
+2021.05.06, 14:33:42.0148 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la relación «segd_usuario»
+--------------------------------------------------------------------------------------------
+
+2021.05.06, 14:58:57.0012 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la columna «telefono»
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 19:26:31.0519 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la columna u.is_usuario
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 21:47:02.0731 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «id_usuario» de la relación «sat_permisos_usuarios» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:02:55.0451 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: no existe la columna «permiso_ver» en la relación «sat_permisos_usuarios»
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:05:42.0948 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: INSERT tiene más columnas de destino que expresiones
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:12:22.0223 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «opc_administracion» de la relación «sat_permisos_usuarios» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:16:49.0188 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: ReferenceError: estado is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:17:51.0207 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: ReferenceError: estado is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:18:30.0589 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «permiso_app» de la relación «sat_permisos_usuarios» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.07, 22:22:49.0501 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «permiso_app» de la relación «sat_permisos_usuarios» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.09, 17:00:48.0021 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: TypeError: Cannot read property 'id_usuario' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.05.09, 20:29:09.0907 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: ReferenceError: Authorization is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.09, 20:30:40.0347 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: ReferenceError: Authorization is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 02:29:21.0803 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: error de sintaxis al final de la entrada
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 02:30:43.0238 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 02:32:48.0234 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 02:39:26.0711 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 02:45:56.0548 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 02:56:18.0346 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:02:09.0748 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:06:13.0519 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:18:25.0034 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:22:06.0443 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:25:20.0511 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:32:21.0548 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:34:14.0322 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 03:38:54.0763 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: updateUsersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «{"1","",""}»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 05:14:43.0346 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: la referencia a la columna «id_perfil» es ambigua
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 05:14:46.0471 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: la referencia a la columna «id_perfil» es ambigua
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 21:03:24.0180 UTC -> 
+archivo: administrative-units.controller
+ruta: src/controllers/front
+funcion: createAdministrativeUnit
+error: error: el valor nulo en la columna «nombre_unidad» de la relación «sat_unidad_administrativa» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 21:04:33.0983 UTC -> 
+archivo: administrative-units.controller
+ruta: src/controllers/front
+funcion: createAdministrativeUnit
+error: error: el valor nulo en la columna «cod_usu_ing» de la relación «sat_unidad_administrativa» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 22:05:06.0526 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 22:07:25.0981 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 22:09:59.0557 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «»
+--------------------------------------------------------------------------------------------
+
+2021.05.10, 22:11:15.0900 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: la sintaxis de entrada no es válida para tipo numeric: «»
+--------------------------------------------------------------------------------------------
+
+2021.05.11, 20:51:36.0192 UTC -> 
+archivo: zone.controller
+ruta: src/controllers/front
+funcion: createZone
+error: error: no existe la relación «sat_zona»
+--------------------------------------------------------------------------------------------
+
+2021.05.11, 21:07:04.0981 UTC -> 
+archivo: zone.controller
+ruta: src/controllers/front
+funcion: updateZone
+error: error: el mensaje de enlace (bind) entrega 6 parámetros, pero la sentencia preparada «» requiere 5
+--------------------------------------------------------------------------------------------
+
+2021.05.11, 22:52:39.0630 UTC -> 
+archivo: sex.controller
+ruta: src/controllers/front
+funcion: createSex
+error: ReferenceError: nombre_zona is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 16:54:15.0561 UTC -> 
+archivo: gender.controller
+ruta: src/controllers/front
+funcion: createGender
+error: error: no existe la columna «nombre_gender» en la relación «sat_genero»
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 17:05:42.0656 UTC -> 
+archivo: gender.controller
+ruta: src/controllers/front
+funcion: createGender
+error: error: no existe la columna «nombre_gender» en la relación «sat_genero»
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 17:07:20.0799 UTC -> 
+archivo: gender.controller
+ruta: src/controllers/front
+funcion: updateGender
+error: error: el valor nulo en la columna «nombre_genero» de la relación «sat_genero» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 18:34:35.0954 UTC -> 
+archivo: population-type.controller
+ruta: src/controllers/front
+funcion: updatePopulationType
+error: error: error de sintaxis en o cerca de «WHERE»
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 18:35:33.0779 UTC -> 
+archivo: population-type.controller
+ruta: src/controllers/front
+funcion: updatePopulationType
+error: error: la sintaxis de entrada no es válida para tipo numeric: «:id_poblacion»
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 18:36:40.0177 UTC -> 
+archivo: population-type.controller
+ruta: src/controllers/front
+funcion: updatePopulationType
+error: error: el valor nulo en la columna «nombre_poblacion» de la relación «sat_tipo_poblacion» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 20:04:00.0708 UTC -> 
+archivo: crisis-classification-quality.controller
+ruta: src/controllers/front
+funcion: createClassificationQuality
+error: error: el valor nulo en la columna «nombre_calidad_crisis» de la relación «sat_calidad_clasificacion_crisis» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.12, 20:08:25.0137 UTC -> 
+archivo: crisis-classification-quality.controller
+ruta: src/controllers/front
+funcion: updateClassificationQuality
+error: error: error de sintaxis en o cerca de «fecha_mod_reg»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 16:34:35.0643 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la relación «sat_modulos»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 20:32:14.0884 UTC -> 
+archivo: roles.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la columna «id_permiso_dato»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 20:32:43.0792 UTC -> 
+archivo: roles.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la columna «id_permiso_dato»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 20:32:54.0173 UTC -> 
+archivo: roles.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la columna «id_permiso_dato»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 23:00:23.0280 UTC -> 
+archivo: modules.controller
+ruta: src/controllers/front
+funcion: getById
+error: ReferenceError: id_modulo_app is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 23:01:16.0733 UTC -> 
+archivo: modules.controller
+ruta: src/controllers/front
+funcion: updateModule
+error: error: no existe la relación «sat_modulos_app»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 23:05:04.0974 UTC -> 
+archivo: modules.controller
+ruta: src/controllers/front
+funcion: updateModule
+error: error: error de sintaxis en o cerca de «fecha_mod_reg»
+--------------------------------------------------------------------------------------------
+
+2021.05.17, 23:06:14.0118 UTC -> 
+archivo: modules.controller
+ruta: src/controllers/front
+funcion: updateModule
+error: error: error de sintaxis en o cerca de «fecha_mod_reg»
+--------------------------------------------------------------------------------------------
+
+2021.05.18, 15:13:50.0134 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la relación «sat_modulos_app»
+--------------------------------------------------------------------------------------------
+
+2021.05.18, 15:13:57.0262 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la relación «sat_modulos_app»
+--------------------------------------------------------------------------------------------
+
+2021.05.18, 15:15:14.0027 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la relación «sat_modulos_web»
+--------------------------------------------------------------------------------------------
+
+2021.05.18, 15:18:50.0083 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la columna «id_modulo_web»
+--------------------------------------------------------------------------------------------
+
+2021.05.19, 03:48:09.0235 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la columna u.active
+--------------------------------------------------------------------------------------------
+
+2021.05.19, 04:01:48.0656 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la columna u.active
+--------------------------------------------------------------------------------------------
+
+2021.05.19, 04:02:48.0683 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la relación «sat_permisos_usuarios»
+--------------------------------------------------------------------------------------------
+
+2021.05.19, 21:32:34.0431 UTC -> 
+archivo: conflict-phases.controller
+ruta: src/controllers/front
+funcion: updateConflictPhase
+error: error: error de sintaxis en o cerca de «estado»
+--------------------------------------------------------------------------------------------
+
+2021.05.19, 21:34:12.0862 UTC -> 
+archivo: conflict-phases.controller
+ruta: src/controllers/front
+funcion: updateConflictPhase
+error: error: el mensaje de enlace (bind) entrega 4 parámetros, pero la sentencia preparada «» requiere 6
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 13:40:57.0844 UTC -> 
+archivo: administrative-units.controller
+ruta: src/controllers/front
+funcion: createAdministrativeUnit
+error: error: el valor nulo en la columna «nombre_unidad» de la relación «sat_unidad_administrativa» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 13:48:07.0072 UTC -> 
+archivo: banner.controller
+ruta: src/controllers/front
+funcion: createBanner
+error: error: INSERT tiene más columnas de destino que expresiones
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 16:27:35.0653 UTC -> 
+archivo: banner.controller
+ruta: src/controllers/front
+funcion: createBanner
+error: TypeError: Cannot read property '0' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 16:39:50.0161 UTC -> 
+archivo: banner.controller
+ruta: src/controllers/front
+funcion: createBanner
+error: ReferenceError: url is not defined
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 21:40:21.0426 UTC -> 
+archivo: banner.controller
+ruta: src/controllers/front
+funcion: updateBanner
+error: error: no se pudo determinar el tipo del parámetro $1
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 21:42:29.0832 UTC -> 
+archivo: banner.controller
+ruta: src/controllers/front
+funcion: updatePhotoBanner
+error: error: no se pudo determinar el tipo del parámetro $1
+--------------------------------------------------------------------------------------------
+
+2021.05.20, 22:01:03.0538 UTC -> 
+archivo: banner.controller
+ruta: src/controllers/front
+funcion: updatePhotoBanner
+error: ReferenceError: photoRoute is not defined
+--------------------------------------------------------------------------------------------
+
