@@ -3,7 +3,7 @@ const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 
 let earlyAlertsList = async(req, res) => {
-
+  const { offset } = req.query;
     try {
         
         var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas Tempranas.", instance: "early-alert/earlyAlertsList" });
@@ -21,8 +21,7 @@ let earlyAlertsList = async(req, res) => {
         poblacion_ninos, poblacion_ninas, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, 
         poblacion_mujer_mayor, cantidad_aproximada, id_fase_conflicto, id_tipo_alerta, id_accion_pddh, 
         estado_modulo
-        FROM sat_alerta_temprana
-        ORDER BY id_alerta_temprana ASC`, (err, results)=>{
+        FROM sat_alerta_temprana ORDER BY id_alerta_temprana ASC LIMIT 25 OFFSET $1`,[offset], (err, results)=>{
             if(err){
                 console.log(err.message);
                 return res.status(500).json(errorResponse.toJson());
@@ -105,35 +104,30 @@ let getById = async (req, res)=>{
         
       try {
 
-        var early_alert_country = await db.query(`SELECT descripcion FROM sat_alerta_temprana AS sat INNER JOIN admi_pais AS p ON p.id_pais = sat.id_pais 
-        WHERE sat.id_alerta_temprana = $1`, [id_alerta_temprana]);
-        early_alert_country = early_alert_country.rows;
+        var early_alert = await db.query(`SELECT * FROM sat_alerta_temprana WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
+        early_alert = early_alert.rows[0];
         
-        var early_alert_municipality = await db.query(`SELECT m.descripcion FROM sat_alerta_temprana AS at INNER JOIN admi_municipio AS m ON m.id_municipio = at.id_municipio
-        WHERE at.id_alerta_temprana = $1`, [id_alerta_temprana]);
-        early_alert_municipality = early_alert_municipality.rows[0]; 
-
-        var early_alert_state = await db.query(`SELECT d.descripcion FROM sat_alerta_temprana AS at INNER JOIN admi_departamento AS d ON d.id_departamento = at.id_departamento
-        WHERE at.id_alerta_temprana = $1`, [id_alerta_temprana]);
-        early_alert_state = early_alert_state.rows[0];
-
-        var early_alert_zone = await db.query(`SELECT z.nombre_zona FROM sat_alerta_temprana AS sat INNER JOIN sat_zonas AS z ON z.id_zona = sat.id_tipo_zona 
-        WHERE sat.id_alerta_temprana = 1`, [id_alerta_temprana]);
-        early_alert_zone = early_alert_zone.rows[0];
-            
+        var sourceType = await db.query('SELECT id_tipo_fuente::integer AS answer_id, nombre_tipo_fuente AS answer FROM sat_tipo_fuente WHERE estado = 1 ORDER BY id_tipo_fuente ASC');
+        sourceType = sourceType.rows;
+    
+        var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
+        source = source.rows; 
 
         var scenario = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenario ORDER BY id_escenario ASC');
         scenario = scenario.rows;
-    
-        var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
-        typeZone = typeZone.rows;
-    
-        var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer FROM admi_municipio WHERE est_reg = 'A'`);
-        var municipality = municipality.rows;
-    
+        
+        // var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
+        // country = country.rows[0];
+
         var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
         state = state.rows;
-        
+
+        var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer FROM admi_municipio WHERE est_reg = 'A'`);
+        var municipality = municipality.rows;
+
+        var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
+        typeZone = typeZone.rows;
+                
         var vulnerableGroup = await db.query(`SELECT id_grp_vulnerable::integer AS answer_id, descripcion AS answer FROM admi_grp_vulnerable WHERE est_reg = 'A' ORDER BY id_grp_vulnerable ASC`);
         vulnerableGroup = vulnerableGroup.rows;
     
@@ -466,25 +460,25 @@ let getById = async (req, res)=>{
                 enabled: 0,
                 question_type: "open",
                 question: "Pais",
-                answer: early_alert_country
+                answer: "El Salvador"
               },
               {
                 question_id: "id_departamento",
                 question_type: "state",
                 question: "Departamento",
-                answers: early_alert_state
+                answers: state
               },
               {
                 question_id: "id_municipio",
                 question_type: "closed",
                 question: "Municipio",
-                answers: early_alert_municipality
+                answers: municipality
               },
               {
                 question_id: "id_tipo_zona",
                 question_type: "closed",
                 question: "Tipo de Zona",
-                answers: early_alert_zone
+                answers: typeZone
               },
               {
                 question_id: "descripcion_hechos",
@@ -730,7 +724,7 @@ let getById = async (req, res)=>{
             numberPopulationDetermined, conflictPhaseAssessment);
         //1
         var formEarlyAlert = {
-            form_id: 0,
+            form_id: early_alert.id_alerta_temprana,
             sections: sections
         }
     
@@ -776,7 +770,7 @@ let updateEarlyAlert = async (req, res)=>{
 
 };
 
-let geEarlyAlertList = async(req, res)=>{
+let getEarlyAlertForm = async(req, res)=>{
     
     try {
 
@@ -1415,5 +1409,5 @@ module.exports = {
     createEarlyAlert,
     getById,
     updateEarlyAlert,
-    geEarlyAlertList 
+    getEarlyAlertForm 
 }

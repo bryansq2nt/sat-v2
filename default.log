@@ -789,3 +789,24 @@ funcion: updatePhotoBanner
 error: ReferenceError: photoRoute is not defined
 --------------------------------------------------------------------------------------------
 
+2021.05.25, 15:18:54.0915 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: geEarlyAlertList
+error: error: no existe la relación «admi_cat_derecho»
+--------------------------------------------------------------------------------------------
+
+2021.05.25, 15:21:04.0932 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: geEarlyAlertList
+error: TypeError: Cannot read property 'id_alerta_temprana' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.05.25, 15:47:16.0350 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: geEarlyAlertList
+error: error: no existe la relación «admi_cat_derecho»
+--------------------------------------------------------------------------------------------
+
