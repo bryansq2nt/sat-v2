@@ -56,6 +56,8 @@ const login = async (req, res) => {
                 });
             }
             else {
+                errorResponse.title = "Datos incorrectos";
+                    errorResponse.detail = 'Correo o contraseña invalido';
                 return res.status(401).json(errorResponse.toJson());
             }
 
@@ -101,7 +103,6 @@ const refreshToken = (req, res) => {
 
 const profile = async (req,res) => {
 
-    console.log(req.user);
     
     var errorResponse = new ErrorModel({ type: "Users-Auth", title:"Falló la función", status:401, detail:"Lo sentimos ocurrió un error al intentar iniciar sesión.", instance:"users.auth/login" });
 

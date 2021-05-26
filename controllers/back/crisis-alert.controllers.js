@@ -7,12 +7,12 @@ let crisisAlertsList = async(req, res) => {
     var entryType = await db.query('SELECT id_entrada::integer AS answer_id, nombre_entrada AS answer FROM sat_tipo_entrada WHERE estado = 1');
     entryType = entryType.rows;
 
-    var CrisisClasification = await db.query(`SELECT id_nat_sit_crisis::integer AS id_answer, decripcion AS answer FROM admi_nat_sit_crisis WHERE est_reg = 'A'`);
+    var CrisisClasification = await db.query(`SELECT id_nat_sit_crisis::integer AS answer_id, decripcion AS answer FROM admi_nat_sit_crisis WHERE est_reg = 'A'`);
     CrisisClasification = CrisisClasification.rows;
 
     var Nature = [];
 
-    var QuelityParticipants = await db.query('SELECT id_calidad_participa::integer AS id_answer, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1 ORDER BY id_calidad_participa ASC')
+    var QuelityParticipants = await db.query('SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1 ORDER BY id_calidad_participa ASC')
     QuelityParticipants = QuelityParticipants.rows;
 
     var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
@@ -26,7 +26,7 @@ let crisisAlertsList = async(req, res) => {
     var gender = await db.query('SELECT id_genero::integer AS answer_id, nombre_genero AS answer FROM sat_genero WHERE estado = 1 ORDER BY id_genero ASC');
     gender = gender.rows;
 
-    var sexualOrientation = await db.query(`SELECT id_ori_sexual, descripcion FROM admi_ori_sexual WHERE est_reg = 'A' ORDER BY id_ori_sexual ASC`);
+    var sexualOrientation = await db.query(`SELECT id_ori_sexual::integer AS answer_id, descripcion AS answer FROM admi_ori_sexual WHERE est_reg = 'A' ORDER BY id_ori_sexual ASC`);
     sexualOrientation = sexualOrientation.rows;
 
     var occupation = await db.query(`SELECT id_cat_pro_oficio::integer AS answer_id, descripcion AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A'`);
@@ -49,7 +49,7 @@ let crisisAlertsList = async(req, res) => {
     var participantQuality = await db.query('SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1');
     participantQuality = participantQuality.rows; 
 
-    var populationType = await db.query(`SELECT id_poblacion, nombre_poblacion, estado FROM sat_tipo_poblacion WHERE estado = 1 ORDER BY id_poblacion ASC`);
+    var populationType = await db.query(`SELECT id_poblacion::integer AS answer_id, nombre_poblacion AS answer, estado FROM sat_tipo_poblacion WHERE estado = 1 ORDER BY id_poblacion ASC`);
     populationType = populationType.rows;
 
     var sections = [];

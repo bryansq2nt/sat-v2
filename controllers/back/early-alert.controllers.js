@@ -51,6 +51,7 @@ let createEarlyAlert = async (req, res) => {
         estado_modulo } = req.body;
 
 
+       
     var cod_usu_ing = req.user.user_id;
     var cod_usu_mod = req.user.user_id;
 
@@ -84,6 +85,7 @@ let createEarlyAlert = async (req, res) => {
                 cantidad_aproximada, id_fase_conflicto, id_tipo_alerta, id_accion_pddh, fecha_ing_reg, fecha_mod_reg,
                 cod_usu_ing, cod_usu_mod, 0], (err, results) => {
                     if (err) {
+                      console.log(err);
                       errorResponse.detail = err.message;
                         return res.status(500).json(errorResponse.toJson());
                     } else {

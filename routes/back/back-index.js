@@ -65,4 +65,6 @@ module.exports = (app) => {
 
     app.use(require('./banner.routes'));
 
+    app.use(require('./upload'));
+
 };
