@@ -71,21 +71,22 @@ module.exports = function(passport) {
                         console.log(err.stack);
                         return done(null, false, req.flash('error', err.stack));
                     }else{
-
+                        console.log('Filtro 1');
                         if (!results.rows.length) {
                             return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                         } else {
-                            
+                            console.log('Filtro 2');
                             var userPassword = md5(password);
 
                             if (userPassword != results.rows[0].clave) {
                                 return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                             } else {
+                                console.log('paso la contrasena');
                                 let user = results.rows[0];
                                 user.authorizationModuls = []
                                 
                                 if( results.rows.length > 0){
-  
+                                    
                                     authorizationModuls = await db.query(`SELECT mu.id_modulo, m.nombre_modulo  
                                     FROM sat_permisos_modulos_usuario AS mu 
                                     INNER JOIN sat_modulos AS m ON mu.id_modulo = m.id_modulo 

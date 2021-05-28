@@ -63,7 +63,12 @@ let getById = async(req, res) =>{
 
 let usersAuthotization = async (req, res) => {
     const { id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web} =  req.body;
-    
+        //   console.log('id_usuario', id_usuario);
+        //   console.log('acceso app', permiso_acceso_app);
+        //   console.log('acesso web', permiso_acceso_web);
+        //   console.log('permisos datos', id_rol_permisos);
+        //   console.log('modulos app', id_modulo_app);
+        //   console.log('modulos web', id_modulo_web);
     try {
 
         var cod_usu_ing = req.user.id_usuario;
@@ -91,7 +96,7 @@ let usersAuthotization = async (req, res) => {
                     if(permiso_acceso_web == 1) {
                         if (id_modulo_web != undefined) {
 
-                            for (let i = 0; i < id_modulo_app.length; i++) {
+                            for (let i = 0; i < id_modulo_web.length; i++) {
                                 await db.query(`INSERT INTO sat_permisos_modulos_usuario(
                                 id_usuario, id_modulo, cod_usu_ing, cod_usu_mod)
                                 VALUES ($1, $2, $3, $4)`, [id_usuario, id_modulo_web[i], cod_usu_ing, cod_usu_mod]);

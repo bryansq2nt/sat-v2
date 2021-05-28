@@ -2,16 +2,41 @@ const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 
-let crisisAlertsList = async(req, res) => {
+let crisisAlertsList = async(req, res) =>{
+  const { offset } = req.query;
 
+  try {
+
+      var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
+      
+      await db.query(`SELECT id_atencion_crisis FROM sat_atencion_crisis ORDER BY id_atencion_crisis ASC LIMIT 25 OFFSET $1`,[offset],(err,results)=>{
+        if(err){
+          console.log(err.message);
+          return res.status(500).json(errorResponse.toJson());
+        }else{
+          var crisisAlerts = results.rows;
+          return res.status(200).json({ crisisAlerts });
+        }
+      });
+  } catch (error) {
+    log('src/controllers/back', 'crisis-alert', 'crisisAlertsList', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+};
+
+let getCrisisAlertsForm = async(req, res) => {
+
+    try {
+      
     var entryType = await db.query('SELECT id_entrada::integer AS answer_id, nombre_entrada AS answer FROM sat_tipo_entrada WHERE estado = 1');
     entryType = entryType.rows;
 
-    var CrisisClasification = await db.query(`SELECT id_nat_sit_crisis::integer AS answer_id, decripcion AS answer FROM admi_nat_sit_crisis WHERE est_reg = 'A'`);
+    var CrisisClasification = await db.query(`SELECT id_calidad_crisis::integer AS answer_id, nombre_calidad_crisis AS answer FROM sat_calidad_clasificacion_crisis WHERE estado = 1`);
     CrisisClasification = CrisisClasification.rows;
 
-    var Nature = [];
-
+    var natureCrisis = await db.query(`SELECT id_nat_sit_crisis::integer AS answer_id, decripcion AS answer FROM admi_nat_sit_crisis WHERE est_reg = 'A'`);  
+    natureCrisis = natureCrisis.rows;
+    
     var QuelityParticipants = await db.query('SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1 ORDER BY id_calidad_participa ASC')
     QuelityParticipants = QuelityParticipants.rows;
 
@@ -41,10 +66,8 @@ let crisisAlertsList = async(req, res) => {
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
 
-    // var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
-    // notificationMeans = notificationMeans.rows;
-
-    var notificationMeans = [];
+    var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
+    notificationMeans = notificationMeans.rows;
 
     var participantQuality = await db.query('SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1');
     participantQuality = participantQuality.rows; 
@@ -54,9 +77,10 @@ let crisisAlertsList = async(req, res) => {
 
     var sections = [];
 
-    var calification = [];
+    var calification = await db.query(`SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1`);
+    calification = calification.rows;
 
-    // Datos generales
+    // Datos generales -- VERIFICADO
     var generalData = {
         section_id: 15,
         bold_title: 1,
@@ -83,7 +107,7 @@ let crisisAlertsList = async(req, res) => {
         ]
     }; 
 
-    // Clasificacion de Crisis
+    // Clasificacion de Crisis -- VERIFICADO
     var clasification = {
         section_id: 16,
         section_title: "Calificación inicial de la crisis",
@@ -98,12 +122,12 @@ let crisisAlertsList = async(req, res) => {
             question_id: "id_naturaleza",
             question_type: "closed",
             question: "Naturaleza",
-            answers: Nature
+            answers: natureCrisis
           }
         ]
     };
 
-    //Participantes en la atencion
+    //Participantes en la atencion -- VERIFICADO
     var participants = {
         section_id: 17,
         section_title: "Participantes en la atención de la crisis (personal PDDH)",
@@ -275,7 +299,7 @@ let crisisAlertsList = async(req, res) => {
             question: "Sector Población afectada"
           },
           {
-            question_id: "id_grupo_vulnerabilidad",
+            question_id: "grupo_vulnerabilidad",
             question_type: "open",
             question: "Grupo en condición de vulnerabilidad"
           },
@@ -358,8 +382,62 @@ let crisisAlertsList = async(req, res) => {
     return res.status(200).json({
         form: formCrisisAlert
     })
+
+  } catch (error) {
+    log('src/controllers/back', 'crisis-alert', 'getCrisisAlertsForm', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
 };
 
+let createCrisisAlert = async (req, res) => {
+  const { fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+    participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
+    edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
+    id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
+    fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+    grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
+    institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod } = req.body;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "createCrisisAlert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar guardar la Alerta de Crisis.", instance: "crisis-alert/createCrisisAlert" });
+
+    await db.query(`INSERT INTO sat_atencion_crisis(
+      fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre, 
+      participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento, 
+      edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad, 
+      id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion, 
+      fecha_informacion, referencia_emision, "fecha_recepción", id_poblacion, cantidad_aproximada, sector_poblacion_afectada, 
+      grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros, 
+      institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
+        $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, 
+        $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, 
+        $39, $40, $41, $42)`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+      participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
+      edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
+      id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
+      fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+      grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
+      institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod], (err, results) => {
+        if (err) {
+          console.log(err.message);
+          return res.status(500).json(errorResponse.toJson());
+        } else {
+
+        }
+      });
+
+
+  } catch (error) {
+
+  }
+
+};
+
+
 module.exports = {
-    crisisAlertsList
+  getCrisisAlertsForm,
+  crisisAlertsList
 }
