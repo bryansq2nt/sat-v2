@@ -790,7 +790,7 @@ let getById = async(req, res) =>{
     sections.push(generalData, clasification, participants, personalInformation, informationSource, crisisInformation, factSummary, other);
 
     var formCrisisAlert = {
-      form_id: 0,
+      form_id: id_atencion_crisis,
       sections: sections
     }
 
