@@ -733,7 +733,8 @@ let getById = async(req, res) =>{
           question_id: "id_calificacion",
           question_type: "closed",
           question: "Calificación",
-          answer: crisisAttention.id_calificacion
+          answers: calification,
+          answer: Number.parseInt(crisisAttention.id_calificacion)
         },
         {
           question_id: "nombre_funcionario",
