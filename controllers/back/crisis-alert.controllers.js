@@ -1,6 +1,7 @@
 const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
+const dateFormat = require('dateformat');
 
 let crisisAlertsList = async(req, res) =>{
   const { offset } = req.query;
