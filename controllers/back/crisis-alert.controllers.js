@@ -856,7 +856,6 @@ let createCrisisAlert = async (req, res) => {
 
 };
 
-
 let updateCrisisAlert = async (req, res) =>{
   const {fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
@@ -904,6 +903,7 @@ let updateCrisisAlert = async (req, res) =>{
   }
 
 };
+
 
 module.exports = {
   getCrisisAlertsForm,
