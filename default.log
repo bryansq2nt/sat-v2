@@ -817,3 +817,10 @@ funcion: analyzeEarlyAlert
 error: ReferenceError: fases_conflicto is not defined
 --------------------------------------------------------------------------------------------
 
+2021.05.31, 17:14:38.0110 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: updateCrisisAlert
+error: ReferenceError: id_atencion_crisis is not defined
+--------------------------------------------------------------------------------------------
+
