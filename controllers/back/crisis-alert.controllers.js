@@ -859,8 +859,8 @@ let createCrisisAlert = async (req, res) => {
 };
 
 let updateCrisisAlert = async (req, res) =>{
-  const {fecha_ingreso} = req.params;
-  const {id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+  const {id_atencion_crisis} = req.params;
+  const {fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
     edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
