@@ -35,7 +35,7 @@ let createBanner = async (req, res) => {
 
         if (req.files[0] != undefined) {
             photo = req.files[0].filename;
-            photoRoute = 'http://104.156.247.89:4000/uploads/' + photo;
+            photoRoute = '/uploads/' + photo;
         }
 
         await db.query(`INSERT INTO sat_banner(titulo_banner, descripcion, url, cod_usu_ing, cod_usu_mod, estado)

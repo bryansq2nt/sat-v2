@@ -904,11 +904,103 @@ let updateCrisisAlert = async (req, res) =>{
 
 };
 
+let getFormToAnalyze = async (req,res) => {
+  const { id_atencion_crisis } = req.params;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener el formulario.", instance: "early-alert/getFormToAnalyze" });
+
+    var acciones_pddh = await db.query('SELECT id_accion_pddh::integer AS answer_id, nombre_accion AS answer FROM sat_accion_pddh WHERE estado = 1');
+    acciones_pddh = acciones_pddh.rows;
+
+    var administrative_unit = await db.query(`SELECT id_unidad_administrativa:: integer AS answer_id, nombre_unidad AS answer
+    FROM sat_unidad_administrativa WHERE estado = 1`);
+    administrative_unit = administrative_unit.rows;
+
+    var section = {
+      section_id: 0,
+      questions: [
+        {
+          question_id: "id_accion_pddh",
+          question_type: "closed",
+          question: "Acciones PDDH",
+          answers: acciones_pddh
+        },
+        {
+          question_id: "analisis",
+          question_type: "area",
+          required: 1,
+          question: "Analisis"
+        },
+        {
+          question_id: "notificar",
+          question_type: "closed",
+          question: "Notificar a:",
+          answers: administrative_unit
+        },
+        {
+          question_id: "texto_mensaje",
+          question_type: "area",
+          required: 1,
+          question: "Texto en el Mensaje"
+        }
+      ]
+    }
+
+    var sections = [];
+    sections.push(section);
+
+    var formCrisisAlert = {
+      form_id: id_atencion_crisis,
+      sections
+    }
+
+    return res.status(200).json({
+      form: formCrisisAlert
+    });
+
+  } catch (error) {
+    log('src/controllers/back', 'crisis-alert', 'getFormToAnalyze', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+
+};
+
+let analyzeCrisisAlert = async (req,res) => {
+  const { id_atencion_crisis } = req.params;
+  const { id_accion_pddh, analisis, id_unidad_administrativa, texto_mensaje,} = req.body;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar analizar la Alerta.", instance: "crisis-alert/analyzeCrisisAlert" });
+
+    
+    await db.query(`UPDATE sat_atencion_crisis SET analizada = true, id_accion_pddh = $1, analisis = $2, id_unidad_administrativa = $3, texto_mensaje = $4 WHERE id_atencion_crisis = $5`, [id_accion_pddh, analisis, id_unidad_administrativa, texto_mensaje, id_atencion_crisis], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var CrisisAlert = results.rows[0];
+        return res.status(200).json({ CrisisAlert });
+      }
+    });
+  } catch (error) {
+    log('src/controllers/back', 'crisi-alert', 'analyzeCrisisAlert', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+
+}
+
 
 module.exports = {
   getCrisisAlertsForm,
   crisisAlertsList,
   getById,
   createCrisisAlert,
-  updateCrisisAlert
+  updateCrisisAlert,
+  getFormToAnalyze,
+  analyzeCrisisAlert
 }
