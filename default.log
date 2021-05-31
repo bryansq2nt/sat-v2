@@ -810,3 +810,10 @@ funcion: geEarlyAlertList
 error: error: no existe la relación «admi_cat_derecho»
 --------------------------------------------------------------------------------------------
 
+2021.05.31, 15:12:04.0867 UTC -> 
+archivo: earlt-alert.controller
+ruta: src/controllers/back
+funcion: analyzeEarlyAlert
+error: ReferenceError: fases_conflicto is not defined
+--------------------------------------------------------------------------------------------
+
