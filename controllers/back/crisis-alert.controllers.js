@@ -839,7 +839,7 @@ let createCrisisAlert = async (req, res) => {
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
       institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod], (err, results) => {
         if (err) {
-          console.log(err.message);
+          console.log(err.stack);
           return res.status(500).json(errorResponse.toJson());
         } else {
           var crisisAlerts = results.rows[0];
