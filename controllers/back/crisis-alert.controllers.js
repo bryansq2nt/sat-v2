@@ -439,5 +439,6 @@ let createCrisisAlert = async (req, res) => {
 
 module.exports = {
   getCrisisAlertsForm,
-  crisisAlertsList
+  crisisAlertsList,
+  createCrisisAlert
 }
