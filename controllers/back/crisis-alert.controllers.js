@@ -633,7 +633,7 @@ let getById = async(req, res) =>{
           question_type: "closed",
           question: "Medio de notificación",
           answers: notificationMeans,
-          answer: crisisAttention.id_otr_med_notificacion
+          answer: Number.parseInt(crisisAttention.id_otr_med_notificacion)
         },
         {
           question_id: "detalle_persona",
