@@ -1,6 +1,7 @@
 const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
+const dateFormat = require('dateformat');
 
 let crisisAlertsList = async(req, res) =>{
   const { offset } = req.query;
@@ -733,7 +734,8 @@ let getById = async(req, res) =>{
           question_id: "id_calificacion",
           question_type: "closed",
           question: "Calificación",
-          answer: crisisAttention.id_calificacion
+          answers: calification,
+          answer: Number.parseInt(crisisAttention.id_calificacion)
         },
         {
           question_id: "nombre_funcionario",
@@ -863,7 +865,9 @@ let updateCrisisAlert = async (req, res) =>{
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
     fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
-    institucion_otros, cargo_otros, id_calificacion_otros, } = req.params;
+    institucion_otros, cargo_otros, id_calificacion_otros, } = req.body;
+
+    const { id_atencion_crisis } = req.params;
 
   var localDate =  new Date();
   var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
@@ -880,7 +884,7 @@ let updateCrisisAlert = async (req, res) =>{
     id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepción=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
     nombre_notificacion_medio=$32, resumen_hecho=$33, id_calificacion=$34, nombre_funcionario=$35, cargo=$36, nombre_otros=$37, institucion_otros=$38, cargo_otros=$39, id_calificacion_otros=$40, id_accion_pddh=$41, analisis=$42, id_unidad_administrativa=$43, 
     texto_mensaje=$32, fecha_mod_reg=$33, cod_usu_ing=$34, cod_usu_mod=$35
-    WHERE id_atencion_crisis = $$44`,[fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+    WHERE id_atencion_crisis = $44`,[fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
@@ -893,7 +897,7 @@ let updateCrisisAlert = async (req, res) =>{
         return res.status(500).json(errorResponse.toJson());
       }else{
         var crisisAlerts = results.rows[0];
-        return res.status(201).json({
+        return res.status(200).json({
           crisisAlerts
         });
       }
