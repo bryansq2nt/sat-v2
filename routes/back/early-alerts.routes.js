@@ -1,19 +1,19 @@
 const {Router} = require('express');
 const router = Router();
 
-const { usersTokenVerification } = require('../../middlewares/token.middleware');
-const { earlyAlertsList, getById, getEarlyAlertForm, createEarlyAlert, updateEarlyAlert,getFormToAnalyze,analyzeEarlyAlert } = require('@controllers/back/early-alert.controllers');
+const { usersTokenVerification } = require('@middlewares/token.middleware');
+const { earlyAlertsList, getById, getEarlyAlertForm, createEarlyAlert, updateEarlyAlert, getFormToAnalyze, analyzeEarlyAlert, searchEarlyAlert } = require('@controllers/back/early-alert.controllers');
 
-router.get('/api/early-alerts/list', earlyAlertsList);
-router.get('/api/early-alerts/:id_alerta_temprana', getById);
-router.put('/api/early-alerts/:id_alerta_temprana',usersTokenVerification, updateEarlyAlert);
-router.put('/api/early-alerts/:id_alerta_temprana/analyze',usersTokenVerification, analyzeEarlyAlert);
+router.post('/api/alerts', usersTokenVerification, createEarlyAlert);
+router.get('/api/alerts', earlyAlertsList);
 
-router.get('/api/early-alerts-form', getEarlyAlertForm);
-router.get('/api/early-alerts-form-to-analyze/:id_alerta_temprana', getFormToAnalyze);
+router.get('/api/alerts/search', searchEarlyAlert);
+router.get('/api/alerts/:id_alerta_temprana', getById);
+router.put('/api/alerts/:id_alerta_temprana',usersTokenVerification, updateEarlyAlert);
 
-router.post('/api/early-alerts-form', usersTokenVerification, createEarlyAlert);
-
+router.get('/api/alerts/form/empty', getEarlyAlertForm);
+router.get('/api/alerts/form/analyze/:id_alerta_temprana', getFormToAnalyze);
+router.put('/api/alerts/form/analyze/:id_alerta_temprana',usersTokenVerification, analyzeEarlyAlert);
 
 
 

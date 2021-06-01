@@ -1605,6 +1605,31 @@ let analyzeEarlyAlert = async (req,res) => {
 
 }
 
+let searchEarlyAlert = async (req,res) => {
+  const { delegate } = req.query;
+
+  try {
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "early-alert/searchEarlyAlert" });
+
+    await db.query(`SELECT id_alerta_temprana::integer AS form_id, analizada AS analyzed FROM sat_alerta_temprana WHERE texto_mensaje ILIKE '%${delegate}%'`,(err,results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }
+
+      var earlyAlerts = results.rows;
+      return res.status(200).json({ earlyAlerts });
+
+    });
+
+  } catch (e){
+    log('src/controllers/back', 'earlt-alert', 'searchEarlyAlert', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+
+}
+
 module.exports = {
   earlyAlertsList,
   createEarlyAlert,
@@ -1612,5 +1637,6 @@ module.exports = {
   updateEarlyAlert,
   getEarlyAlertForm,
   getFormToAnalyze,
-  analyzeEarlyAlert
+  analyzeEarlyAlert,
+  searchEarlyAlert
 }

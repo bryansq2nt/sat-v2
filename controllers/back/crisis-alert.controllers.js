@@ -10,7 +10,7 @@ let crisisAlertsList = async(req, res) =>{
 
       var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
       
-      await db.query(`SELECT id_atencion_crisis::integer AS form_id FROM sat_atencion_crisis ORDER BY id_atencion_crisis ASC LIMIT 25 OFFSET $1`,[offset],(err,results)=>{
+      await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis ORDER BY id_atencion_crisis ASC LIMIT 25 OFFSET $1`,[offset],(err,results)=>{
         if(err){
           console.log(err.message);
           return res.status(500).json(errorResponse.toJson());
@@ -997,6 +997,30 @@ let analyzeCrisisAlert = async (req,res) => {
 
 }
 
+let searchCrisisAlert = async (req,res) => {
+  const { delegate } = req.query;
+
+  try {
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "crisis-alert/searchCrisisAlert" });
+
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE texto_mensaje ILIKE '%${delegate}%'`,(err,results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }
+
+      var crisisAlerts = results.rows;
+      return res.status(200).json({ crisisAlerts });
+
+    });
+
+  } catch (e){
+    log('src/controllers/back', 'crisis-alert', 'searchCrisisAlert', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+
+}
 
 module.exports = {
   getCrisisAlertsForm,
@@ -1005,5 +1029,6 @@ module.exports = {
   createCrisisAlert,
   updateCrisisAlert,
   getFormToAnalyze,
-  analyzeCrisisAlert
+  analyzeCrisisAlert,
+  searchCrisisAlert
 }

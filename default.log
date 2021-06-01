@@ -824,3 +824,17 @@ funcion: updateCrisisAlert
 error: ReferenceError: id_atencion_crisis is not defined
 --------------------------------------------------------------------------------------------
 
+2021.05.31, 17:26:10.0267 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: updateCrisisAlert
+error: ReferenceError: id_atencion_crisis is not defined
+--------------------------------------------------------------------------------------------
+
+2021.06.01, 16:14:13.0503 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: getById
+error: error: invalid input syntax for type numeric: "form"
+--------------------------------------------------------------------------------------------
+
