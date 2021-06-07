@@ -880,6 +880,9 @@ let getEarlyAlertForm = async (req, res) => {
     var scenarios = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenarios ORDER BY id_escenario ASC');
     scenarios = scenarios.rows;
 
+    var scenario = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenario ORDER BY id_escenario ASC');
+    scenario = scenario.rows;
+
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
     typeZone = typeZone.rows;
 
@@ -1258,7 +1261,7 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "id_escenarios",
           question_type: "closed",
-          question: "Escenario",
+          question: "Escenarios",
           answers: scenarios
         },
         {
@@ -1286,6 +1289,12 @@ let getEarlyAlertForm = async (req, res) => {
           question_id: "cantida",
           question_type: "numeric",
           question: "Cantidad"
+        },
+        {
+          question_id: "id_escenario",
+          question_type: "closed",
+          question: "Escenario",
+          answers: scenario
         },
         {
           question_id: "id_tematica_relacionada",

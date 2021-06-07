@@ -538,6 +538,7 @@ CREATE TABLE sat_alerta_temprana (
     id_criterio NUMERIC,
     id_temporalidad VARCHAR(100), --AGREGADO
     cantidad NUMERIC, --AGREGADO
+    id_scenario NUMERIC,
     antecedentes_hecho TEXT,
     poblacion_afectada VARCHAR(100),
     contraparte VARCHAR(100),
