@@ -685,7 +685,7 @@ let getById = async (req, res) => {
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
-          question_id: "hubo_agresion", //89
+          question_id: "hubo_agresion", 
           required: 1,
           question_type: "switch",
           question: "¿Se ha producido algún tipo de agresión?",
@@ -696,7 +696,7 @@ let getById = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 15,
-          dependent_question_id: "hubo_agresion",//89
+          dependent_question_id: "hubo_agresion",
           dependent_answer: true,
           question_type: "closed_multiple",
           question: "Tipo de agresión",
@@ -1282,12 +1282,20 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "id_temporalidad",
           question_type: "closed",
+          dependent: 1,
+          dependent_section_id: 8,
+          dependent_question_id: "fecha_futura_hechos",
+          dependent_answer: true,
           question: "Temporalidad",
           answers: temporality
         },
         {
           question_id: "cantida",
           question_type: "numeric",
+          dependent: 1,
+          dependent_section_id: 8,
+          dependent_question_id: "fecha_futura_hechos",
+          dependent_answer: true,
           question: "Cantidad"
         },
         {
@@ -1336,18 +1344,21 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "poblacion_afectada",
           question_type: "open",
+          required: 1,
           question: "Población afectada"
         },
         {
           question_id: "contraparte",
           question_type: "open",
+          required: 1,
           question: "Contraparte"
         },
         {
           question_id: "perfil_actor",
           question_type: "closed",
+          required: 1,
           question: "Perfil de actores",
-          answer: profileActors
+          answers: profileActors
         },
         {
           question_id: "id_grupo_vulnerable",
@@ -1359,6 +1370,7 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "demanda_solicitud",
           question_type: "area",
+          required: 1,
           question: "Demanda o solicitud de la población afectada a las autoridades competentes",
           hint: "Escriba aqui..."
         },
@@ -1438,6 +1450,7 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "cantidad_aproximada",
           question_type: "numeric",
+          required: 1,
           question: "Cantidad aproximada"
         }
       ]
@@ -1449,7 +1462,7 @@ let getEarlyAlertForm = async (req, res) => {
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
-          question_id: "id_acciones_hecho", //89
+          question_id: "id_acciones_hecho", 
           required: 1,
           question_type: "closed",
           question: "Acciones del Hecho",
@@ -1462,7 +1475,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "¿Existen medidas de protección vigentes? "
         },
         {
-          question_id: "hubo_agresion", //89
+          question_id: "hubo_agresion", 
           required: 1,
           question_type: "switch",
           question: "¿Se ha producido algún tipo de agresión?"
@@ -1472,7 +1485,7 @@ let getEarlyAlertForm = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 15,
-          dependent_question_id: "hubo_agresion",//89
+          dependent_question_id: "hubo_agresion",
           dependent_answer: true,
           question_type: "closed_multiple",
           question: "Tipo de agresión",
@@ -1503,9 +1516,13 @@ let getEarlyAlertForm = async (req, res) => {
           question: "¿Hubo crisis?"
         },
         {
-          question_id: "id_acciones_hecho", //89
+          question_id: "id_acciones_hecho", 
           required: 1,
           question_type: "closed",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "crisis_conflicto",
+          dependent_answer: true,
           question: "Acciones del Hecho Anterior",
           answers: []
         },
@@ -1513,6 +1530,10 @@ let getEarlyAlertForm = async (req, res) => {
           question_id: "resolucion_conflicto",
           required: 1,
           question_type: "switch",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "crisis_conflicto",
+          dependent_answer: true,
           question: "¿Hubo mecanismos de resolución del conflicto?"
         },
         {
@@ -1538,6 +1559,10 @@ let getEarlyAlertForm = async (req, res) => {
           question_id: "intervencion_fuerza_publica",
           required: 1,
           question_type: "switch",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "presencia_fuerza_publica",
+          dependent_answer: true,
           question: "¿Hubo Intervencion de fuerzas públicas"
         }
       ]
