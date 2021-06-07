@@ -58,6 +58,7 @@ let getCrisisAlertsForm = async(req, res) => {
     var occupation = await db.query(`SELECT id_cat_pro_oficio::integer AS answer_id, descripcion AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A'`);
     occupation = occupation.rows;
 
+
     var vulnerableGroup = await db.query(`SELECT id_grp_vulnerable::integer AS answer_id, descripcion AS answer FROM admi_grp_vulnerable WHERE est_reg = 'A' ORDER BY id_grp_vulnerable ASC`);
     vulnerableGroup = vulnerableGroup.rows;
 
@@ -201,7 +202,7 @@ let getCrisisAlertsForm = async(req, res) => {
         },
         {
           question_id: "id_ocupacion",
-          question_type: "closed",
+          question_type: "closed_searchable",
           question: "Ocupación",
           answers: occupation
         },
@@ -429,6 +430,14 @@ let getById = async(req, res) =>{
     var occupation = await db.query(`SELECT id_cat_pro_oficio::integer AS answer_id, descripcion AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A'`);
     occupation = occupation.rows;
 
+    
+    var occupation_answer = null;
+    if(crisisAttention.id_ocupacion != null){
+      occupation_answer = await db.query(`SELECT CONCAT(id_cat_pro_oficio, '|',descripcion) AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A' AND id_cat_pro_oficio = ${crisisAttention.id_ocupacion}`);
+    occupation_answer = occupation_answer.rows[0].answer;
+    }
+
+
     var vulnerableGroup = await db.query(`SELECT id_grp_vulnerable::integer AS answer_id, descripcion AS answer FROM admi_grp_vulnerable WHERE est_reg = 'A' ORDER BY id_grp_vulnerable ASC`);
     vulnerableGroup = vulnerableGroup.rows;
 
@@ -590,10 +599,11 @@ let getById = async(req, res) =>{
         },
         {
           question_id: "id_ocupacion",
-          question_type: "closed",
+          question_type: "closed_searchable",
+          required: 1,
           question: "Ocupación",
           answers: occupation,
-          answer: Number.parseInt(crisisAttention.id_ocupacion)
+          answer: occupation_answer
         },
         {
           question_id: "id_grupo_vulnerabilidad",
@@ -806,13 +816,16 @@ let getById = async(req, res) =>{
 };
 
 let createCrisisAlert = async (req, res) => {
-  const { fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+  const { id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
     edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
     fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
     institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
+
+    var localDate =  new Date();
+    var fecha_ingreso = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
 
     var cod_usu_ing = req.user.id_usuario;
     var cod_usu_mod = req.user.id_usuario;
