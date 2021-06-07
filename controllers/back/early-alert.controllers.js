@@ -877,8 +877,8 @@ let getEarlyAlertForm = async (req, res) => {
     var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
     source = source.rows;
 
-    var scenario = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenario ORDER BY id_escenario ASC');
-    scenario = scenario.rows;
+    var scenarios = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenarios ORDER BY id_escenario ASC');
+    scenarios = scenarios.rows;
 
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
     typeZone = typeZone.rows;
@@ -900,6 +900,18 @@ let getEarlyAlertForm = async (req, res) => {
 
     var law = await db.query(`SELECT id_cat_derecho::integer AS answer_id, descripcion AS answer FROM admi_cat_derecho WHERE est_reg = 'A'`);
     law = law.rows;
+
+    var temporality = await db.query(`SELECT id_temporalidad::integer AS answer_id, nombre_temporalidad AS answer FROM sat_temporalidad WHERE estado = 1`);
+    temporality = temporality.rows;
+
+    var topics = await db.query(`SELECT id_tema::integer AS answer_id, nombre_tema AS answer FROM sat_temas WHERE estado = 1`);
+    topics = topics.rows;
+
+    var profileActors = await db.query(`SELECT id_perfil_actor::integer AS answer_id, nombre_actor AS answer FROM sat_perfil_actores WHERE estado = 1`);
+    profileActors = profileActors.rows;
+
+    var actionsFact = await db.query(`SELECT id_acciones_hecho::integer AS answer_id, nombre_hecho AS answer FROM sat_acciones_hecho WHERE estado = 1`);
+    actionsFact = actionsFact.rows;
 
     //Prensa Escrita
     var newspapers = {
@@ -1226,12 +1238,14 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "id_departamento",
           question_type: "state",
+          required: 1,
           question: "Departamento",
           answers: state
         },
         {
           question_id: "id_municipio",
           question_type: "closed",
+          required: 1,
           question: "Municipio",
           answers: []
         },
@@ -1244,25 +1258,56 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "descripcion_hechos",
           question_type: "area",
+          required: 1,
           question: "Breve descripción del hecho/Situación/Problema",
           limit: 500
         },
         {
           question_id: "id_derecho",
           question_type: "closed",
+          required: 1,
           question: "Derecho",
           answers: law
         },
         {
-          question_id: "id_escenario",
+          question_id: "id_escenarios",
           question_type: "closed",
           question: "Escenario",
-          answers: scenario
+          answers: scenarios
+        },
+        {
+          question_id: "id_temporalidad",
+          question_type: "closed",
+          question: "Temporalidad",
+          answers: temporality
+        },
+        {
+          question_id: "cantida",
+          question_type: "numeric",
+          question: "Cantidad"
+        },
+        {
+          question_id: "id_tematica_relacionada",
+          question_type: "closed",
+          question: "Temática",
+          answers: topics
         },
         {
           question_id: "id_sub_tematica",
           question_type: "closed",
           question: "Sub Temática",
+          answers: []
+        },
+        {
+          question_id: "id_situacion_conflictiva",
+          question_type: "closed",
+          question: "Situación conflictiva",
+          answers: []
+        },
+        {
+          question_id: "id_criterio",
+          question_type: "closed",
+          question: "Criterio",
           answers: []
         },
         {
@@ -1290,8 +1335,9 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "perfil_actor",
-          question_type: "open",
-          question: "Perfil de actores"
+          question_type: "closed",
+          question: "Perfil de actores",
+          answer: profileActors
         },
         {
           question_id: "id_grupo_vulnerable",
@@ -1393,6 +1439,19 @@ let getEarlyAlertForm = async (req, res) => {
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
+          question_id: "id_acciones_hecho", //89
+          required: 1,
+          question_type: "closed",
+          question: "Acciones del Hecho",
+          answers: actionsFact
+        },
+        {
+          question_id: "proteccion_vigente",
+          required: 1,
+          question_type: "switch",
+          question: "¿Existen medidas de protección vigentes? "
+        },
+        {
           question_id: "hubo_agresion", //89
           required: 1,
           question_type: "switch",
@@ -1433,7 +1492,19 @@ let getEarlyAlertForm = async (req, res) => {
           question_type: "switch",
           question: "¿Hubo crisis?"
         },
-
+        {
+          question_id: "id_acciones_hecho", //89
+          required: 1,
+          question_type: "closed",
+          question: "Acciones del Hecho Anterior",
+          answers: []
+        },
+        {
+          question_id: "resolucion_conflicto",
+          required: 1,
+          question_type: "switch",
+          question: "¿Hubo mecanismos de resolución del conflicto?"
+        },
         {
           question_id: "id_situacion_conflicto",
           required: 1,
@@ -1446,6 +1517,18 @@ let getEarlyAlertForm = async (req, res) => {
           required: 1,
           question_type: "switch",
           question: "¿A disminuido la cantidad de personas involucradas?"
+        },
+        {
+          question_id: "presencia_fuerza_publica",
+          required: 1,
+          question_type: "switch",
+          question: "¿Hubo Presencia de fuerzas públicas"
+        },
+        {
+          question_id: "intervencion_fuerza_publica",
+          required: 1,
+          question_type: "switch",
+          question: "¿Hubo Intervencion de fuerzas públicas"
         }
       ]
     }
