@@ -1256,6 +1256,12 @@ let getEarlyAlertForm = async (req, res) => {
           answers: typeZone
         },
         {
+          question_id: "id_escenarios",
+          question_type: "closed",
+          question: "Escenario",
+          answers: scenarios
+        },
+        {
           question_id: "descripcion_hechos",
           question_type: "area",
           required: 1,
@@ -1269,12 +1275,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "Derecho",
           answers: law
         },
-        {
-          question_id: "id_escenarios",
-          question_type: "closed",
-          question: "Escenario",
-          answers: scenarios
-        },
+        
         {
           question_id: "id_temporalidad",
           question_type: "closed",
