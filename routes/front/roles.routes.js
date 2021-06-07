@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 
 const { isLoggedIn } = require('@middlewares/auth');
-const { rolesList, viewCreateRole, createRole, getById, updateRole } = require('@controllers/front/roles.controlles');
+const { rolesList, viewCreateRole, createRole, getById, updateRole } = require('@controllers/front/roles.controllers');
 
 router.get('/api-sat/role-list', isLoggedIn, rolesList);
 

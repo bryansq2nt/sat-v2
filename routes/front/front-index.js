@@ -16,7 +16,7 @@ module.exports = (app, passport) => {
     app.use(require('./source.routes'));
 
     //Scenario
-    app.use(require('./scenario.routes'));
+    app.use(require('./scenarios.routes'));
 
     //Phases Conflict
     app.use(require('./conflict-phases.routes'));
@@ -65,5 +65,23 @@ module.exports = (app, passport) => {
 
     //Banner
     app.use(require('./banner.routes'));
+
+    //Issuance Reference
+    app.use(require('./issuance-reference.routes'));
+
+    //Temporality
+    app.use(require('./temporality.routes'));
+
+    //Topic
+    app.use(require('./topic.routes'));
+
+    //Subtopic
+    app.use(require('./subtopic.routes'));
+
+    //Situation
+    app.use(require('./situation.routes'));
+
+    //Criterion
+    app.use(require('./criterion.routes'));
 
 };

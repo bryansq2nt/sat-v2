@@ -6,14 +6,14 @@ const log = require('@lib/catch-error');
 
 
 
-module.exports = function(passport) {
+module.exports = function (passport) {
 
-     passport.serializeUser(function(user, done) {
-        
+    passport.serializeUser(function (user, done) {
+
         done(null, user);
     });
 
-    passport.deserializeUser(function(user,done) {
+    passport.deserializeUser(function (user, done) {
 
         done(null, user);
     });
@@ -21,14 +21,14 @@ module.exports = function(passport) {
     passport.use(
         'local-login',
         new LocalStrategy({
-                usernameField: 'email',
-                passwordField: 'password',
-                passReqToCallback: true
-            },
-            async(req, email, password, done) => {
-                
-                db.query("SELECT * FROM admins WHERE email = $1", [email],async(err,results)=>{
-                    if(err){
+            usernameField: 'email',
+            passwordField: 'password',
+            passReqToCallback: true
+        },
+            async (req, email, password, done) => {
+
+                db.query("SELECT * FROM admins WHERE email = $1", [email], async (err, results) => {
+                    if (err) {
                         console.log(err.stack);
                         return done(null, false, req.flash('error', err.stack));
                     }
@@ -36,19 +36,19 @@ module.exports = function(passport) {
                     if (!results.rows.length) {
                         return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                     } else {
-                      
+
                         if (!bcrypt.compareSync(password, results.rows[0].password)) {
-                         
+
                             return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                         }
 
                         const user = results.rows[0];
-                        
+
                         return done(null, user, null);
                     }
                 });
-            
-                
+
+
             })
     );
 
@@ -70,34 +70,39 @@ module.exports = function(passport) {
                     if (err) {
                         console.log(err.stack);
                         return done(null, false, req.flash('error', err.stack));
-                    }else{
-                        console.log('Filtro 1');
+                    } else {
+
                         if (!results.rows.length) {
                             return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                         } else {
-                            console.log('Filtro 2');
                             var userPassword = md5(password);
 
                             if (userPassword != results.rows[0].clave) {
                                 return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                             } else {
-                                console.log('paso la contrasena');
+
                                 let user = results.rows[0];
-                                user.authorizationModuls = []
-                                
-                                if( results.rows.length > 0){
-                                    
-                                    authorizationModuls = await db.query(`SELECT mu.id_modulo, m.nombre_modulo  
+                                user.administracion = 0;
+                                user.cat = 0;
+                                user.dashboard = 0;
+
+                                if (results.rows.length > 0) {
+
+                                    var authorizationModuls = await db.query(`SELECT mu.id_modulo::numeric AS id_modulo, m.nombre_modulo  
                                     FROM sat_permisos_modulos_usuario AS mu 
                                     INNER JOIN sat_modulos AS m ON mu.id_modulo = m.id_modulo 
-                                    WHERE mu.id_usuario = $1 AND m.tipo_modulo = 2`,[user.id_usuario]);
+                                    WHERE mu.id_usuario = $1 AND m.tipo_modulo = 2`, [user.id_usuario]);
                                     authorizationModuls = authorizationModuls.rows;
-                                    
-                                    if(authorizationModuls.length > 0){
-                                        for(let i=0; i < authorizationModuls.length; i++){
-                                            user.authorizationModuls.push(authorizationModuls[i].id_modulo); 
+                                     
+                                    for (let i = 0; i < authorizationModuls.length; i++) {
+                                        if(authorizationModuls[i].id_modulo == 4){
+                                            user.administracion = 1;
+                                        }else if(authorizationModuls[i].id_modulo == 5){
+                                            user.cat = 1;
+                                        }else if(authorizationModuls[i].id_modulo == 6){
+                                            user.dashboard = 1;
                                         }
-                                    }
+                                    } 
                                 }
 
                                 return done(null, user, null);
