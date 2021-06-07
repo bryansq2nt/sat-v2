@@ -34,34 +34,41 @@ let createEarlyAlert = async (req, res) => {
     contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
     contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
     fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona,
-    descripcion_hechos, id_derecho, id_escenario, id_tematica_relacionada, id_sub_tematica, antecedentes_hecho,
-    poblacion_afectada, postura_autoridades, contraparte, perfil_actor, id_grupo_vulnerable, demanda_solicitud, poblacion_ninos,
-    poblacion_ninas, adolecentes_hombres, adolecentes_mujeres, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,
-    poblacion_mujer_mayor, cantidad_aproximada, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto,
-    dialogo_roto_conflicto, crisis_conflicto, cant_persona_involucrada, id_situacion_conflicto } = req.body;
+    descripcion_hechos, id_derecho, id_escenarios, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
+    id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, poblacion_afectada, contraparte, 
+    id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
+    proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
+    id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
+    presencia_fuerza_publica, intervencion_fuerza_publica} = req.body;
 
 
 
-  var cod_usu_ing = req.user.user_id;
+  var cod_usu = req.user.user_id;
 
   var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
 
   try {
     await db.query(`INSERT INTO sat_alerta_temprana(
-          id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa, fecha_publicacion_prensa, fotografia_prensa,
-          nombre_medio_radio, canal_radio, nombre_programa_radio, fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social,
-          fecha_pub_red_social, pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo,
-          nombre_organismo, nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo,
-          nombre_inst_gub, contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria,
-          nombre_contacto_mensajeria, contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-          fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona,
-          descripcion_hechos, id_derecho, id_escenario, id_tematica_relacionada, id_sub_tematica, antecedentes_hecho,
-          poblacion_afectada, postura_autoridades, contraparte, perfil_actor, id_grupo_vulnerable, demanda_solicitud, poblacion_ninos,
-          poblacion_ninas, adolecentes_hombres, adolecentes_mujeres, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor,
-          cantidad_aproximada, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto, cant_persona_involucrada, id_situacion_conflicto, cod_usu_ing)
+      id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, 
+      autor_prensa, fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio, 
+      fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social, pantalla_red_social, 
+      nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo, nombre_contacto_organismo, 
+      correo_organismo, telefono_organismo, datos_organismo, nombre_mensajeria, nombre_contacto_mensajeria, 
+      contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, nombre_inst_gub, contacto_inst_gub, correo_inst_gub, 
+      telefono_inst_gub, datos_inst_gub, otras_detalle, otras_adicionales, fecha_hechos, fecha_futura_hechos, fecha_reporte, 
+      id_pais, id_departamento, id_municipio, id_tipo_zona, descripcion_hechos, id_derecho, id_escenarios, id_tematica_relacionada, 
+      id_sub_tematica, id_situacion_conflictiva, id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, 
+      poblacion_afectada, contraparte, id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, 
+      poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, 
+      poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, 
+      medida_conflicto, dialogo_roto_conflicto, crisis_conflicto, id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, 
+      cant_persona_involucrada, presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu_ing, cod_usu_mod)
             VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, 
                     $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, 
-                    $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74)`,
+                    $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, 
+                    $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $82, $83, $84,
+                    $85, $86)`,
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
         fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
         fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
@@ -69,12 +76,14 @@ let createEarlyAlert = async (req, res) => {
         nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
         contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
         contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-        fecha_hechos, fecha_futura_hechos, fecha_reporte, 62, id_departamento, id_municipio, id_tipo_zona,
-        descripcion_hechos, id_derecho, id_escenario, id_tematica_relacionada, id_sub_tematica, antecedentes_hecho,
-        poblacion_afectada, postura_autoridades, contraparte, perfil_actor, id_grupo_vulnerable, demanda_solicitud, poblacion_ninos,
-        poblacion_ninas, adolecentes_hombres, adolecentes_mujeres, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,
-        poblacion_mujer_mayor, cantidad_aproximada, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto,
-        dialogo_roto_conflicto, crisis_conflicto, cant_persona_involucrada, id_situacion_conflicto, cod_usu_ing], (err, results) => {
+        fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona,
+        descripcion_hechos, id_derecho, id_escenarios, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
+        id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, poblacion_afectada, contraparte, 
+        id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
+        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
+        proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
+        id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
+        presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu, cod_usu], (err, results) => {
           if (err) {
             console.log(err);
             errorResponse.detail = err.message;
@@ -105,6 +114,9 @@ let getById = async (req, res) => {
     var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
     source = source.rows;
 
+    var scenarios = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenarios ORDER BY id_escenario ASC');
+    scenarios = scenarios.rows;
+
     var scenario = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenario ORDER BY id_escenario ASC');
     scenario = scenario.rows;
 
@@ -131,6 +143,19 @@ let getById = async (req, res) => {
 
     var law = await db.query(`SELECT id_cat_derecho::integer AS answer_id, descripcion AS answer FROM admi_cat_derecho WHERE est_reg = 'A'`);
     law = law.rows;
+
+    var temporality = await db.query(`SELECT id_temporalidad::integer AS answer_id, nombre_temporalidad AS answer FROM sat_temporalidad WHERE estado = 1`);
+    temporality = temporality.rows;
+
+    var topics = await db.query(`SELECT id_tema::integer AS answer_id, nombre_tema AS answer FROM sat_temas WHERE estado = 1`);
+    topics = topics.rows;
+
+    var profileActors = await db.query(`SELECT id_perfil_actor::integer AS answer_id, nombre_actor AS answer FROM sat_perfil_actores WHERE estado = 1`);
+    profileActors = profileActors.rows;
+
+    var actionsFact = await db.query(`SELECT id_acciones_hecho::integer AS answer_id, nombre_hecho AS answer FROM sat_acciones_hecho WHERE estado = 1`);
+    actionsFact = actionsFact.rows;
+
 
     //Prensa Escrita
     var newspapers = {
@@ -568,10 +593,12 @@ let getById = async (req, res) => {
           answer: early_alert.contraparte
         },
         {
-          question_id: "perfil_actor",
+          question_id: "id_perfil_actor",
           question_type: "open",
           question: "Perfil de actores",
-          answer: early_alert.perfil_actor
+          answers: profileActors,
+          answer: Number.parseInt(early_alert.id_perfil_actor)
+          
         },
         {
           question_id: "id_grupo_vulnerable",
@@ -579,7 +606,7 @@ let getById = async (req, res) => {
           question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup,
-          answer: early_alert.id_grupo_vulnerable
+          answer: Number.parseInt(early_alert.id_grupo_vulnerable)
         },
         {
           question_id: "demanda_solicitud",
@@ -685,6 +712,21 @@ let getById = async (req, res) => {
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
+          question_id: "id_acciones_hecho", 
+          required: 1,
+          question_type: "closed",
+          question: "Acciones del Hecho",
+          answers: actionsFact,
+          answer:early_alert.id_acciones_hecho
+        },
+        {
+          question_id: "proteccion_vigente",
+          required: 1,
+          question_type: "switch",
+          question: "¿Existen medidas de protección vigentes? ",
+          answer:early_alert.proteccion_vigente
+        },
+        {
           question_id: "hubo_agresion", 
           required: 1,
           question_type: "switch",
@@ -701,7 +743,7 @@ let getById = async (req, res) => {
           question_type: "closed_multiple",
           question: "Tipo de agresión",
           answers: aggresionType,
-          answer: early_alert.id_tipo_agresion
+          answer: Number.parseInt(early_alert.id_tipo_agresion)
         },
         {
           question_id: "dialogo_conflicto",
@@ -731,7 +773,30 @@ let getById = async (req, res) => {
           question: "¿Hubo crisis?",
           answer: early_alert.crisis_conflicto
         },
+        {
+          question_id: "id_acciones_hecho", 
+          required: 1,
+          question_type: "closed",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "crisis_conflicto",
+          dependent_answer: true,
+          question: "Acciones del Hecho Anterior",
+          answers: actionsFact,
+          answer: Number.parseInt(early_alert.id_acciones_hecho)
+        },
+        {
+          question_id: "resolucion_conflicto",
+          required: 1,
+          question_type: "switch",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "crisis_conflicto",
+          dependent_answer: true,
+          question: "¿Hubo mecanismos de resolución del conflicto?",
+          answer: early_alert.resolucion_conflicto
 
+        },
         {
           question_id: "id_situacion_conflicto",
           required: 1,
@@ -746,6 +811,24 @@ let getById = async (req, res) => {
           question_type: "switch",
           question: "¿A disminuido la cantidad de personas involucradas?",
           answer: early_alert.cant_persona_involucrada
+        },
+        {
+          question_id: "presencia_fuerza_publica",
+          required: 1,
+          question_type: "switch",
+          question: "¿Hubo Presencia de fuerzas públicas",
+          answer: early_alert.presencia_fuerza_publica
+        },
+        {
+          question_id: "intervencion_fuerza_publica",
+          required: 1,
+          question_type: "switch",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "presencia_fuerza_publica",
+          dependent_answer: true,
+          question: "¿Hubo Intervencion de fuerzas públicas",
+          answer: early_alert.intervencion_fuerza_publica
         }
       ]
     }
@@ -1354,7 +1437,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "Contraparte"
         },
         {
-          question_id: "perfil_actor",
+          question_id: "id_perfil_actor",
           question_type: "closed",
           required: 1,
           question: "Perfil de actores",

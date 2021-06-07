@@ -838,3 +838,24 @@ funcion: getById
 error: error: invalid input syntax for type numeric: "form"
 --------------------------------------------------------------------------------------------
 
+2021.06.07, 19:08:49.0296 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: getById
+error: TypeError: Cannot read property 'titulo_noticia' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.06.07, 21:57:43.0397 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: getById
+error: error: no existe la relación «sat_perfil_actores»
+--------------------------------------------------------------------------------------------
+
+2021.06.07, 21:59:20.0675 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/back
+funcion: getById
+error: error: no existe la relación «sat_acciones_hecho»
+--------------------------------------------------------------------------------------------
+
