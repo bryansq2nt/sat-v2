@@ -9,7 +9,7 @@ let earlyAlertsList = async (req, res) => {
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas Tempranas.", instance: "early-alert/earlyAlertsList" });
 
 
-    await db.query(`SELECT id_alerta_temprana::numeric AS form_id, analizada AS analyzed FROM sat_alerta_temprana ORDER BY id_alerta_temprana ASC LIMIT 25 OFFSET $1`, [offset], (err, results) => {
+    await db.query(`SELECT id_alerta_temprana::numeric AS form_id, analizada AS analyzed FROM sat_alerta_temprana ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());

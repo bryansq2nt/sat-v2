@@ -10,7 +10,7 @@ let crisisAlertsList = async(req, res) =>{
 
       var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
       
-      await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis ORDER BY id_atencion_crisis ASC LIMIT 25 OFFSET $1`,[offset],(err,results)=>{
+      await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`,[offset],(err,results)=>{
         if(err){
           console.log(err.message);
           return res.status(500).json(errorResponse.toJson());
