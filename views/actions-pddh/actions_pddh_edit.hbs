@@ -2,13 +2,13 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Crear Tipo de Alerta</h4>
+                <h4 class="card-title">Actualizar Acci&oacute;n PDDH</h4>
                 <form class="m-t-40" novalidate action="/api-sat/actions-pddh/{{actionPDDH.id_accion_pddh}}/update" method="POST">
                     <section>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <h5>T&iacute;tulo Acciones<span class="text-danger">*</span></h5>
+                                    <h5>T&iacute;tulo Acci&oacute;n<span class="text-danger">*</span></h5>
                                     <div class="controls">
                                         <input type="text" name="nombre_accion" class="form-control" required
                                             data-validation-required-message="Este campo es obligatorio" value="{{actionPDDH.nombre_accion}}">

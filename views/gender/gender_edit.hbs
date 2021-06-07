@@ -2,14 +2,14 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Actualizar Sexo</h4>
+                <h4 class="card-title">Actualizar G&eacute;nero</h4>
                 <form class="m-t-40" novalidate action="/api-sat/gender/{{gender.id_genero}}/edit"
                     method="POST">
                     <section>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <h5> T&iacute;tulo Tipo de Entrada</h5>
+                                    <h5> T&iacute;tulo G&eacute;nero</h5>
                                     <div class="controls">
                                         <input type="text" name="nombre_genero" class="form-control"
                                             value="{{gender.nombre_genero}}">
@@ -30,7 +30,7 @@
                         </div>
                         <div class="text-xs-right">
                             <button type="submit" class="btn btn-info">Actualizar</button>
-                            <a href="/api-sat/sex-list" type="reset" class="btn btn-inverse">Cancelar</a>
+                            <a href="/api-sat/gender-list" type="reset" class="btn btn-inverse">Cancelar</a>
                         </div>
                     </section>
                 </form>

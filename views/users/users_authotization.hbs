@@ -138,41 +138,14 @@
 
                 <div class="form-group row pt-3">
                     <div class="col-sm-4">
+                        {{!-- list modulos --}}
+                        {{#each modulsAppAndUser}}
                         <div class="custom-control custom-checkbox">
-                            <input type="text" class="custom-control-input" name="id_usuario"
-                                value="{{usersAutorizarion.id_usuario}}" hidden>
-                            {{#showFormElements userAuthorization.opc_alerta_temprana}}
-                            <input type="checkbox" class="check" id="flat-checkbox-1" checked
-                                data-checkbox="icheckbox_flat-blue" name="opc_alerta_temprana" value="1">
-                            <label for="flat-checkbox-1">Alerta Temprana</label>
-                            {{else}}
-                            <input type="checkbox" class="check" id="flat-checkbox-2"
-                                data-checkbox="icheckbox_flat-blue" name="opc_alerta_temprana" value="1">
-                            <label for="flat-checkbox-2">Alerta Temprana</label>
-                            {{/showFormElements}}
-                        </div>
-                        <div class="custom-control custom-checkbox">
-                            {{#showFormElements userAuthorization.opc_atencion_crisis}}
-                            <input type="checkbox" class="check" id="flat-checkbox-3" checked name="opc_atencion_crisis"
-                                value="1" data-checkbox="icheckbox_flat-blue">
-                            <label for="flat-checkbox-3">Atención a Crisis</label>
-                            {{else}}
-                            <input type="checkbox" class="check" id="flat-checkbox-4" name="opc_atencion_crisis"
-                                value="1" data-checkbox="icheckbox_flat-blue">
-                            <label for="flat-checkbox-4">Atención a Crisis</label>
-                            {{/showFormElements}}
-                        </div>
-                        <div class="custom-control custom-checkbox">
-                            {{#showFormElements userAuthorization.opc_dashboard}}
-                            <input type="checkbox" class="check" id="flat-checkbox-5" checked name="opc_dashboard"
-                                value="1" data-checkbox="icheckbox_flat-blue">
-                            <label for="flat-checkbox-5">Dashboard</label>
-                            {{else}}
-                            <input type="checkbox" class="check" id="flat-checkbox-6" name="opc_dashboard" value="1"
+                            <input type="checkbox" class="check" id="flat-checkbox-{{@index}}" {{checked}} name="id_modulo_app[]" value="{{id_modulo}}"
                                 data-checkbox="icheckbox_flat-blue">
-                            <label for="flat-checkbox-6">Dashboard</label>
-                            {{/showFormElements}}
+                            <label for="flat-checkbox-{{@index}}">{{nombre_modulo}}</label>
                         </div>
+                        {{/each}}
                     </div>
                     <div class="col-sm-4">
                         {{#each dataAuthorization}}
@@ -184,7 +157,7 @@
                         {{/each}}
                     </div>
                 </div>
-                <label class="pb-2">Habilitar Acceso a Dashboard Web ----- {{#showFormElementsShowModife userAuthorization.id_rol_permisos}}{{/showFormElementsShowModife}}</label>
+                <label class="pb-2">Habilitar Acceso a Dashboard Web</label>
                 {{#showFormElements userAuthorization.permiso_acceso_web}}
                 <div class="custom-control custom-radio pb-2">
                     <input type="radio" class="check" id="square-radio-46" name="permiso_acceso_web" checked value="1"
@@ -208,14 +181,25 @@
                     <label for="square-radio-49">No</label>
                 </div>
                 {{/showFormElements}}
-                <div class="form-group row pt-3">
+                  <div class="form-group row pt-3">
                     <div class="col-sm-4">
-                        <h6>Falta</h6>
+                        <div class="custom-control custom-checkbox">
+                            <input type="text" class="custom-control-input" name="id_usuario"
+                                value="{{usersAutorizarion.id_usuario}}" hidden/>
+                        </div>
+                        {{!-- list modulos --}}
+                        {{#each modulsWebAndUser}}
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="check" id="flat-checkbox-{{@index}}" {{checked}} name="id_modulo_web[]" value="{{id_modulo}}"
+                                data-checkbox="icheckbox_flat-blue">
+                            <label for="flat-checkbox-{{@index}}">{{nombre_modulo}}</label>
+                        </div>
+                        {{/each}}
                     </div>
                 </div>
                 <div class="form-actions">
                     <div class="card-body">
-                        <button type="submit" class="btn btn-primary"> <i class="fa fa-check"></i> Guardar</button>
+                        <button type="submit" class="btn btn-primary"> <i class="fa fa-check"></i>Actualizar</button>
                         <a href="/api-sat/users-list" class="btn btn-dark">Cancelar</a>
                     </div>
                 </div>

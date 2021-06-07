@@ -10,7 +10,7 @@ let populationTypeList = async(req, res) => {
                 log('src/controllers/front', 'population-type', 'populationTypeList', err, false, req, res);
             }else{
                 var populationTypeList = results.rows;
-                return res.render('population-type/population_type_create_list', { populationTypeList });
+                return res.render('population-type/population_type_list', { populationTypeList });
             }
         });   
     } catch (error) {
