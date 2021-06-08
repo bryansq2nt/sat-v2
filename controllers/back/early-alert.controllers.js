@@ -774,7 +774,7 @@ let getById = async (req, res) => {
           answer: early_alert.crisis_conflicto
         },
         {
-          question_id: "id_acciones_hecho", 
+          question_id: "id_acciones_hecho_anterior", 
           required: 1,
           question_type: "closed",
           dependent: 1,
@@ -782,8 +782,8 @@ let getById = async (req, res) => {
           dependent_question_id: "crisis_conflicto",
           dependent_answer: true,
           question: "Acciones del Hecho Anterior",
-          answers: actionsFact,
-          answer: Number.parseInt(early_alert.id_acciones_hecho)
+          answers: [],
+          answer: Number.parseInt(early_alert.id_acciones_hecho_anterior)
         },
         {
           question_id: "resolucion_conflicto",
@@ -1599,7 +1599,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "¿Hubo crisis?"
         },
         {
-          question_id: "id_acciones_hecho", 
+          question_id: "id_acciones_hecho_anterior", 
           required: 1,
           question_type: "closed",
           dependent: 1,
