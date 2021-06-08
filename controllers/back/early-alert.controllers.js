@@ -714,7 +714,7 @@ let getById = async (req, res) => {
       questions: [
         {
           question_id: "id_acciones_hecho", 
-          required: 1,
+          required: 0,
           question_type: "closed",
           question: "Acciones del Hecho",
           answers: actionsFact,
@@ -776,14 +776,14 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_acciones_hecho_anterior", 
-          required: 1,
+          required: 0,
           question_type: "closed",
           dependent: 1,
           dependent_section_id: 15,
           dependent_question_id: "crisis_conflicto",
           dependent_answer: true,
           question: "Acciones del Hecho Anterior",
-          answers: [],
+          answers: actionsFact,
           answer: Number.parseInt(early_alert.id_acciones_hecho_anterior)
         },
         {
@@ -1556,7 +1556,7 @@ let getEarlyAlertForm = async (req, res) => {
       questions: [
         {
           question_id: "id_acciones_hecho", 
-          required: 1,
+          required: 0,
           question_type: "closed",
           question: "Acciones del Hecho",
           answers: actionsFact
@@ -1610,14 +1610,14 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_acciones_hecho_anterior", 
-          required: 1,
+          required: 0,
           question_type: "closed",
           dependent: 1,
           dependent_section_id: 15,
           dependent_question_id: "crisis_conflicto",
           dependent_answer: true,
           question: "Acciones del Hecho Anterior",
-          answers: []
+          answers: actionsFact
         },
         {
           question_id: "resolucion_conflicto",
