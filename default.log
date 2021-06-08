@@ -859,3 +859,10 @@ funcion: getById
 error: error: no existe la relación «sat_acciones_hecho»
 --------------------------------------------------------------------------------------------
 
+2021.06.08, 18:29:24.0519 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: getAnalyzedForm
+error: error: column "notificar" does not exist
+--------------------------------------------------------------------------------------------
+

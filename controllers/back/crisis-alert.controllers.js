@@ -925,7 +925,10 @@ let getFormToAnalyze = async (req,res) => {
 
   try {
 
-    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener el formulario.", instance: "early-alert/getFormToAnalyze" });
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener el formulario.", instance: "early-alert/getAnalyzedForm" });
+
+    var crisisAlert = await db.query(`SELECT id_accion_pddh, analisis, id_unidad_administrativa, texto_mensaje, analizada AS analyzed FROM sat_atencion_crisis WHERE id_atencion_crisis = ${id_atencion_crisis}`);
+    crisisAlert = crisisAlert.rows[0];
 
     var acciones_pddh = await db.query('SELECT id_accion_pddh::integer AS answer_id, nombre_accion AS answer FROM sat_accion_pddh WHERE estado = 1');
     acciones_pddh = acciones_pddh.rows;
@@ -941,25 +944,29 @@ let getFormToAnalyze = async (req,res) => {
           question_id: "id_accion_pddh",
           question_type: "closed",
           question: "Acciones PDDH",
-          answers: acciones_pddh
+          answers: acciones_pddh,
+          answer: Number.parseInt(crisisAlert.id_accion_pddh)
         },
         {
           question_id: "analisis",
           question_type: "area",
           required: 1,
-          question: "Analisis"
+          question: "Analisis",
+          answer: crisisAlert.analisis
         },
         {
-          question_id: "notificar",
+          question_id: "id_unidad_administrativa",
           question_type: "closed",
           question: "Notificar a:",
-          answers: administrative_unit
+          answers: administrative_unit,
+          answer: Number.parseInt(crisisAlert.id_unidad_administrativa)
         },
         {
           question_id: "texto_mensaje",
           question_type: "area",
           required: 1,
-          question: "Texto en el Mensaje"
+          question: "Texto en el Mensaje",
+          answer: crisisAlert.texto_mensaje
         }
       ]
     }
@@ -969,15 +976,17 @@ let getFormToAnalyze = async (req,res) => {
 
     var formCrisisAlert = {
       form_id: id_atencion_crisis,
+      analyzed: crisisAlert.analyzed,
       sections
     }
 
+    
     return res.status(200).json({
       form: formCrisisAlert
     });
 
   } catch (error) {
-    log('src/controllers/back', 'crisis-alert', 'getFormToAnalyze', error, true, req, res);
+    log('src/controllers/back', 'crisis-alert', 'getAnalyzedForm', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 

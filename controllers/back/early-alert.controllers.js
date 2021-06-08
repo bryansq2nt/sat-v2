@@ -49,7 +49,11 @@ let createEarlyAlert = async (req, res) => {
 
   var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
 
+ 
   try {
+    var pais = await db.query(`SELECT id_pais FROM public.admi_pais WHERE codigo = 'SV'`);
+    pais = pais.rows[0].id_pais;
+  
     await db.query(`INSERT INTO sat_alerta_temprana(
       id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, 
       autor_prensa, fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio, 
@@ -77,7 +81,7 @@ let createEarlyAlert = async (req, res) => {
         nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
         contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
         contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-        fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona,
+        fecha_hechos, fecha_futura_hechos, fecha_reporte, pais, id_departamento, id_municipio, id_tipo_zona,
         descripcion_hechos, id_derecho, id_escenarios, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
         id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, poblacion_afectada, contraparte, 
         id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
@@ -598,7 +602,7 @@ let getById = async (req, res) => {
           question_type: "closed_multiple",
           question: "Perfil de actores",
           answers: profileActors,
-          answer: Number.parseInt(early_alert.id_perfil_actor)
+          answer: early_alert.id_perfil_actor
           
         },
         {
@@ -607,7 +611,7 @@ let getById = async (req, res) => {
           question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup,
-          answer: Number.parseInt(early_alert.id_grupo_vulnerable)
+          answer: early_alert.id_grupo_vulnerable
         },
         {
           question_id: "demanda_solicitud",
@@ -744,7 +748,7 @@ let getById = async (req, res) => {
           question_type: "closed_multiple",
           question: "Tipo de agresión",
           answers: aggresionType,
-          answer: Number.parseInt(early_alert.id_tipo_agresion)
+          answer: early_alert.id_tipo_agresion
         },
         {
           question_id: "dialogo_conflicto",
@@ -912,6 +916,9 @@ let updateEarlyAlert = async (req, res) => {
 
   try {
 
+    var pais = await db.query(`SELECT id_pais FROM public.admi_pais WHERE codigo = 'SV'`);
+    pais = pais.rows[0].id_pais;
+  
     await db.query(`UPDATE sat_alerta_temprana
     SET id_tipo_fuente=$1, id_fuente=$2, titulo_noticia=$3, nombre_medio_prensa=$4, paginas_prensa=$5, autor_prensa=$6, 
     fecha_publicacion_prensa=$7, fotografia_prensa=$8, nombre_medio_radio=$9, canal_radio=$10, nombre_programa_radio=$11, 
@@ -936,7 +943,7 @@ let updateEarlyAlert = async (req, res) => {
       nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
       contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
       contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-      fecha_hechos, fecha_futura_hechos, fecha_reporte, 62, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
+      fecha_hechos, fecha_futura_hechos, fecha_reporte, pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
       descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
       id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, poblacion_afectada, contraparte, 
       id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
@@ -1712,12 +1719,16 @@ let getEarlyAlertForm = async (req, res) => {
 
 };
 
+
 let getFormToAnalyze = async (req,res) => {
   const { id_alerta_temprana } = req.params;
 
   try {
 
-    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener el formulario.", instance: "early-alert/getFormToAnalyze" });
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener el formulario.", instance: "early-alert/getAnalyzedForm" });
+
+    var earlyAlert = await db.query(`SELECT id_fase_conflicto, id_tipo_alerta, id_accion_pddh, analisis, notificar, texto_mensaje, analizada AS analyzed FROM sat_alerta_temprana WHERE id_alerta_temprana = ${id_alerta_temprana}`);
+    earlyAlert = earlyAlert.rows[0];
 
     var fases_conflicto = await db.query('SELECT id_fase_conflicto::integer AS answer_id, nombre_fase AS answer FROM sat_fase_conflicto WHERE estado = 1');
     fases_conflicto = fases_conflicto.rows;
@@ -1735,37 +1746,43 @@ let getFormToAnalyze = async (req,res) => {
           question_id: "id_fase_conflicto",
           question_type: "closed",
           question: "Fases del conflicto",
-          answers: fases_conflicto
+          answers: fases_conflicto,
+          answer: Number.parseInt(earlyAlert.id_fase_conflicto)
         },
         {
           question_id: "id_tipo_alerta",
           question_type: "closed",
           question: "Tipo de alerta",
-          answers: tipos_alerta
+          answers: tipos_alerta,
+          answer: Number.parseInt(earlyAlert.id_tipo_alerta)
         },
         {
           question_id: "id_accion_pddh",
           question_type: "closed",
           question: "Acciones PDDH",
-          answers: acciones_pddh
+          answers: acciones_pddh,
+          answer: Number.parseInt(earlyAlert.id_accion_pddh)
         },
         {
           question_id: "analisis",
           question_type: "area",
           required: 1,
-          question: "Analisis"
+          question: "Analisis",
+          answer: earlyAlert.analisis
         },
         {
           question_id: "notificar",
           question_type: "closed",
           question: "Notificar a:",
-          answers: []
+          answers: [],
+          answer: Number.parseInt(earlyAlert.notificar)
         },
         {
           question_id: "texto_mensaje",
           question_type: "area",
           required: 1,
-          question: "Texto en el Mensaje"
+          question: "Texto en el Mensaje",
+          answer: earlyAlert.texto_mensaje
         }
       ]
     }
@@ -1775,20 +1792,23 @@ let getFormToAnalyze = async (req,res) => {
 
     var formEarlyAlert = {
       form_id: id_alerta_temprana,
+      analyzed: earlyAlert.analyzed,
       sections
     }
+
 
     return res.status(200).json({
       form: formEarlyAlert
     });
 
   } catch (error) {
-    log('src/controllers/back', 'earlt-alert', 'analyzeEarlyAlert', error, true, req, res);
+    log('src/controllers/back', 'earlt-alert', 'getAnalyzedForm', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
 
 }
+
 
 let analyzeEarlyAlert = async (req,res) => {
   const { id_alerta_temprana } = req.params;
