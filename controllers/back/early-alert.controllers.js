@@ -1,6 +1,7 @@
 const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
+const dateFormat = require('dateformat');
 
 let earlyAlertsList = async (req, res) => {
   const { offset } = req.query;
@@ -886,54 +887,63 @@ let getById = async (req, res) => {
 let updateEarlyAlert = async (req, res) => {
 
   const { id_alerta_temprana } = req.params;
-  const {
-    id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
+  const { id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
     fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
     fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
     pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
     nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
     contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
     contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-    fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona,
-    descripcion_hechos, id_derecho, id_escenario, id_tematica_relacionada, id_sub_tematica, antecedentes_hecho,
-    poblacion_afectada, postura_autoridades, contraparte, perfil_actor, id_grupo_vulnerable, demanda_solicitud, poblacion_ninos,
-    poblacion_ninas, adolecentes_hombres, adolecentes_mujeres, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,
-    poblacion_mujer_mayor, cantidad_aproximada, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto,
-    dialogo_roto_conflicto, crisis_conflicto, cant_persona_involucrada, id_situacion_conflicto } = req.body;
+    fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
+    descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
+    id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, poblacion_afectada, contraparte, 
+    id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
+    proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
+    id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
+    presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
-  var cod_usu_mod = req.user.user_id;
-  var fecha_mod_reg = new Date().toLocaleString();
+    var localDate =  new Date();
+    var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    var cod_usu_mod = req.user.id_usuario;
 
-  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar la Alerta.", instance: "early-alert/updateEarlyAlert" });
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar la Alerta.", instance: "early-alert/updateEarlyAlert" });
 
 
   try {
 
-    await db.query(`UPDATE sat_alerta_temprana  SET id_tipo_fuente = $1, id_fuente = $2, titulo_noticia = $3, nombre_medio_prensa = $4, paginas_prensa = $5, autor_prensa = $6,
-    fecha_publicacion_prensa = $7, fotografia_prensa = $8, nombre_medio_radio = $9, canal_radio = $10, nombre_programa_radio = $11,
-    fecha_emision_radio = $12, titulo_redes = $13, nombre_red_social = $14, url_red_social = $15, fecha_pub_red_social = $16,
-    pantalla_red_social = $17, nombre_colectivo = $18, nombre_contacto_colectivo = $19, telefono_colectivo = $20, nombre_organismo = $21,
-    nombre_contacto_organismo = $22, correo_organismo = $23, telefono_organismo = $24, datos_organismo = $25, nombre_inst_gub = $26,
-    contacto_inst_gub = $27, correo_inst_gub = $28, telefono_inst_gub = $29, datos_inst_gub = $30, nombre_mensajeria = $31, nombre_contacto_mensajeria = $32,
-    contacto_mensajeria = $33, datos_mensajeria = $34, fotografia_mensajeria = $35, otras_detalle = $36, otras_adicionales = $37,
-    fecha_hechos = $38, fecha_futura_hechos = $39, fecha_reporte = $40, id_pais = $41, id_departamento = $42, id_municipio = $43, id_tipo_zona = $44,
-    descripcion_hechos = $45, id_derecho = $46, id_escenario = $47, id_tematica_relacionada = $48, id_sub_tematica = $49, antecedentes_hecho = $50,
-    poblacion_afectada = $51, postura_autoridades = $52, contraparte = $53, perfil_actor = $54, id_grupo_vulnerable = $55, demanda_solicitud = $56, poblacion_ninos = $57,
-    poblacion_ninas = $58, adolecentes_hombres = $59, adolecentes_mujeres = $60, poblacion_hombres = $61, poblacion_mujeres = $62, poblacion_hombre_mayor = $63,
-    poblacion_mujer_mayor = $64, cantidad_aproximada = $65, hubo_agresion = $66, id_tipo_agresion = $67, dialogo_conflicto = $68, medida_conflicto = $69,
-    dialogo_roto_conflicto = $70, crisis_conflicto = $71, cant_persona_involucrada = $72, id_situacion_conflicto = $73, fecha_mod_reg = $74, cod_usu_mod = $75 WHERE id_alerta_temprana = $76`, [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
+    await db.query(`UPDATE sat_alerta_temprana
+    SET id_tipo_fuente=$1, id_fuente=$2, titulo_noticia=$3, nombre_medio_prensa=$4, paginas_prensa=$5, autor_prensa=$6, 
+    fecha_publicacion_prensa=$7, fotografia_prensa=$8, nombre_medio_radio=$9, canal_radio=$10, nombre_programa_radio=$11, 
+    fecha_emision_radio=$12, titulo_redes=$13, nombre_red_social=$14, url_red_social=$15, fecha_pub_red_social=$16, pantalla_red_social=$17, 
+    nombre_colectivo=$18, nombre_contacto_colectivo=$19, telefono_colectivo=$20, nombre_organismo=$21, nombre_contacto_organismo=$22, 
+    correo_organismo=$23, telefono_organismo=$24, datos_organismo=$25, nombre_inst_gub=$26, contacto_inst_gub=$27, 
+    correo_inst_gub=$28, telefono_inst_gub=$29, datos_inst_gub=$30, nombre_mensajeria=$31, nombre_contacto_mensajeria=$32, 
+    contacto_mensajeria=$33, datos_mensajeria=$34, fotografia_mensajeria=$35, otras_detalle=$36, otras_adicionales=$37, fecha_hechos=$38, 
+    fecha_futura_hechos=$39, fecha_reporte=$40, id_pais=$41, id_departamento=$42, id_municipio=$43, id_tipo_zona=$44, id_escenarios=$45, 
+    descripcion_hechos=$46, id_derecho=$47, id_tematica_relacionada=$48, id_sub_tematica=$49, id_situacion_conflictiva=$50, id_criterio=$51, 
+    id_temporalidad=$52, cantidad=$53, id_scenario=$54, antecedentes_hecho=$55, poblacion_afectada=$56, contraparte=$57, id_perfil_actor=$58, 
+    id_grupo_vulnerable=$59, demanda_solicitud=$60, postura_autoridades=$61, poblacion_ninos=$62, poblacion_ninas=$63, adolecentes_mujeres=$64, 
+    adolecentes_hombres=$65, poblacion_hombres=$66, poblacion_mujeres=$67, poblacion_hombre_mayor=$68, poblacion_mujer_mayor=$69, cantidad_aproximada=$70, 
+    id_acciones_hecho=$71, proteccion_vigente=$72, hubo_agresion=$73, id_tipo_agresion=$74, dialogo_conflicto=$75, medida_conflicto=$76, dialogo_roto_conflicto=$77, 
+    crisis_conflicto=$78, id_acciones_hecho_anterior=$79, resolucion_conflicto=$80, id_situacion_conflicto=$81, cant_persona_involucrada=$82, presencia_fuerza_publica=$83, 
+    intervencion_fuerza_publica=$84, fecha_mod_reg=$85, cod_usu_mod=$86
+    WHERE id_alerta_temprana = $87`, 
+      [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
       fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
       fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
       pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
       nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
       contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
       contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-      fecha_hechos, fecha_futura_hechos, fecha_reporte, 62, id_departamento, id_municipio, id_tipo_zona,
-      descripcion_hechos, id_derecho, id_escenario, id_tematica_relacionada, id_sub_tematica, antecedentes_hecho,
-      poblacion_afectada, postura_autoridades, contraparte, perfil_actor, id_grupo_vulnerable, demanda_solicitud, poblacion_ninos,
-      poblacion_ninas, adolecentes_hombres, adolecentes_mujeres, poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,
-      poblacion_mujer_mayor, cantidad_aproximada, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto,
-      dialogo_roto_conflicto, crisis_conflicto, cant_persona_involucrada, id_situacion_conflicto,fecha_mod_reg,cod_usu_mod, id_alerta_temprana], (err, results) => {
+      fecha_hechos, fecha_futura_hechos, fecha_reporte, 62, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
+      descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
+      id_criterio, id_temporalidad, cantidad, id_scenario, antecedentes_hecho, poblacion_afectada, contraparte, 
+      id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
+      poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
+      proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
+      id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
+      presencia_fuerza_publica, intervencion_fuerza_publica, fecha_mod_reg, cod_usu_mod, id_alerta_temprana], (err, results) => {
       if (err) {
         console.log(err);
         errorResponse.detail = err.message;
