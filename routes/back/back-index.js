@@ -67,4 +67,17 @@ module.exports = (app) => {
 
     app.use(require('./upload'));
 
+    //Topic
+    app.use(require('./topic.routes'));
+
+    //Subtopic
+    app.use(require('./subtopic.routes'));
+
+    //Situations
+    app.use(require('./situation.routes'));
+
+    //Criterion
+    app.use(require('./criterion.routes'));
+
+
 };
