@@ -595,7 +595,7 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_perfil_actor",
-          question_type: "open",
+          question_type: "closed_multiple",
           question: "Perfil de actores",
           answers: profileActors,
           answer: Number.parseInt(early_alert.id_perfil_actor)
@@ -1448,7 +1448,7 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_perfil_actor",
-          question_type: "closed",
+          question_type: "closed_multiple",
           required: 1,
           question: "Perfil de actores",
           answers: profileActors
