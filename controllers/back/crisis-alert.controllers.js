@@ -68,6 +68,9 @@ let getCrisisAlertsForm = async(req, res) => {
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
 
+    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare FROM admi_municipio WHERE est_reg = 'A'`);
+    municipality = municipality.rows;
+
     var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
     notificationMeans = notificationMeans.rows;
 
@@ -220,16 +223,21 @@ let getCrisisAlertsForm = async(req, res) => {
         },
         {
           question_id: "id_departamento",
-          question_type: "state",
+          required: 1,
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_municipio",
           question: "Departamento del domicilio",
           answers: state
         },
         {
           question_id: "id_municipio",
           question_type: "closed",
+          required: 1,
           question: "Municipio del domicilio",
-          answers: []
+          answers: municipality
         },
+       
         {
           question_id: "direccion",
           question_type: "open",
@@ -621,7 +629,10 @@ let getById = async(req, res) =>{
         },
         {
           question_id: "id_departamento",
-          question_type: "state",
+          required: 1,
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_municipio",
           question: "Departamento del domicilio",
           answers: state,
           answer: Number.parseInt(crisisAttention.id_departamento)
@@ -629,6 +640,7 @@ let getById = async(req, res) =>{
         {
           question_id: "id_municipio",
           question_type: "closed",
+          required: 1,
           question: "Municipio del domicilio",
           answers: municipality,
           answer: Number.parseInt(crisisAttention.id_municipio)
