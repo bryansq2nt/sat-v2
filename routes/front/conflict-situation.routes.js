@@ -2,7 +2,7 @@ const {Router} = require('express');
 const router = Router();
 
 const {isLoggedIn} = require('@middlewares/auth');
-const {conflictSituationList, viewCreateConflictSituation, createConflictSituation, getById, updateConflictSituation} = require('@controllers/front/situation.controller');
+const {conflictSituationList, viewCreateConflictSituation, createConflictSituation, getById, updateConflictSituation} = require('@controllers/front/conflict-situation.controller');
 
 router.get('/api-sat/conflict-situation-list', isLoggedIn, conflictSituationList);
 

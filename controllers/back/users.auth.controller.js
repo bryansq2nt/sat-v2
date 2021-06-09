@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, fcm_token} = req.body;
 
     var errorResponse = new ErrorModel({ type: "Users-Auth", title:"Falló la función", status:401, detail:"Lo sentimos ocurrió un error al intentar iniciar sesión.", instance:"users.auth/login" });
 
@@ -24,7 +24,7 @@ const login = async (req, res) => {
         INNER JOIN sat_permisos_modulos_usuario AS mu ON u.id_usuario = mu.id_usuario
         INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo
         WHERE u.correo = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
-        GROUP BY user_id, name, user_name, position, email, gender, clave`, [email], (err, results) => {
+        GROUP BY user_id, name, user_name, position, email, gender, clave`, [email], async(err, results) => {
             if (err) {
                 console.log(err.message);
                 return res.status(500).json(errorResponse.toJson());
@@ -42,10 +42,16 @@ const login = async (req, res) => {
                 }
 
                 var user = results.rows[0];
-
-                // if (user.fcm_token != fcm_token) {
-                //     db.query('UPDATE usuario SET fcm_token = $1 WHERE id_usuario = $2', [fcm_token, user.client_id]);
-                // }
+                var userToken = await db.query(`SELECT token FROM sat_seguridad_token WHERE id_usuario = $1`, [user.user_id]);
+                userToken = userToken.rows[0];
+ 
+                if (userToken != undefined) {
+                    if(userToken.token != fcm_token){
+                        db.query('UPDATE sat_seguridad_token SET token= $1 WHERE id_seguridad_token=$2', [fcm_token, user.user_id]);
+                    }
+                }else {
+                    db.query('INSERT INTO sat_seguridad_token(id_usuario, token) VALUES ($1, $2)', [user.user_id, fcm_token]);
+                }
 
                 let token = jwt.sign({ user }, process.env.SEED, { expiresIn: Number(process.env.CADUCIDAD_TOKEN) });
 

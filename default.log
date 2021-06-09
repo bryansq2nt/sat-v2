@@ -866,3 +866,10 @@ funcion: getAnalyzedForm
 error: error: column "notificar" does not exist
 --------------------------------------------------------------------------------------------
 
+2021.06.09, 05:35:31.0270 UTC -> 
+archivo: conflict-situation.controller
+ruta: src/controllers/front
+funcion: createAggressionType
+error: error: la sintaxis de entrada no es válida para tipo numeric: «»
+--------------------------------------------------------------------------------------------
+

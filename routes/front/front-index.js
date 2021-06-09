@@ -16,6 +16,9 @@ module.exports = (app, passport) => {
     app.use(require('./source.routes'));
 
     //Scenario
+    app.use(require('./scenario.routes'));   
+    
+    //Scenarios
     app.use(require('./scenarios.routes'));
 
     //Phases Conflict

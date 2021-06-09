@@ -21,7 +21,7 @@
                                 <div class="form-group">
                                     <h5>Temas</h5>
                                     <div class="controls">
-                                        <select name="id_tema" id="select" class="form-control">
+                                        <select id="id_tema" name="id_tema" class="form-control">
                                             <option value="{{criterion.id_tema}}">{{criterion.nombre_tema}}</option>
                                             {{#each topic}}
                                             <option value="{{id_tema}}">{{nombre_tema}}</option>
@@ -34,7 +34,7 @@
                                 <div class="form-group">
                                     <h5>SubTemas</h5>
                                     <div class="controls">
-                                        <select name="id_subtema" id="select" class="form-control">
+                                        <select id="id_subtema" name="id_subtema" class="form-control">
                                             <option value="{{criterion.id_subtema}}">{{criterion.nombre_subtema}}</option>
                                             {{#each subtopic}}
                                             <option value="{{id_subtema}}">{{nombre_subtema}}</option>
@@ -47,7 +47,7 @@
                                 <div class="form-group">
                                     <h5>Situaci&oacute;n Conflictiva</h5>
                                     <div class="controls">
-                                        <select name="id_situacion_conflictiva" id="select" class="form-control">
+                                        <select id="id_situacion_conflictiva"  name="id_situacion_conflictiva" class="form-control">
                                             <option value="{{criterion.id_sit_conflictiva}}">{{criterion.nombre_sit_conflictiva}}</option>
                                             {{#each conflictSituation}}
                                             <option value="{{id_situacion_conflictiva}}">{{nombre_sit_conflictiva}}</option>
@@ -69,7 +69,7 @@
                             </div>
                         </div>
                         <div class="text-xs-right">
-                            <button type="submit" class="btn btn-info">Guardar</button>
+                            <button type="submit" class="btn btn-info">Actualizar</button>
                             <a href="/api-sat/criterion-list" type="reset" class="btn btn-inverse">Cancelar</a>
                         </div>
                     </section>
