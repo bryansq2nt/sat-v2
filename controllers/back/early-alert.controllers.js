@@ -82,7 +82,7 @@ let createEarlyAlert = async (req, res) => {
         nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
         contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
         contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-        fecha_hechos, fecha_futura_hechos, fecha_reporte, 62, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
+        fecha_hechos, fecha_futura_hechos, fecha_reporte, pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
         descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
         id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
         id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
@@ -190,7 +190,6 @@ let getById = async (req, res) => {
       questions: [
         {
           question_id: "titulo_noticia",
-          required: 1,
           question_type: "open",
           question: "Titulo de la noticia",
           answer: early_alert.titulo_noticia
@@ -210,7 +209,6 @@ let getById = async (req, res) => {
         {
           question_id: "autor_prensa",
           question_type: "open",
-          required: 1,
           question: "Autor/a",
           answer: early_alert.autor_prensa
         },
@@ -361,21 +359,18 @@ let getById = async (req, res) => {
         },
         {
           question_id: "correo_organismo",
-          required: 1,
           question_type: "open",
           question: "Correo",
           answer: early_alert.correo_organismo
         },
         {
           question_id: "telefono_organismo",
-          required: 1,
           question_type: "open",
           question: "Teléfono contacto",
           answer: early_alert.telefono_organismo
         },
         {
           question_id: "datos_organismo",
-          required: 1,
           question_type: "open",
           question: "Datos adicionales",
           answer: early_alert.datos_organismo
@@ -437,34 +432,29 @@ let getById = async (req, res) => {
         {
           question_id: "nombre_inst_gub",
           question_type: "open",
-          required: 1,
           question: "Nombre Organización",
           answer: early_alert.nombre_inst_gub
         },
         {
           question_id: "contacto_inst_gub",
           question_type: "open",
-          required: 1,
           question: "Nombre contacto",
           answer: early_alert.contacto_inst_gub
         },
         {
           question_id: "correo_inst_gub",
           question_type: "open",
-          required: 1,
           question: "Correo",
           answer: early_alert.correo_inst_gub
         },
         {
           question_id: "telefono_inst_gub",
-          required: 1,
           question_type: "open",
           question: "Teléfono Contacto",
           answer: early_alert.telefono_inst_gub
         },
         {
           question_id: "datos_inst_gub",
-          required: 1,
           question_type: "open",
           question: "Datos Adicionales",
           answer: early_alert.datos_inst_gub
@@ -1124,7 +1114,6 @@ let getEarlyAlertForm = async (req, res) => {
       questions: [
         {
           question_id: "titulo_noticia",
-          required: 1,
           question_type: "open",
           question: "Titulo de la noticia"
         },
@@ -1141,7 +1130,6 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "autor_prensa",
           question_type: "open",
-          required: 1,
           question: "Autor/a"
         },
         {
@@ -1200,7 +1188,6 @@ let getEarlyAlertForm = async (req, res) => {
       questions: [
         {
           question_id: "titulo_redes",
-          required: 1,
           question_type: "open",
           question: "Titulo de la noticia"
         },
@@ -1275,19 +1262,16 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "correo_organismo",
-          required: 1,
           question_type: "open",
           question: "Correo"
         },
         {
           question_id: "telefono_organismo",
-          required: 1,
           question_type: "open",
           question: "Teléfono contacto"
         },
         {
           question_id: "datos_organismo",
-          required: 1,
           question_type: "open",
           question: "Datos adicionales"
         }
@@ -1343,30 +1327,25 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "nombre_inst_gub",
           question_type: "open",
-          required: 1,
           question: "Nombre Organización"
         },
         {
           question_id: "contacto_inst_gub",
           question_type: "open",
-          required: 1,
           question: "Nombre contacto"
         },
         {
           question_id: "correo_inst_gub",
           question_type: "open",
-          required: 1,
           question: "Correo"
         },
         {
           question_id: "telefono_inst_gub",
-          required: 1,
           question_type: "open",
           question: "Teléfono Contacto"
         },
         {
           question_id: "datos_inst_gub",
-          required: 1,
           question_type: "open",
           question: "Datos Adicionales"
         }
