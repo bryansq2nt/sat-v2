@@ -116,7 +116,7 @@ let getById = async (req, res) => {
     var sourceType = await db.query('SELECT id_tipo_fuente::integer AS answer_id, nombre_tipo_fuente AS answer FROM sat_tipo_fuente WHERE estado = 1 ORDER BY id_tipo_fuente ASC');
     sourceType = sourceType.rows;
 
-    var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
+    var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer, id_tipo_fuente AS to_compare FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
     source = source.rows;
 
     var scenarios = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenarios ORDER BY id_escenario ASC');
@@ -131,7 +131,7 @@ let getById = async (req, res) => {
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
 
-    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer FROM admi_municipio WHERE est_reg = 'A'`);
+    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare FROM admi_municipio WHERE est_reg = 'A'`);
     var municipality = municipality.rows;
 
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
@@ -154,6 +154,22 @@ let getById = async (req, res) => {
 
     var topics = await db.query(`SELECT id_tema::integer AS answer_id, nombre_tema AS answer FROM sat_temas WHERE estado = 1`);
     topics = topics.rows;
+
+    var subTopics = await db.query(`SELECT id_subtema::integer AS answer_id, nombre_subtema AS answer, id_tema::integer AS to_compare
+    FROM sat_subtemas 
+    WHERE estado = 1 ORDER BY id_subtema ASC`);
+    subTopics = subTopics.rows;
+
+    
+    var conflictSituations = await db.query(`SELECT id_situacion_conflictiva::integer AS answer_id, nombre_sit_conflictiva AS answer, id_subtema AS to_compare
+    FROM sat_situacion_conflictiva 
+    WHERE estado = 1 ORDER BY id_situacion_conflictiva ASC`);
+    conflictSituations = conflictSituations.rows;
+
+    var criteria = await db.query(`SELECT id_criterio::integer AS answer_id, nombre_criterio AS answer, id_sit_conflictiva AS to_compare
+    FROM sat_criterio 
+    WHERE estado = 1 ORDER BY id_criterio ASC`);
+    criteria = criteria.rows;
 
     var profileActors = await db.query(`SELECT id_perfil_actor::integer AS answer_id, nombre_actor AS answer FROM sat_perfil_actores WHERE estado = 1`);
     profileActors = profileActors.rows;
@@ -524,7 +540,10 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_departamento",
-          question_type: "state",
+          question_type: "closed_with_child",
+          required: 1,
+          has_child: 1,
+          principal_child: "id_municipio",
           question: "Departamento",
           answers: state,
           answer: Number.parseInt(early_alert.id_departamento)
@@ -565,11 +584,40 @@ let getById = async (req, res) => {
           answer: Number.parseInt(early_alert.id_escenario)
         },
         {
+          question_id: "id_tematica_relacionada",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_sub_tematica",
+          children: ["id_situacion_conflictiva","id_criterio"],
+          question: "Temática",
+          answers: topics,
+          answer: Number.parseInt(early_alert.id_tematica_relacionada)
+        },
+        {
           question_id: "id_sub_tematica",
-          question_type: "closed",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_situacion_conflictiva",
+          children: ["id_criterio"],
           question: "Sub Temática",
-          answers: [],
+          answers: subTopics,
           answer: Number.parseInt(early_alert.id_sub_tematica)
+        },
+        {
+          question_id: "id_situacion_conflictiva",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_criterio",
+          question: "Situación conflictiva",
+          answers: conflictSituations,
+          answer: Number.parseInt(early_alert.id_situacion_conflictiva)
+        },
+        {
+          question_id: "id_criterio",
+          question_type: "closed",
+          question: "Criterio",
+          answers: criteria,
+          answer: Number.parseInt(early_alert.id_criterio)
         },
         {
           question_id: "antecedentes_hecho",
@@ -848,11 +896,15 @@ let getById = async (req, res) => {
     var argumentesArrayQuestionsOb1 = {
       question_id: "id_tipo_fuente",
       required: 1,
-      question_type: "source_type",
-      question: "Tipo de Fuente",
+      question_type: "closed_with_child",
+      has_child: 1,
+      principal_child: "id_fuente",
+      question: "Tipo de fuente",
       answers: sourceType,
       answer: Number.parseInt(early_alert.id_tipo_fuente)
     }
+
+    
 
     var argumentsArrayQuestionObj2 = {
       question_id: "id_fuente",
@@ -974,7 +1026,7 @@ let getEarlyAlertForm = async (req, res) => {
     var sourceType = await db.query('SELECT id_tipo_fuente::integer AS answer_id, nombre_tipo_fuente AS answer FROM sat_tipo_fuente WHERE estado = 1 ORDER BY id_tipo_fuente ASC');
     sourceType = sourceType.rows;
 
-    var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
+    var source = await db.query('SELECT id_fuente::integer AS answer_id, nombre_fuente AS answer, id_tipo_fuente AS to_compare FROM sat_fuente WHERE estado = 1 ORDER BY id_fuente ASC');
     source = source.rows;
 
     var scenarios = await db.query('SELECT id_escenario::integer AS answer_id, nombre_escenario AS answer FROM sat_escenarios ORDER BY id_escenario ASC');
@@ -986,8 +1038,8 @@ let getEarlyAlertForm = async (req, res) => {
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
     typeZone = typeZone.rows;
 
-    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer FROM admi_municipio WHERE est_reg = 'A'`);
-    var municipality = municipality.rows;
+    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare FROM admi_municipio WHERE est_reg = 'A'`);
+    municipality = municipality.rows;
 
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
@@ -1009,6 +1061,22 @@ let getEarlyAlertForm = async (req, res) => {
 
     var topics = await db.query(`SELECT id_tema::integer AS answer_id, nombre_tema AS answer FROM sat_temas WHERE estado = 1`);
     topics = topics.rows;
+
+    var subTopics = await db.query(`SELECT id_subtema::integer AS answer_id, nombre_subtema AS answer, id_tema::integer AS to_compare
+    FROM sat_subtemas 
+    WHERE estado = 1 ORDER BY id_subtema ASC`);
+    subTopics = subTopics.rows;
+
+    
+    var conflictSituations = await db.query(`SELECT id_situacion_conflictiva::integer AS answer_id, nombre_sit_conflictiva AS answer, id_subtema AS to_compare
+    FROM sat_situacion_conflictiva 
+    WHERE estado = 1 ORDER BY id_situacion_conflictiva ASC`);
+    conflictSituations = conflictSituations.rows;
+
+    var criteria = await db.query(`SELECT id_criterio::integer AS answer_id, nombre_criterio AS answer, id_sit_conflictiva AS to_compare
+    FROM sat_criterio 
+    WHERE estado = 1 ORDER BY id_criterio ASC`);
+    criteria = criteria.rows;
 
     var profileActors = await db.query(`SELECT id_perfil_actor::integer AS answer_id, nombre_actor AS answer FROM sat_perfil_actores WHERE estado = 1`);
     profileActors = profileActors.rows;
@@ -1340,8 +1408,10 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_departamento",
-          question_type: "state",
           required: 1,
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_municipio",
           question: "Departamento",
           answers: state
         },
@@ -1350,7 +1420,7 @@ let getEarlyAlertForm = async (req, res) => {
           question_type: "closed",
           required: 1,
           question: "Municipio",
-          answers: []
+          answers: municipality
         },
         {
           question_id: "id_tipo_zona",
@@ -1406,27 +1476,35 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_tematica_relacionada",
-          question_type: "closed",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_sub_tematica",
+          children: ["id_situacion_conflictiva","id_criterio"],
           question: "Temática",
           answers: topics
         },
         {
           question_id: "id_sub_tematica",
-          question_type: "closed",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_situacion_conflictiva",
+          children: ["id_criterio"],
           question: "Sub Temática",
-          answers: []
+          answers: subTopics
         },
         {
           question_id: "id_situacion_conflictiva",
-          question_type: "closed",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_criterio",
           question: "Situación conflictiva",
-          answers: []
+          answers: conflictSituations
         },
         {
           question_id: "id_criterio",
           question_type: "closed",
           question: "Criterio",
-          answers: []
+          answers: criteria
         },
         {
           question_id: "antecedentes_hecho",
@@ -1678,7 +1756,9 @@ let getEarlyAlertForm = async (req, res) => {
     var argumentesArrayQuestionsOb1 = {
       question_id: "id_tipo_fuente",
       required: 1,
-      question_type: "source_type",
+      question_type: "closed_with_child",
+      has_child: 1,
+      principal_child: "id_fuente",
       question: "Tipo de Fuente",
       answers: sourceType
     }
@@ -1688,7 +1768,7 @@ let getEarlyAlertForm = async (req, res) => {
       required: 1,
       question_type: "closed",
       question: "Fuente",
-      answers: []
+      answers: source
     }
 
     array_questions.push(argumentesArrayQuestionsOb1, argumentsArrayQuestionObj2);
@@ -1738,6 +1818,7 @@ let getFormToAnalyze = async (req,res) => {
 
     var acciones_pddh = await db.query('SELECT id_accion_pddh::integer AS answer_id, nombre_accion AS answer FROM sat_accion_pddh WHERE estado = 1');
     acciones_pddh = acciones_pddh.rows;
+
 
     var section = {
       section_id: 0,
