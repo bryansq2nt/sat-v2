@@ -455,8 +455,8 @@ let getById = async(req, res) =>{
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
 
-    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer FROM admi_municipio WHERE est_reg = 'A'`);
-    var municipality = municipality.rows;
+    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare  FROM admi_municipio WHERE est_reg = 'A'`);
+    municipality = municipality.rows;
 
     var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
     notificationMeans = notificationMeans.rows;
