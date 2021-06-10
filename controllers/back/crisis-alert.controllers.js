@@ -841,8 +841,8 @@ let createCrisisAlert = async (req, res) => {
     var localDate =  new Date();
     var fecha_ingreso = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
 
-    var cod_usu_ing = req.user.id_usuario;
-    var cod_usu_mod = req.user.id_usuario;
+    var cod_usu_ing = req.user.user_id;
+    var cod_usu_ing = req.user.user_id;
 
 
   try {
@@ -899,8 +899,8 @@ let updateCrisisAlert = async (req, res) =>{
 
     var localDate =  new Date();
     var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
-    var cod_usu_ing = req.user.id_usuario;
-    var cod_usu_mod = req.user.id_usuario;
+    var cod_usu_ing = req.user.user_id;
+    var cod_usu_ing = req.user.user_id;
 
     var errorResponse = new ErrorModel({ type: "createCrisisAlert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar la Alerta a Crisis.", instance: "crisis-alert/updateCrisisAlert" });
 
