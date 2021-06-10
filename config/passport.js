@@ -93,7 +93,7 @@ module.exports = function (passport) {
                                     INNER JOIN sat_modulos AS m ON mu.id_modulo = m.id_modulo 
                                     WHERE mu.id_usuario = $1 AND m.tipo_modulo = 2`, [user.id_usuario]);
                                     authorizationModuls = authorizationModuls.rows;
-                                     
+                                    
                                     for (let i = 0; i < authorizationModuls.length; i++) {
                                         if(authorizationModuls[i].id_modulo == 4){
                                             user.administracion = 1;

@@ -87,4 +87,7 @@ module.exports = (app, passport) => {
     //Criterion
     app.use(require('./criterion.routes'));
 
+    //Heat-Map
+    app.use(require('./heat-map.routes'));
+
 };

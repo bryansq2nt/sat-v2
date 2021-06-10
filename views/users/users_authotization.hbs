@@ -138,7 +138,7 @@
 
                 <div class="form-group row pt-3">
                     <div class="col-sm-4">
-                        {{!-- list modulos --}}
+                        {{!-- list modules --}}
                         {{#each modulsAppAndUser}}
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="check" id="flat-checkbox-{{@index}}" {{checked}} name="id_modulo_app[]" value="{{id_modulo}}"
@@ -148,9 +148,10 @@
                         {{/each}}
                     </div>
                     <div class="col-sm-4">
-                        {{#each dataAuthorization}}
+                        {{!-- permission list  --}}
+                        {{#each readAndModifyPermissions}}
                         <div class="custom-control custom-radio pb-2">
-                            <input type="radio" class="check" id="square-radio-{{@index}}" {{#showFormElementsShowModife id_rol_permisos}}{{/showFormElementsShowModife}} name="id_rol_permisos"
+                            <input type="radio" class="check" id="square-radio-{{@index}}" {{checked}} name="id_rol_permisos"
                                 value="{{id_rol_permisos}}" data-radio="iradio_square-blue">
                             <label for="square-radio-{{@index}}">{{nombre_permiso}}</label>
                         </div>

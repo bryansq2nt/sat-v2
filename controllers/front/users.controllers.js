@@ -37,9 +37,13 @@ let getById = async (req, res) => {
         WHERE acc.id_usuario = $1`, [id_usuario]);
         userAuthorization = userAuthorization.rows[0];
 
-        // Obtiene los permisos asignados a los datos. Lectura y Edicion
+        // Obtiene los permisos de Lectura y Edicion. Utilizada para Asignar permisos
         let dataAuthorization = await db.query('SELECT id_rol_permisos, nombre_permiso FROM sat_rol_app_permisos WHERE estado = 1 ORDER BY id_rol_permisos ASC');
         dataAuthorization = dataAuthorization.rows;
+
+        // Obtiene los permisos de Lectura y Edicion. Utilizada para Actualizar permisos
+        let readAndModifyPermissions = await db.query('SELECT id_rol_permisos, nombre_permiso FROM sat_rol_app_permisos WHERE estado = 1 ORDER BY id_rol_permisos ASC');
+        readAndModifyPermissions = readAndModifyPermissions.rows;
 
         //Obtiene la lista de modulos de la aplicacion. Alerta, atencion a crisis y dashboard.
         let moduleAppAutorization = await db.query('SELECT id_modulo, nombre_modulo FROM sat_modulos WHERE tipo_modulo = 1 ORDER BY id_modulo ASC');
@@ -219,7 +223,17 @@ let getById = async (req, res) => {
 
         }
 
-        res.render('users/users_authotization', { SIGIuser, dataAuthorization, userAuthorization, moduleAppAutorization, moduleWebAutorization, modulsAppAndUser, modulsWebAndUser });
+        //***** Obtener los permisos de moficacion y lectura del usuario 
+        for (let i = 0; i < readAndModifyPermissions.length; i++) {
+            readAndModifyPermissions[i].checked;
+            if(readAndModifyPermissions[i].id_rol_permisos == userAuthorization.id_rol_permisos){
+                readAndModifyPermissions[i].checked = 'checked';
+            }else{
+                readAndModifyPermissions[i].checked = '';
+            }
+        }
+
+        res.render('users/users_authotization', { SIGIuser, dataAuthorization, userAuthorization, moduleAppAutorization, moduleWebAutorization, modulsAppAndUser, modulsWebAndUser, readAndModifyPermissions});
 
     } catch (error) {
         log('src/controllers/front', 'users', 'getById', error, false, req, res);
@@ -292,7 +306,8 @@ let usersAuthotization = async (req, res) => {
 let updateUsersAuthotization = async (req, res) => {
     const { id_usuario } = req.params;
     const { permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web } = req.body;
-    
+    console.log(id_modulo_app);
+    console.log(id_modulo_web);
     if(permiso_acceso_app == 1){
         if(id_modulo_app == undefined){
             req.flash('delete','El Acceso APP fue permitido, pero ningún permiso fue asignado');
