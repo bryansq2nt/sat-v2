@@ -112,7 +112,7 @@ let sendNotification = async (req, res) => {
     
                 var userTokens = results.rows;
                 var tokens = [];
-
+                console.log(userTokens);
     
                 for (let i = 0; i < userTokens.length; i++) {
     
@@ -121,7 +121,7 @@ let sendNotification = async (req, res) => {
                         tokens.push(userTokens[i].token);
     
                         await db.query(`INSERT INTO sat_notificacion(id_usuario, mensaje, cod_usu_ing, cod_usu_mod)
-                            VALUES (?, ?, ?, ?)`, [userTokens[i].id_usuario, mensaje, cod_usu, cod_usu], (err, results) => {
+                            VALUES ($1, $2, $3, $4)`, [userTokens[i].id_usuario, mensaje, cod_usu, cod_usu], (err, results) => {
                             if (err) {
                                 log('src/controllers/front', 'administrative-units', 'sendNotification', err, false, req, res);
                             } else {
@@ -132,36 +132,36 @@ let sendNotification = async (req, res) => {
     
                 }
     
-                (async () => {
+                // (async () => {
     
-                    const message = {
-                        tokens: tokens,
-                        notification: {
-                            body: mensaje,
-                            title: 'NOMBRE UNIDAD ADMINISTRATIVA'
-                        },
-                        data: {
-                            showForegroundNotification: 'false',
-                            //type: 'promotion',
-                            //business_id: `${data_clients[0].business_id}`
-                        },
-                        android: {
-                            notification: {
-                                clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-                            },
-                        },
-                        apns: {
-                            payload: {
-                                aps: {
-                                    category: "FLUTTER_NOTIFICATION_CLICK"
-                                }
-                            }
-                        },
-                    };
+                //     const message = {
+                //         tokens: tokens,
+                //         notification: {
+                //             body: mensaje,
+                //             title: 'NOMBRE UNIDAD ADMINISTRATIVA'
+                //         },
+                //         data: {
+                //             showForegroundNotification: 'false',
+                //             //type: 'promotion',
+                //             //business_id: `${data_clients[0].business_id}`
+                //         },
+                //         android: {
+                //             notification: {
+                //                 clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+                //             },
+                //         },
+                //         apns: {
+                //             payload: {
+                //                 aps: {
+                //                     category: "FLUTTER_NOTIFICATION_CLICK"
+                //                 }
+                //             }
+                //         },
+                //     };
     
-                    admin.messaging().sendMulticast(message);
+                //     admin.messaging().sendMulticast(message);
     
-                })();
+                // })();
     
     
                 req.flash('success', 'Notificacion enviada correctamente');
