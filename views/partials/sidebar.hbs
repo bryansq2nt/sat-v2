@@ -51,42 +51,29 @@
                         <li><a href="index2.html">Reporte 01</a></li>
                         <li><a href="index3.html">Reporte 02</a></li>
                         <li><a href="index4.html">Reporte 03</a></li>
-                        <li><a href="index4.html">Mapa de Calor</a></li>
+                        <li><a href="/api-sat/heat-map">Mapa de Calor</a></li>
                     </ul>
                 </li>
-                {{!-- <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
-                            class="icon-Car-Wheel"></i><span class="hide-menu">Nuevas Tablas</span></a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li><a href="/api-sat/zone-list">Zonas </a></li>
-                        <li><a href="/api-sat/entry-type-list">Tipo de Entrada</a></li>
-                        <li><a href="/api-sat/sex-list">Sexo</a></li>
-                        <li><a href="/api-sat/gender-list">Genero</a></li>
-                        <li><a href="/api-sat/population-type-list">Tipo de Poblaci&oacute;n</a></li>
-                        <li><a href="/api-sat/crisis-classification-quality-list">Clasificaci&oacute; de Crisis</a></li>
-                        <li><a href="/api-sat/participant-quality-list">Clasificaci&oacute; Participa</a></li>
-                        <li><a href="/api-sat/Banner-list">Banner</a></li>
-                    </ul>
-                </li> --}}
                 {{else}}
                 {{#siderbardOptionsAdministracion user.administracion}}
-                <li class="three-column"> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
-                            class="icon-On-Off-3"></i><span class="hide-menu">Administraci&oacute;n</span></a>
+                <li class="two-column"> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
+                            class="icon-On-Off-2"></i><span class="hide-menu">Administraci&oacute;n</span></a>
                     <ul aria-expanded="false" class="collapse">
                         <li><a href="/api-sat/role-list">Roles</a></li>
                         <li><a href="/api-sat/modules-list">M&oacute;dulos</a></li>
                     </ul>
                 </li>
                 {{/siderbardOptionsAdministracion}}
-                {{#siderbardOptionsCatalogos user.catalogos}}
+                {{#siderbardOptionsCatalogos user.cat}}
                 <li class="three-column"> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i
                             class="icon-On-Off-3"></i><span class="hide-menu">Catálogos </span></a>
-                <ul aria-expanded="false" class="collapse">
+                    <ul aria-expanded="false" class="collapse">
                         <li><a href="/api-sat/actions-pddh-list">Acci&oacute;n PDDH</a></li>
                         <li><a href="/api-sat/Banner-list">Banner</a></li>
                         <li><a href="/api-sat/crisis-classification-quality-list">Clasificaci&oacute; de Crisis</a></li>
                         <li><a href="/api-sat/participant-quality-list">Clasificaci&oacute; Participa</a></li>
                         <li><a href="/api-sat/criterion-list">Criterio</a></li>
-                        {{!-- <li><a href="/api-sat/scenario-list">Escenario</a></li> --}}
+                        <li><a href="/api-sat/scenario-list">Escenario</a></li>
                         <li><a href="/api-sat/scenarios-list">Escenarios</a></li>
                         <li><a href="/api-sat/source-list">Fuentes</a></li>
                         <li><a href="/api-sat/conflict-phases-list">Fases del Conflicto</a></li>
@@ -115,9 +102,10 @@
                         <li><a href="index2.html">Reporte 01</a></li>
                         <li><a href="index3.html">Reporte 02</a></li>
                         <li><a href="index4.html">Reporte 03</a></li>
-                        <li><a href="index4.html">Mapa de Calor</a></li>
+                        <li><a href="/api-sat/heat-map">Mapa de Calor</a></li>
                     </ul>
                 </li>
+                <li></li>
                 {{/siderbardOptionsDashboard}}
                 {{/isAdmin}}
             </ul>
