@@ -146,7 +146,6 @@ let getSubtopicsByTopic = async (req, res) => {
                 log('src/controllers/front', 'criterion', 'getSubtopicsByIdTopic', err, false, req, res);
             } else {
                 var subtopics = results.rows;
-                console.log(subtopics);
                 return res.status(200).json({
                     subtopics
                 });
@@ -168,7 +167,6 @@ let getConflictSituationBySubtopic = async (req, res) => {
                 log('src/controllers/front', 'situation', 'getConflictSituationBySubtopic', err, false, req, res);
             } else {
                 var situations = results.rows;
-                console.log(situations);
                 return res.status(200).json({
                     situations
                 });
