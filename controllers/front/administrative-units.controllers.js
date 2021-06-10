@@ -99,7 +99,6 @@ let viewSendNotification = async(req, res)=>{
 
 let sendNotification = async (req, res) => {
     const { mensaje } = req.body;
-    //var type = 'promotion';
 
     try {
 
