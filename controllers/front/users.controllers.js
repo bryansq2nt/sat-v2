@@ -30,20 +30,9 @@ let getById = async (req, res) => {
         p.descripcion FROM usuario AS u INNER JOIN perfil AS p ON p.id_perfil = u.id_perfil WHERE u.id_usuario = $1`, [id_usuario]);
         SIGIuser = SIGIuser.rows[0];
 
-        let userAuthorization = await db.query(`SELECT acc.id_usuario, acc.permiso_acceso_app, 
-        acc.permiso_acceso_web, acc.id_rol_permisos, app.nombre_permiso
-        FROM sat_accesos_usuario AS acc
-        INNER JOIN sat_rol_app_permisos AS app ON app.id_rol_permisos = acc.id_rol_permisos
-        WHERE acc.id_usuario = $1`, [id_usuario]);
-        userAuthorization = userAuthorization.rows[0];
-
         // Obtiene los permisos de Lectura y Edicion. Utilizada para Asignar permisos
         let dataAuthorization = await db.query('SELECT id_rol_permisos, nombre_permiso FROM sat_rol_app_permisos WHERE estado = 1 ORDER BY id_rol_permisos ASC');
         dataAuthorization = dataAuthorization.rows;
-
-        // Obtiene los permisos de Lectura y Edicion. Utilizada para Actualizar permisos
-        let readAndModifyPermissions = await db.query('SELECT id_rol_permisos, nombre_permiso FROM sat_rol_app_permisos WHERE estado = 1 ORDER BY id_rol_permisos ASC');
-        readAndModifyPermissions = readAndModifyPermissions.rows;
 
         //Obtiene la lista de modulos de la aplicacion. Alerta, atencion a crisis y dashboard.
         let moduleAppAutorization = await db.query('SELECT id_modulo, nombre_modulo FROM sat_modulos WHERE tipo_modulo = 1 ORDER BY id_modulo ASC');
@@ -53,24 +42,56 @@ let getById = async (req, res) => {
         let moduleWebAutorization = await db.query('SELECT id_modulo, nombre_modulo FROM sat_modulos WHERE tipo_modulo = 2 ORDER BY id_modulo ASC');
         moduleWebAutorization = moduleWebAutorization.rows;
 
+        // Obtiene los permisos de Lectura y Edicion. Utilizada para Actualizar permisos
+        let readAndModifyPermissions = await db.query('SELECT id_rol_permisos, nombre_permiso FROM sat_rol_app_permisos WHERE estado = 1 ORDER BY id_rol_permisos ASC');
+        readAndModifyPermissions = readAndModifyPermissions.rows;
+
         //***** 
+        let searchUserAccess = await db.query(`SELECT id_usuario FROM sat_accesos_usuario AS acc
+        WHERE id_usuario = $1`, [id_usuario]);
+        searchUserAccess = searchUserAccess.rows[0];
+
+
+        var userAuthorization;
+        var modulsAppAndUser = [];
+        var modulsWebAndUser = [];
+
+        if (searchUserAccess != undefined) {
+
+            userAuthorization = await db.query(`SELECT acc.id_usuario, acc.permiso_acceso_app, 
+            acc.permiso_acceso_web, acc.id_rol_permisos, app.nombre_permiso
+            FROM sat_accesos_usuario AS acc
+            INNER JOIN sat_rol_app_permisos AS app ON app.id_rol_permisos = acc.id_rol_permisos
+            WHERE acc.id_usuario = $1`, [id_usuario]);
+            userAuthorization = userAuthorization.rows[0];
+
+            // Obtener los permisos de moficacion y lectura del usuario 
+            for (let i = 0; i < readAndModifyPermissions.length; i++) {
+                readAndModifyPermissions[i].checked;
+                if (readAndModifyPermissions[i].id_rol_permisos == userAuthorization.id_rol_permisos) {
+                    readAndModifyPermissions[i].checked = 'checked';
+                } else {
+                    readAndModifyPermissions[i].checked = '';
+                }
+            }
+        }
 
         //Get List of User Modules (APP) 
         let autorizacionAppModulsUser = await db.query(`SELECT pu.id_usuario, pu.id_modulo, m.nombre_modulo, m.tipo_modulo, pu.estado
         FROM sat_permisos_modulos_usuario AS pu
         INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
-        WHERE pu.id_usuario = $1 AND m.tipo_modulo = 1`, [id_usuario]);
+            WHERE pu.id_usuario = $1 AND m.tipo_modulo = 1`, [id_usuario]);
         autorizacionAppModulsUser = autorizacionAppModulsUser.rows;
 
         //Get List of User Modules (WEB)
         let autorizacionWebModulsUser = await db.query(`SELECT pu.id_usuario, pu.id_modulo, m.nombre_modulo, m.tipo_modulo, pu.estado
         FROM sat_permisos_modulos_usuario AS pu
         INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
-        WHERE pu.id_usuario = $1 AND m.tipo_modulo = 2`, [id_usuario]);
+            WHERE pu.id_usuario = $1 AND m.tipo_modulo = 2`, [id_usuario]);
         autorizacionWebModulsUser = autorizacionWebModulsUser.rows;
-
         //*****
-        var modulsAppAndUser = []; // Lista de modulos (APP) asignados al usuario y lo que no han sido asignados
+
+        modulsAppAndUser = []; // Guarda de modulos del APP asignados al usuario y los que no han sido asignados.
         var idModulsNotAuthorized = [];
         var idModulstAuthorizedUser = [];
         var modulAutAndNotAuth = [];
@@ -83,9 +104,9 @@ let getById = async (req, res) => {
                     if (moduleAppAutorization[i].id_modulo != autorizacionAppModulsUser[j].id_modulo) { //Comparar los modulos de la aplicacion y el usuario. Si el modulo es disinto significa, que no ha sido asignado al usuario.  
 
                         var getUserModules = await db.query(`SELECT pu.id_modulo, m.nombre_modulo 
-                        FROM sat_permisos_modulos_usuario AS pu
-                        INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
-                        WHERE pu.id_modulo = $1 AND pu.id_usuario = $2`, [id_module, id_usuario]);
+                            FROM sat_permisos_modulos_usuario AS pu
+                            INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
+                            WHERE pu.id_modulo = $1 AND pu.id_usuario = $2`, [id_module, id_usuario]);
                         getUserModules = getUserModules.rows[0]; // Buscar y Obtener los ids de modulos que han sido autorizados al usuario. Guardarlos en un arreglo y asignar el valor a la variable checked.
 
                         if (getUserModules == undefined) {
@@ -127,9 +148,9 @@ let getById = async (req, res) => {
         for (let i = 0; i < modulAutAndNotAuth.length; i++) {
 
             var UserModules = await db.query(`SELECT pu.id_modulo, m.nombre_modulo 
-            FROM sat_permisos_modulos_usuario AS pu
-            INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
-            WHERE pu.id_modulo = $1 AND pu.id_usuario = $2`, [modulAutAndNotAuth[i], id_usuario]);
+                FROM sat_permisos_modulos_usuario AS pu
+                INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
+                WHERE pu.id_modulo = $1 AND pu.id_usuario = $2`, [modulAutAndNotAuth[i], id_usuario]);
             UserModules = UserModules.rows[0]; // Buscar y Obtener los ids de modulos que han sido autorizados al usuario. Guardarlos en un arreglo y asignar el valor a la variable checked.        
 
 
@@ -148,7 +169,7 @@ let getById = async (req, res) => {
 
         //*****
 
-        var modulsWebAndUser = []; // Lista de modulos (APP) asignados al usuario y lo que no han sido asignados
+        modulsWebAndUser = []; // Guarda los modulos WEB asignados al usuario y los que no han sido asignados.
         var idModulsWebNotAuthorized = [];
         var modulWebAutAndNotAuth = [];
         var idModulsWebtAuthorizedUser = [];
@@ -191,7 +212,7 @@ let getById = async (req, res) => {
 
         } else {
 
-            let modulesAplication = await db.query('SELECT id_modulo, nombre_modulo FROM sat_modulos WHERE tipo_modulo = 1 ORDER BY id_modulo ASC');
+            let modulesAplication = await db.query('SELECT id_modulo, nombre_modulo FROM sat_modulos WHERE tipo_modulo = 2 ORDER BY id_modulo ASC');
             modulesAplication = modulesAplication.rows;
 
             var checked = '';
@@ -223,17 +244,7 @@ let getById = async (req, res) => {
 
         }
 
-        //***** Obtener los permisos de moficacion y lectura del usuario 
-        for (let i = 0; i < readAndModifyPermissions.length; i++) {
-            readAndModifyPermissions[i].checked;
-            if(readAndModifyPermissions[i].id_rol_permisos == userAuthorization.id_rol_permisos){
-                readAndModifyPermissions[i].checked = 'checked';
-            }else{
-                readAndModifyPermissions[i].checked = '';
-            }
-        }
-
-        res.render('users/users_authotization', { SIGIuser, dataAuthorization, userAuthorization, moduleAppAutorization, moduleWebAutorization, modulsAppAndUser, modulsWebAndUser, readAndModifyPermissions});
+        res.render('users/users_authotization', { SIGIuser, dataAuthorization, moduleAppAutorization, moduleWebAutorization, userAuthorization, modulsAppAndUser, modulsWebAndUser, readAndModifyPermissions });
 
     } catch (error) {
         log('src/controllers/front', 'users', 'getById', error, false, req, res);
@@ -244,21 +255,37 @@ let getById = async (req, res) => {
 let usersAuthotization = async (req, res) => {
     const { id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web } = req.body;
     
-    if(permiso_acceso_app == 1){
-        if(id_modulo_app == undefined){
-            req.flash('delete','El Acceso APP fue permitido, pero ningún permiso fue asignado');
-            return res.redirect(`/api-sat/users/${id_usuario}/edit-view`)
-        }
+    var acceso_app = permiso_acceso_app;
+    var acceso_web = permiso_acceso_web;
+    var permisosDatos =  id_rol_permisos;
+
+    if(permiso_acceso_app == undefined && permiso_acceso_web == undefined && id_rol_permisos == undefined){
+        req.flash('delete', 'No se marco ninguna de las opciones');
+        return res.redirect(`/api-sat/users/${id_usuario}/edit-view`)
     }
 
-    if(permiso_acceso_web == 1){
-        if(id_modulo_web == undefined){
-            req.flash('delete','El Acceso WEB fue permitido, pero ningún permiso fue asignado');
+    if (acceso_app == 1) {
+        if (id_modulo_app == undefined) {
+            req.flash('delete', 'El Acceso APP fue permitido, pero ningún permiso fue asignado');
             return res.redirect(`/api-sat/users/${id_usuario}/edit-view`)
         }
+    }else{
+        acceso_app = 0;
     }
 
-    
+    if (acceso_web == 1) {
+        if (id_modulo_web == undefined) {
+            req.flash('delete', 'El Acceso WEB fue permitido, pero ningún permiso fue asignado');
+            return res.redirect(`/api-sat/users/${id_usuario}/edit-view`)
+        }
+    }else{
+        acceso_web = 0;
+    }
+
+    if(permisosDatos == undefined){
+        permisosDatos = 1
+    }
+
     try {
 
         var cod_usu_ing = req.user.id_usuario;
@@ -267,12 +294,12 @@ let usersAuthotization = async (req, res) => {
         await db.query(`INSERT INTO sat_accesos_usuario(
             id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, 
             cod_usu_ing, cod_usu_mod)
-            VALUES ($1, $2, $3, $4, $5, $6)`, [id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, cod_usu_ing, cod_usu_mod], async (err, results) => {
+            VALUES ($1, $2, $3, $4, $5, $6)`, [id_usuario, acceso_app, acceso_web, permisosDatos, cod_usu_ing, cod_usu_mod], async (err, results) => {
             if (err) {
                 log('src/controllers/front', 'users', 'usersAuthotization', err, false, req, res);
             } else {
                 //var Useraccess = results.rows[0];
-                if (permiso_acceso_app == 1) {
+                if (acceso_app == 1) {
                     if (id_modulo_app != undefined) {
 
                         for (let i = 0; i < id_modulo_app.length; i++) {
@@ -283,7 +310,7 @@ let usersAuthotization = async (req, res) => {
                     }
                 }
 
-                if (permiso_acceso_web == 1) {
+                if (acceso_web == 1) {
                     if (id_modulo_web != undefined) {
 
                         for (let i = 0; i < id_modulo_web.length; i++) {
@@ -306,20 +333,26 @@ let usersAuthotization = async (req, res) => {
 let updateUsersAuthotization = async (req, res) => {
     const { id_usuario } = req.params;
     const { permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web } = req.body;
-    console.log(id_modulo_app);
-    console.log(id_modulo_web);
-    if(permiso_acceso_app == 1){
-        if(id_modulo_app == undefined){
-            req.flash('delete','El Acceso APP fue permitido, pero ningún permiso fue asignado');
+
+    var acceso_app = permiso_acceso_app;
+    var acceso_web = permiso_acceso_web
+
+    if (acceso_app == 1) {
+        if (id_modulo_app == undefined) {
+            req.flash('delete', 'El Acceso APP fue permitido, pero ningún permiso fue asignado');
             return res.redirect(`/api-sat/users/${id_usuario}/edit-view`)
         }
+    }else{
+        acceso_app = 0;
     }
 
-    if(permiso_acceso_web == 1){
-        if(id_modulo_web == undefined){
-            req.flash('delete','El Acceso WEB fue permitido, pero ningún permiso fue asignado');
+    if (acceso_web == 1) {
+        if (id_modulo_web == undefined) {
+            req.flash('delete', 'El Acceso WEB fue permitido, pero ningún permiso fue asignado');
             return res.redirect(`/api-sat/users/${id_usuario}/edit-view`)
         }
+    }else{
+        acceso_web = 0;
     }
 
     try {
@@ -330,75 +363,76 @@ let updateUsersAuthotization = async (req, res) => {
 
         await db.query(`UPDATE sat_accesos_usuario
             SET permiso_acceso_app=$1, permiso_acceso_web=$2, id_rol_permisos=$3, fecha_mod_reg=$4, 
-            cod_usu_ing=$5, cod_usu_mod=$6 WHERE id_usuario = $7 RETURNING *`, [permiso_acceso_app, permiso_acceso_web, id_rol_permisos, fecha_mod_reg, cod_usu, cod_usu, id_usuario], async (err, results)=>{
-                if(err){
-                    log('src/controllers/front', 'users', 'usersAuthotization', err, false, req, res);
-                }else{
-                    var userAccess = results.rows[0];
-                    
-                    //Actualizar permisos seleccionados
-                    if(userAccess.permiso_acceso_app != 0){
-                        
-                        var autorizacionAppModulsUser = await db.query(`SELECT pu.id_modulo
+            cod_usu_ing=$5, cod_usu_mod=$6 WHERE id_usuario = $7 RETURNING *`, [acceso_app, acceso_web, id_rol_permisos, fecha_mod_reg, cod_usu, cod_usu, id_usuario], async (err, results) => {
+            if (err) {
+                log('src/controllers/front', 'users', 'usersAuthotization', err, false, req, res);
+            } else {
+                var userAccess = results.rows[0];
+
+                //Actualizar permisos seleccionados
+                if (userAccess.permiso_acceso_app != 0) {
+
+                    var autorizacionAppModulsUser = await db.query(`SELECT pu.id_modulo
                         FROM sat_permisos_modulos_usuario AS pu
                         INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
                         WHERE pu.id_usuario = $1 AND m.tipo_modulo = 1`, [id_usuario]);
-                        autorizacionAppModulsUser = autorizacionAppModulsUser.rows;
+                    autorizacionAppModulsUser = autorizacionAppModulsUser.rows;
 
-                        for (let i = 0; i < autorizacionAppModulsUser.length; i++) {
-                            await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2',[id_usuario, autorizacionAppModulsUser[i].id_modulo]);
-                        }
-                        
-                        for (let i = 0; i < id_modulo_app.length; i++) {
-                            
-                            await db.query(`INSERT INTO sat_permisos_modulos_usuario(
-                                id_usuario, id_modulo, cod_usu_ing, cod_usu_mod)
-                                VALUES ($1, $2, $3, $4)`,[id_usuario, id_modulo_app[i], cod_usu, cod_usu])
-                        }
-                    
-                    } else {
-
-                        //Obtiene la lista de modulos de la aplicacion. Alerta, atencion a crisis y dashboard.
-                        var modulesApp = await db.query('SELECT id_modulo FROM sat_modulos WHERE tipo_modulo = 1 ORDER BY id_modulo ASC');
-                        modulesApp = modulesApp.rows;
-
-                        for (let i = 0; i < modulesApp.length; i++) {
-                            await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, modulesApp[i]]);
-                        }
+                    for (let i = 0; i < autorizacionAppModulsUser.length; i++) {
+                        await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, autorizacionAppModulsUser[i].id_modulo]);
                     }
 
-                    //Actualizar permisos seleccionados
-                    if (userAccess.permiso_acceso_web != 0) {
+                    for (let i = 0; i < id_modulo_app.length; i++) {
+    
+                        await db.query(`INSERT INTO sat_permisos_modulos_usuario(
+                                id_usuario, id_modulo, cod_usu_ing, cod_usu_mod)
+                                VALUES ($1, $2, $3, $4)`, [id_usuario, id_modulo_app[i], cod_usu, cod_usu])
+                    }
 
-                        var autorizacionWebModulsUser = await db.query(`SELECT pu.id_modulo
+                } else {
+                    //Obtiene la lista de modulos de la aplicacion. Alerta, atencion a crisis y dashboard.
+                    var modulesApp = await db.query('SELECT id_modulo FROM sat_modulos WHERE tipo_modulo = 1');
+                    modulesApp = modulesApp.rows;
+
+                    for (let i = 0; i < modulesApp.length; i++) {
+                        await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, modulesApp[i].id_modulo]);
+                    }
+                }
+
+                //Actualizar permisos seleccionados
+                if (userAccess.permiso_acceso_web != 0) {
+
+                    var autorizacionWebModulsUser = await db.query(`SELECT pu.id_modulo
                         FROM sat_permisos_modulos_usuario AS pu
                         INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
                         WHERE pu.id_usuario = $1 AND m.tipo_modulo = 2`, [id_usuario]);
-                        autorizacionWebModulsUser = autorizacionWebModulsUser.rows;
+                    autorizacionWebModulsUser = autorizacionWebModulsUser.rows;
 
-                        for (let i = 0; i < autorizacionWebModulsUser.length; i++) {
-                            await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, autorizacionWebModulsUser[i].id_modulo]);
-                        }
-
-                        for (let i = 0; i < id_modulo_web.length; i++) {
-                            await db.query(`INSERT INTO sat_permisos_modulos_usuario(
-                            id_usuario, id_modulo, cod_usu_ing, cod_usu_mod)
-                            VALUES ($1, $2, $3, $4)`, [id_usuario, id_modulo_web[i], cod_usu, cod_usu]);
-                        }
-
-                    } else {
-                        //Obtiene la lista de modulos de la aplicacion. Alerta, atencion a crisis y dashboard.
-                        var modulesWeb = await db.query('SELECT id_modulo FROM sat_modulos WHERE tipo_modulo = 2 ORDER BY id_modulo ASC');
-                        modulesWeb = modulesWeb.rows;
-
-                        for (let i = 0; i < modulesApp.length; i++) {
-                            await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, modulesWeb[i]]);
-                        }
+                    for (let i = 0; i < autorizacionWebModulsUser.length; i++) {
+                        await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, autorizacionWebModulsUser[i].id_modulo]);
                     }
 
-                    req.flash('warning', 'Registro actualizado correctamente');
-                    res.redirect('/api-sat/users-list');
+                    for (let i = 0; i < id_modulo_web.length; i++) {
+       
+                        await db.query(`INSERT INTO sat_permisos_modulos_usuario(
+                            id_usuario, id_modulo, cod_usu_ing, cod_usu_mod)
+                            VALUES ($1, $2, $3, $4)`, [id_usuario, id_modulo_web[i], cod_usu, cod_usu]);
+                    }
+
+
+                } else {
+                    //Obtiene la lista de modulos de la aplicacion. Alerta, atencion a crisis y dashboard.
+                    var modulesWeb = await db.query('SELECT id_modulo FROM sat_modulos WHERE tipo_modulo = 2 ORDER BY id_modulo ASC');
+                    modulesWeb = modulesWeb.rows;
+
+                    for (let i = 0; i < modulesWeb.length; i++) {
+                        await db.query('DELETE FROM sat_permisos_modulos_usuario WHERE id_usuario =$1 AND id_modulo =$2', [id_usuario, modulesWeb[i].id_modulo]);
+                    }
                 }
+
+                req.flash('warning', 'Registro actualizado correctamente');
+                res.redirect('/api-sat/users-list');
+            }
         });
     } catch (error) {
         log('src/controllers/front', 'users', 'updateUsersAuthotization', error, false, req, res);
@@ -406,52 +440,14 @@ let updateUsersAuthotization = async (req, res) => {
 };
 
 let userProfile = async (req, res) => {
-    return res.render('users/users_profile');
+    try {
+        return res.render('users/users_profile');        
+    } catch (error) {
+        log('src/controllers/front', 'users', 'userProfile', error, false, req, res); 
+    }
+
 };
 
-let codigoPrueba = async(req, res)=>{
-    
-    let autorizacionAppModulsUser = await db.query(`SELECT pu.id_usuario
-    FROM sat_permisos_modulos_usuario AS pu
-    INNER JOIN sat_modulos AS m ON m.id_modulo = pu.id_modulo
-    WHERE pu.id_usuario = $1 AND m.tipo_modulo = 1`, [id_usuario]);
-    autorizacionAppModulsUser = autorizacionAppModulsUser.rows;
-
-    if(id_modulo_app != undefined){
-        if(id_modulo_app.length > autorizacionAppModulsUser.length){
-            for (let i = 0; i < id_modulo_app.length; i++) {
-                                
-                var ModulsAppUser = await db.query(`SELECT id_modulo
-                FROM sat_permisos_modulos_usuario WHERE id_usuario = $1 AND id_modulo = $2`, [id_usuario, id_modulo_app[i]]);
-                ModulsAppUser = ModulsAppUser.rows[0];
-                
-                if(ModulsAppUser == undefined){
-                    await db.query(`INSERT INTO sat_permisos_modulos_usuario(
-                        id_usuario, id_modulo, cod_usu_ing, cod_usu_mod)
-                        VALUES ($1, $2, $3, $4)`,[id_usuario, id_modulo_app[i], cod_usu, cod_usu])
-                }
-                
-            }
-        }else{
-
-            for (let i = 0; i < id_modulo_app.length; i++) {
-                                
-                var modulsAppUser = await db.query(`SELECT mu.id_modulo
-                FROM sat_permisos_modulos_usuario as mu
-                INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo 
-                WHERE id_usuario =$1 AND m.tipo_modulo = 1`, [id_usuario]);
-                modulsAppUser = modulsAppUser.rows;
-                
-                for (let j = 0; j < modulsAppUser.length; j++) {
-                    
-                    if(id_modulo_app[i] != modulsAppUser[j].id_modulo){
-                        console.log(modulsAppUser[j])
-                    }  
-                }              
-            }
-        }
-    }
-}
 
 module.exports = {
     usersList,

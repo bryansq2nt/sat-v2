@@ -88,6 +88,6 @@ module.exports = (app, passport) => {
     app.use(require('./criterion.routes'));
 
     //Heat-Map
-    app.use(require('./heat-map.routes'));
+    app.use(require('./reports.routes'));
 
 };

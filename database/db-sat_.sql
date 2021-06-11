@@ -114,9 +114,9 @@ CREATE TABLE sat_accesos_usuario
 (
     id_acceso_usuario numeric NOT NULL DEFAULT nextval('seq_sat_accesos_usuario'),
     id_usuario numeric NOT NULL,
-    permiso_acceso_app numeric(2) NOT NULL DEFAULT 1,
-    permiso_acceso_web numeric(2) NOT NULL DEFAULT 2,
-    id_rol_permisos numeric(2) NOT NULL DEFAULT 0,
+    permiso_acceso_app numeric(2) NOT NULL DEFAULT 0,
+    permiso_acceso_web numeric(2) NOT NULL DEFAULT 0,
+    id_rol_permisos numeric(2) NOT NULL DEFAULT 1,
     fecha_ing_reg timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_mod_reg timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cod_usu_ing numeric NOT NULL,
@@ -142,8 +142,6 @@ CREATE TABLE sat_permisos_modulos_usuario
 );
 
 
-DROP TABLE sat_seguridad_token;
-DROP SEQUENCE seq_sat_seguridad_token_id_seguridad_token;
 CREATE SEQUENCE seq_sat_seguridad_token_id_seguridad_token;
 CREATE TABLE sat_seguridad_token (
     id_seguridad_token NUMERIC NOT NULL DEFAULT nextval('seq_sat_seguridad_token_id_seguridad_token'),

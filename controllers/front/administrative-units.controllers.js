@@ -99,7 +99,7 @@ let viewSendNotification = async(req, res)=>{
 
 let sendNotification = async (req, res) => {
     const { mensaje } = req.body;
-
+    console.log(mensaje);
     try {
 
         var cod_usu = req.user.id_usuario;
@@ -120,14 +120,14 @@ let sendNotification = async (req, res) => {
     
                         tokens.push(userTokens[i].token);
     
-                        await db.query(`INSERT INTO sat_notificacion(id_usuario, mensaje, cod_usu_ing, cod_usu_mod)
-                            VALUES ($1, $2, $3, $4)`, [userTokens[i].id_usuario, mensaje, cod_usu, cod_usu], (err, results) => {
-                            if (err) {
-                                log('src/controllers/front', 'administrative-units', 'sendNotification', err, false, req, res);
-                            } else {
-                                //console.log('notificacion enviada');
-                            }
-                        });
+                        // await db.query(`INSERT INTO sat_notificacion(id_usuario, mensaje, cod_usu_ing, cod_usu_mod)
+                        //     VALUES ($1, $2, $3, $4)`, [userTokens[i].id_usuario, mensaje, cod_usu, cod_usu], (err, results) => {
+                        //     if (err) {
+                        //         log('src/controllers/front', 'administrative-units', 'sendNotification', err, false, req, res);
+                        //     } else {
+                        //         console.log('notificacion enviada');
+                        //     }
+                        // });
                     }
     
                 }
@@ -165,7 +165,7 @@ let sendNotification = async (req, res) => {
     
     
                 req.flash('success', 'Notificacion enviada correctamente');
-                return res.redirect('/promotions');
+                return res.redirect('/api-sat/administrative-units-list');
             }
     
         });  

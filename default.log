@@ -873,3 +873,59 @@ funcion: createAggressionType
 error: error: la sintaxis de entrada no es válida para tipo numeric: «»
 --------------------------------------------------------------------------------------------
 
+2021.06.10, 20:22:24.0736 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: TypeError: Cannot read property 'id_rol_permisos' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 20:43:03.0601 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: ReferenceError: userAuthorization is not defined
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 20:50:10.0094 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: TypeError: Cannot read property 'id_rol_permisos' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 22:03:15.0735 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «permiso_acceso_app» de la relación «sat_accesos_usuario» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 22:07:47.0062 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «id_rol_permisos» de la relación «sat_accesos_usuario» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 22:34:09.0743 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «permiso_acceso_app» de la relación «sat_accesos_usuario» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 22:44:39.0948 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «id_rol_permisos» de la relación «sat_accesos_usuario» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.06.10, 22:46:22.0530 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: el valor nulo en la columna «id_rol_permisos» de la relación «sat_accesos_usuario» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+

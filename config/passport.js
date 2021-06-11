@@ -75,6 +75,7 @@ module.exports = function (passport) {
                         if (!results.rows.length) {
                             return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
                         } else {
+
                             var userPassword = md5(password);
 
                             if (userPassword != results.rows[0].clave) {
@@ -94,15 +95,17 @@ module.exports = function (passport) {
                                     WHERE mu.id_usuario = $1 AND m.tipo_modulo = 2`, [user.id_usuario]);
                                     authorizationModuls = authorizationModuls.rows;
                                     
-                                    for (let i = 0; i < authorizationModuls.length; i++) {
-                                        if(authorizationModuls[i].id_modulo == 4){
-                                            user.administracion = 1;
-                                        }else if(authorizationModuls[i].id_modulo == 5){
-                                            user.cat = 1;
-                                        }else if(authorizationModuls[i].id_modulo == 6){
-                                            user.dashboard = 1;
+                                    if (authorizationModuls != undefined) {
+                                        for (let i = 0; i < authorizationModuls.length; i++) {
+                                            if (authorizationModuls[i].id_modulo == 4) {
+                                                user.administracion = 1;
+                                            } else if (authorizationModuls[i].id_modulo == 5) {
+                                                user.cat = 1;
+                                            } else if (authorizationModuls[i].id_modulo == 6) {
+                                                user.dashboard = 1;
+                                            }
                                         }
-                                    } 
+                                    }
                                 }
 
                                 return done(null, user, null);
