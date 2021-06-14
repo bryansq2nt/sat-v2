@@ -35,7 +35,7 @@ let earlyAlertsList = async (req, res) => {
   }
 };
 
-let createEarlyAlert = async (req, res) => {
+/*let createEarlyAlert = async (req, res) => {
   const {
     id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
     fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
@@ -121,7 +121,7 @@ let createEarlyAlert = async (req, res) => {
   } catch (error) {
     log('src/controllers/front', 'actions-pddh', 'createConflictPhase', error, false, req, res);
   }
-};
+};*/
 
 let getById = async (req, res) => {
   const { id_alerta_temprana } = req.params;
@@ -781,7 +781,7 @@ let getById = async (req, res) => {
     }
 
     //Poblacion Determinada
-    var numberPopulationDetermined = {
+    /*var numberPopulationDetermined = {
       section_id: 14,
       section_title: "Población indeterminada",
       questions: [
@@ -792,7 +792,7 @@ let getById = async (req, res) => {
           answer: early_alert.cantidad_aproximada
         }
       ]
-    }
+    }*/
 
     //Valoracion de Fase de Conflicto
     var conflictPhaseAssessment = {
@@ -959,7 +959,7 @@ let getById = async (req, res) => {
     }
     sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
       governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,
-      numberPopulationDetermined, conflictPhaseAssessment);
+      conflictPhaseAssessment);
     //1
     var formEarlyAlert = {
       form_id: early_alert.id_alerta_temprana,
@@ -1651,7 +1651,7 @@ let getEarlyAlertForm = async (req, res) => {
     }
 
     //Poblacion Determinada
-    var numberPopulationDetermined = {
+    /*var numberPopulationDetermined = {
       section_id: 14,
       section_title: "Población indeterminada",
       questions: [
@@ -1662,7 +1662,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "Cantidad aproximada"
         }
       ]
-    }
+    }*/
 
     //Valoracion de Fase de Conflicto
     var conflictPhaseAssessment = {
@@ -1810,7 +1810,7 @@ let getEarlyAlertForm = async (req, res) => {
     }
     sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
       governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,
-      numberPopulationDetermined, conflictPhaseAssessment);
+      conflictPhaseAssessment);
     //1
     var formEarlyAlert = {
       form_id: 0,
@@ -1995,8 +1995,7 @@ let searchEarlyAlert = async (req,res) => {
 
 };
 
-/* METODO DE PRUEBA DE CLASIFICACION DE ALERTA*/
-let createEarlyAlertPrueba = async (req, res) => {
+ let createEarlyAlert = async (req, res) => {
   const {
     id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
     fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
@@ -2005,16 +2004,16 @@ let createEarlyAlertPrueba = async (req, res) => {
     nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
     contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
     contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-    fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
+    fecha_hechos, fecha_futura_hechos, fecha_reporte, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
     descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
     id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
     id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho,
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, id_acciones_hecho,
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
-    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor;
+    var cantidad_aproximada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor;
 
   var cod_usu = req.user.user_id;
 
@@ -2040,12 +2039,12 @@ let createEarlyAlertPrueba = async (req, res) => {
     poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-    presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu_ing, cantidad_poblacion_afectada )
+    presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu_ing )
             VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, 
                     $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, 
                     $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, 
                     $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $82, $83, $84,
-                    $85, $86) RETURNING *`,
+                    $85) RETURNING *`,
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
         fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
         fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
@@ -2060,7 +2059,7 @@ let createEarlyAlertPrueba = async (req, res) => {
         poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho,
         proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
         id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-        presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu, cantidad_poblacion_afectada], async(err, results) => {
+        presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu], async(err, results) => {
           if (err) {
             console.log(err);
             errorResponse.detail = err.message;
