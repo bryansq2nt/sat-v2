@@ -1995,7 +1995,7 @@ let searchEarlyAlert = async (req,res) => {
 
 };
 
- let createEarlyAlert = async (req, res) => {
+let createEarlyAlert = async (req, res) => {
   const {
     id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
     fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
