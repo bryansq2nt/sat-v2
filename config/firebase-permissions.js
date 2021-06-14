@@ -8,7 +8,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const database = admin.database();
 
 const firebaseConfig = {
   apiKey: "AIzaSyBlQVDUhvaqXBgi3Z3SRi9t0TxxW3CkJ58",
@@ -24,7 +23,6 @@ firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 module.exports = {
-  database,
   admin,
   auth
 };
