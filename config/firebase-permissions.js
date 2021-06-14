@@ -10,7 +10,7 @@ admin.initializeApp({
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBlQVDUhvaqXBgi3Z3SRi9t0TxxW3CkJ58",
+  apiKey: process.env.APIKEY,
   authDomain: "pddh-sat.firebaseapp.com",
   projectId: "pddh-sat",
   storageBucket: "pddh-sat.appspot.com",
