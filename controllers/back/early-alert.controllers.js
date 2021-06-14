@@ -2,6 +2,15 @@ const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
+const nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'sistemalertpddh2021@gmail.com',
+    pass: '$Pddh2021'
+  }
+});
 
 let earlyAlertsList = async (req, res) => {
   const { offset } = req.query;
@@ -1920,6 +1929,11 @@ let analyzeEarlyAlert = async (req,res) => {
 
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar analizar la Alerta.", instance: "early-alert/analyzeEarlyAlert" });
 
+    let administrativUnit = await db.query(`SELECT nombre_unidad, correo_prinicipal, correo_secundario
+    FROM sat_unidad_administrativa WHERE id_unidad_administrativa = $1`, [notificar ]);
+    administrativUnit = administrativUnit.rows[0];
+
+    var correo_principal = administrativUnit.correo_prinicipal;
 
     await db.query(`UPDATE sat_alerta_temprana SET analizada = true, id_accion_pddh = $1, analisis = $2, notificar = $3, texto_mensaje = $4 WHERE id_alerta_temprana = $5`, [id_accion_pddh,analisis, notificar, texto_mensaje, id_alerta_temprana], (err, results) => {
       if (err) {
@@ -1927,6 +1941,24 @@ let analyzeEarlyAlert = async (req,res) => {
         return res.status(500).json(errorResponse.toJson());
       } else {
         var earlyAlert = results.rows[0];
+
+        var mailOptions = {
+          from: 'sistemalertpddh2021@gmail.com',
+          to: correo_principal,
+          subject: 'ANÁLISIS DE ALERTA',
+          text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia sit facere. In doloribus nemo, voluptas natus velit, qui magnam assumenda, tempore eos obcaecati provident? Praesentium, doloribus sint.`
+        };
+
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+
+
         return res.status(200).json({ earlyAlert });
       }
     });

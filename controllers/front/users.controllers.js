@@ -59,7 +59,7 @@ let getById = async (req, res) => {
         if (searchUserAccess != undefined) {
 
             userAuthorization = await db.query(`SELECT acc.id_usuario, acc.permiso_acceso_app, 
-            acc.permiso_acceso_web, acc.id_rol_permisos, app.nombre_permiso
+            acc.permiso_acceso_web, acc.id_rol_permisos, app.nombre_permiso, acc.telefono
             FROM sat_accesos_usuario AS acc
             INNER JOIN sat_rol_app_permisos AS app ON app.id_rol_permisos = acc.id_rol_permisos
             WHERE acc.id_usuario = $1`, [id_usuario]);
@@ -253,7 +253,7 @@ let getById = async (req, res) => {
 };
 
 let usersAuthotization = async (req, res) => {
-    const { id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web } = req.body;
+    const { id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web, telefono } = req.body;
     
     var acceso_app = permiso_acceso_app;
     var acceso_web = permiso_acceso_web;
@@ -293,8 +293,8 @@ let usersAuthotization = async (req, res) => {
 
         await db.query(`INSERT INTO sat_accesos_usuario(
             id_usuario, permiso_acceso_app, permiso_acceso_web, id_rol_permisos, 
-            cod_usu_ing, cod_usu_mod)
-            VALUES ($1, $2, $3, $4, $5, $6)`, [id_usuario, acceso_app, acceso_web, permisosDatos, cod_usu_ing, cod_usu_mod], async (err, results) => {
+            cod_usu_ing, cod_usu_mod, telefono)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)`, [id_usuario, acceso_app, acceso_web, permisosDatos, cod_usu_ing, cod_usu_mod, telefono], async (err, results) => {
             if (err) {
                 log('src/controllers/front', 'users', 'usersAuthotization', err, false, req, res);
             } else {
@@ -332,7 +332,7 @@ let usersAuthotization = async (req, res) => {
 
 let updateUsersAuthotization = async (req, res) => {
     const { id_usuario } = req.params;
-    const { permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web } = req.body;
+    const { permiso_acceso_app, permiso_acceso_web, id_rol_permisos, id_modulo_app, id_modulo_web, telefono } = req.body;
 
     var acceso_app = permiso_acceso_app;
     var acceso_web = permiso_acceso_web
@@ -363,7 +363,7 @@ let updateUsersAuthotization = async (req, res) => {
 
         await db.query(`UPDATE sat_accesos_usuario
             SET permiso_acceso_app=$1, permiso_acceso_web=$2, id_rol_permisos=$3, fecha_mod_reg=$4, 
-            cod_usu_ing=$5, cod_usu_mod=$6 WHERE id_usuario = $7 RETURNING *`, [acceso_app, acceso_web, id_rol_permisos, fecha_mod_reg, cod_usu, cod_usu, id_usuario], async (err, results) => {
+            cod_usu_ing=$5, cod_usu_mod=$6, telefono=$7 WHERE id_usuario = $8 RETURNING *`, [acceso_app, acceso_web, id_rol_permisos, fecha_mod_reg, cod_usu, cod_usu, telefono, id_usuario], async (err, results) => {
             if (err) {
                 log('src/controllers/front', 'users', 'usersAuthotization', err, false, req, res);
             } else {

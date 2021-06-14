@@ -99,9 +99,9 @@ let viewSendNotification = async(req, res)=>{
 
 let sendNotification = async (req, res) => {
     const { mensaje } = req.body;
-    console.log(mensaje);
-    try {
 
+    try {
+        var nombre_notificacion = 'UNIDAD INFORMATICA';
         var cod_usu = req.user.id_usuario;
 
         await db.query(`SELECT id_usuario, token FROM sat_seguridad_token`, async (err, results) => {
@@ -112,60 +112,58 @@ let sendNotification = async (req, res) => {
     
                 var userTokens = results.rows;
                 var tokens = [];
-                console.log(userTokens);
-    
+                
                 for (let i = 0; i < userTokens.length; i++) {
     
                     if (userTokens[i].token != undefined) {
     
                         tokens.push(userTokens[i].token);
     
-                        // await db.query(`INSERT INTO sat_notificacion(id_usuario, mensaje, cod_usu_ing, cod_usu_mod)
-                        //     VALUES ($1, $2, $3, $4)`, [userTokens[i].id_usuario, mensaje, cod_usu, cod_usu], (err, results) => {
-                        //     if (err) {
-                        //         log('src/controllers/front', 'administrative-units', 'sendNotification', err, false, req, res);
-                        //     } else {
-                        //         console.log('notificacion enviada');
-                        //     }
-                        // });
+                        await db.query(`INSERT INTO sat_notificacion(id_usuario, nombre_notificacion, mensaje, cod_usu_ing, cod_usu_mod)
+                            VALUES ($1, $2, $3, $4, $5)`, [userTokens[i].id_usuario, nombre_notificacion, mensaje, cod_usu, cod_usu], (err, results) => {
+                            if (err) {
+                                log('src/controllers/front', 'administrative-units', 'sendNotification', err, false, req, res);
+                            } else {
+                                (async () => {
+    
+                                    const message = {
+                                        tokens: tokens,
+                                        notification: {
+                                            body: mensaje,
+                                            title: nombre_notificacion
+                                        },
+                                        data: {
+                                            showForegroundNotification: 'false',
+                                            //type: 'promotion',
+                                            //business_id: `${data_clients[0].business_id}`
+                                        },
+                                        android: {
+                                            notification: {
+                                                clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+                                            },
+                                        },
+                                        apns: {
+                                            payload: {
+                                                aps: {
+                                                    category: "FLUTTER_NOTIFICATION_CLICK"
+                                                }
+                                            }
+                                        },
+                                    };
+                                    admin.messaging().sendMulticast(message);
+                                    console.log('notificacion enviada');
+                    
+                                })();
+
+                                    
+                                req.flash('success', 'Notificacion enviada correctamente');
+                                return res.redirect('/api-sat/administrative-units-list');
+                               
+                            }
+                        });
                     }
     
-                }
-    
-                // (async () => {
-    
-                //     const message = {
-                //         tokens: tokens,
-                //         notification: {
-                //             body: mensaje,
-                //             title: 'NOMBRE UNIDAD ADMINISTRATIVA'
-                //         },
-                //         data: {
-                //             showForegroundNotification: 'false',
-                //             //type: 'promotion',
-                //             //business_id: `${data_clients[0].business_id}`
-                //         },
-                //         android: {
-                //             notification: {
-                //                 clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-                //             },
-                //         },
-                //         apns: {
-                //             payload: {
-                //                 aps: {
-                //                     category: "FLUTTER_NOTIFICATION_CLICK"
-                //                 }
-                //             }
-                //         },
-                //     };
-    
-                //     admin.messaging().sendMulticast(message);
-    
-                // })();
-    
-    
-                req.flash('success', 'Notificacion enviada correctamente');
-                return res.redirect('/api-sat/administrative-units-list');
+                }   
             }
     
         });  

@@ -43,9 +43,17 @@
                     <input type="text" id="disabledTextInput" class="form-control" value="{{SIGIuser.descripcion}}">
                 </fieldset>
             </div>
+            <hr>
             {{!-- ASIGNAR PERMISOS AL USUARIO --}}
             {{#Authorization userAuthorization.id_usuario}}
             <form class="form-horizontal mt-4" action="/api-sat/user-authorization" method="POST">
+                <div class="form-group row pt-3">
+                    <div class="col-sm-4">
+                        <label class="pb-2">Tel&eacute;fono Persona Usuaria</label>
+                        <input type="text" name="telefono" class="form-control" required
+                            data-validation-required-message="Este campo es obligatorio">
+                    </div>
+                </div>
                 <label class="pb-2">Habilitar acceso a App Movil</label>
                 <div class="custom-control custom-radio pb-2">
                     <input type="text" class="custom-control-input" name="id_usuario" value="{{SIGIuser.id_usuario}}" />
@@ -109,8 +117,14 @@
             </form>
             {{!-- ACTUALIZAR PERMISOS DEL USUARIO --}}
             {{else}}
-            <form class="form-horizontal mt-4" action="/api-sat/user-authorization/{{SIGIuser.id_usuario}}/update"
-                method="POST">
+            <form class="form-horizontal mt-4" action="/api-sat/user-authorization/{{SIGIuser.id_usuario}}/update" method="POST">
+                <div class="form-group row pt-3">
+                    <div class="col-sm-4">
+                        <label class="pb-2">Tel&eacute;fono Persona Usuaria</label>
+                        <input type="text" name="telefono" value="{{userAuthorization.telefono}}" class="form-control" required
+                            data-validation-required-message="Este campo es obligatorio">
+                    </div>
+                </div>
                 <label class="pb-2">Habilitar acceso a App Movil</label>
                 {{#showFormElements userAuthorization.permiso_acceso_app}}
                 <div class="custom-control custom-radio pb-2">
