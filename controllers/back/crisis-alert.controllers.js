@@ -98,12 +98,7 @@ let getCrisisAlertsForm = async(req, res) => {
           question_type: "date",
           question: "Fecha Ingreso"
         },
-        {
-          question_id: "id_tipo_via_entrada",
-          question_type: "closed",
-          question: "Tipo Via Entrada",
-          answers: entryType
-        },
+        
         {
           question_id: "via_entrada",
           question_type: "open",
