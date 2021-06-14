@@ -2,25 +2,22 @@ var admin = require("firebase-admin");
 const firebase = require('firebase/app');
 require("firebase/auth");
 
-var serviceAccount = require('./reservalo-app-ce7b0-firebase-adminsdk-i6tvz-0df49240f2.json');
+var serviceAccount = require('./pddh-sat-firebase-adminsdk-10sjw-664b8bd688.json');
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://reservalo-app-ce7b0.firebaseio.com"
+  credential: admin.credential.cert(serviceAccount)
 });
-
 
 const database = admin.database();
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCyg23xWfnKeefvKRn0siCWdR7ePLU0jGI",
-    authDomain: "reservalo-app-ce7b0.firebaseapp.com",
-    databaseURL: "https://reservalo-app-ce7b0.firebaseio.com",
-    projectId: "reservalo-app-ce7b0",
-    storageBucket: "reservalo-app-ce7b0.appspot.com",
-    messagingSenderId: "806862613442",
-    appId: "1:806862613442:web:e7284d48c7e69bfda8445b",
-    measurementId: "G-6420F0RET7"
+  apiKey: "AIzaSyBlQVDUhvaqXBgi3Z3SRi9t0TxxW3CkJ58",
+  authDomain: "pddh-sat.firebaseapp.com",
+  projectId: "pddh-sat",
+  storageBucket: "pddh-sat.appspot.com",
+  messagingSenderId: "1002402961086",
+  appId: "1:1002402961086:web:0f393577c4a573048f70ef",
+  measurementId: "G-9LY8W9CM20"
   };
 
 firebase.initializeApp(firebaseConfig);
