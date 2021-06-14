@@ -2158,6 +2158,5 @@ module.exports = {
   getEarlyAlertForm,
   getFormToAnalyze,
   analyzeEarlyAlert,
-  searchEarlyAlert,
-  createEarlyAlertPrueba
+  searchEarlyAlert
 }
