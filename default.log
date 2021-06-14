@@ -929,3 +929,31 @@ funcion: usersAuthotization
 error: error: el valor nulo en la columna «id_rol_permisos» de la relación «sat_accesos_usuario» viola la restricción de no nulo
 --------------------------------------------------------------------------------------------
 
+2021.06.11, 22:53:51.0664 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersAuthotization
+error: error: INSERT tiene más columnas de destino que expresiones
+--------------------------------------------------------------------------------------------
+
+2021.06.14, 14:50:54.0500 UTC -> 
+archivo: administrative-units.controller
+ruta: src/controllers/front
+funcion: sendNotification
+error: error: el valor nulo en la columna «nombre_notificacion» de la relación «sat_notificacion» viola la restricción de no nulo
+--------------------------------------------------------------------------------------------
+
+2021.06.14, 16:06:24.0071 UTC -> 
+archivo: crisi-alert.controller
+ruta: src/controllers/back
+funcion: analyzeCrisisAlert
+error: TypeError: Cannot read property 'correo_prinicipal' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.06.14, 16:08:16.0654 UTC -> 
+archivo: crisi-alert.controller
+ruta: src/controllers/back
+funcion: analyzeCrisisAlert
+error: TypeError: Cannot read property 'correo_prinicipal' of undefined
+--------------------------------------------------------------------------------------------
+

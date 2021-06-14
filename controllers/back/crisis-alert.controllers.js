@@ -2,32 +2,43 @@ const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
+const nodemailer = require('nodemailer');
 
-let crisisAlertsList = async(req, res) =>{
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'sistemalertpddh2021@gmail.com',
+    pass: '$Pddh2021'
+  }
+});
+
+
+let crisisAlertsList = async (req, res) => {
   const { offset } = req.query;
 
   try {
 
-      var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
-     
-      var cod_usu_ing = req.user.user_id;
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
 
-      await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE cod_usu_ing = $1 ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`,[cod_usu_ing,offset],(err,results)=>{
-        if(err){
-          console.log(err.message);
-          return res.status(500).json(errorResponse.toJson());
-        }else{
-          var crisisAlerts = results.rows;
-          return res.status(200).json({ crisisAlerts });
-        }
-      });
+    var cod_usu_ing = req.user.user_id;
+
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE cod_usu_ing = $1 ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var crisisAlerts = results.rows;
+        return res.status(200).json({ crisisAlerts });
+      }
+    });
   } catch (error) {
     log('src/controllers/back', 'crisis-alert', 'crisisAlertsList', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 };
 
-let getCrisisAlertsForm = async(req, res) => {
+let getCrisisAlertsForm = async (req, res) => {
 
   try {
 
@@ -239,7 +250,7 @@ let getCrisisAlertsForm = async(req, res) => {
           question: "Municipio del domicilio",
           answers: municipality
         },
-       
+
         {
           question_id: "direccion",
           question_type: "open",
@@ -402,7 +413,7 @@ let getCrisisAlertsForm = async(req, res) => {
 
 };
 
-let getById = async(req, res) =>{
+let getById = async (req, res) => {
 
   const { id_atencion_crisis } = req.params;
 
@@ -440,11 +451,11 @@ let getById = async(req, res) =>{
     var occupation = await db.query(`SELECT id_cat_pro_oficio::integer AS answer_id, descripcion AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A'`);
     occupation = occupation.rows;
 
-    
+
     var occupation_answer = null;
-    if(crisisAttention.id_ocupacion != null){
+    if (crisisAttention.id_ocupacion != null) {
       occupation_answer = await db.query(`SELECT CONCAT(id_cat_pro_oficio, '|',descripcion) AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A' AND id_cat_pro_oficio = ${crisisAttention.id_ocupacion}`);
-    occupation_answer = occupation_answer.rows[0].answer;
+      occupation_answer = occupation_answer.rows[0].answer;
     }
 
 
@@ -514,7 +525,7 @@ let getById = async(req, res) =>{
           question_type: "closed",
           question: "Clasificación",
           answers: CrisisClasification,
-          answer: Number.parseInt(crisisAttention.id_calidad_crisis) 
+          answer: Number.parseInt(crisisAttention.id_calidad_crisis)
         },
         {
           question_id: "id_naturaleza",
@@ -570,7 +581,7 @@ let getById = async(req, res) =>{
           question_id: "id_documento_solicitante",
           question_type: "closed",
           question: "Documento de identificación",
-          answers:personalDocuments,
+          answers: personalDocuments,
           answer: Number.parseInt(crisisAttention.id_documento_solicitante)
         },
         {
@@ -838,11 +849,11 @@ let createCrisisAlert = async (req, res) => {
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
     institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
 
-    var localDate =  new Date();
-    var fecha_ingreso = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+  var localDate = new Date();
+  var fecha_ingreso = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
 
-    var cod_usu_ing = req.user.user_id;
-    var cod_usu_mod = req.user.user_id;
+  var cod_usu_ing = req.user.user_id;
+  var cod_usu_mod = req.user.user_id;
 
 
   try {
@@ -885,19 +896,19 @@ let createCrisisAlert = async (req, res) => {
 
 };
 
-let updateCrisisAlert = async (req, res) =>{
-  const {id_atencion_crisis} = req.params;
-  const {fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+let updateCrisisAlert = async (req, res) => {
+  const { id_atencion_crisis } = req.params;
+  const { fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
     edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
     fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
-    institucion_otros, cargo_otros, id_calificacion_otros} = req.body;
-  
+    institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
+
   try {
 
-    var localDate =  new Date();
+    var localDate = new Date();
     var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
     var cod_usu_ing = req.user.user_id;
     var cod_usu_mod = req.user.user_id;
@@ -910,31 +921,31 @@ let updateCrisisAlert = async (req, res) =>{
     id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepción=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
     nombre_notificacion_medio=$32, resumen_hecho=$33, id_calificacion=$34, nombre_funcionario=$35, cargo=$36, nombre_otros=$37, institucion_otros=$38, cargo_otros=$39, id_calificacion_otros=$40, 
     fecha_mod_reg=$41, cod_usu_ing=$42, cod_usu_mod=$43
-    WHERE id_atencion_crisis = $44`,[fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+    WHERE id_atencion_crisis = $44`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
       fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
-      institucion_otros, cargo_otros, id_calificacion_otros, fecha_mod_reg, cod_usu_ing, cod_usu_mod, id_atencion_crisis],(err, results)=>{
-      if(err){
-        console.log(err);
-        errorResponse.detail = err.message;
-        return res.status(500).json(errorResponse.toJson());
-      }else{
-        var crisisAlerts = results.rows[0];
-        return res.status(200).json({
-          crisisAlerts
-        });
-      }
-    });
+      institucion_otros, cargo_otros, id_calificacion_otros, fecha_mod_reg, cod_usu_ing, cod_usu_mod, id_atencion_crisis], (err, results) => {
+        if (err) {
+          console.log(err);
+          errorResponse.detail = err.message;
+          return res.status(500).json(errorResponse.toJson());
+        } else {
+          var crisisAlerts = results.rows[0];
+          return res.status(200).json({
+            crisisAlerts
+          });
+        }
+      });
   } catch (error) {
     log('src/controllers/back', 'crisis-alert', 'updateCrisisAlert', error, true, req, res);
   }
 
 };
 
-let getFormToAnalyze = async (req,res) => {
+let getFormToAnalyze = async (req, res) => {
   const { id_atencion_crisis } = req.params;
 
   try {
@@ -994,7 +1005,7 @@ let getFormToAnalyze = async (req,res) => {
       sections
     }
 
-    
+
     return res.status(200).json({
       form: formCrisisAlert
     });
@@ -1007,21 +1018,46 @@ let getFormToAnalyze = async (req,res) => {
 
 };
 
-let analyzeCrisisAlert = async (req,res) => {
+let analyzeCrisisAlert = async (req, res) => {
   const { id_atencion_crisis } = req.params;
-  const { id_accion_pddh, analisis, id_unidad_administrativa, texto_mensaje,} = req.body;
+  const { id_accion_pddh, analisis, id_unidad_administrativa, texto_mensaje, } = req.body;
 
   try {
 
     var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar analizar la Alerta.", instance: "crisis-alert/analyzeCrisisAlert" });
 
-    
+    let administrativUnit = await db.query(`SELECT nombre_unidad, correo_prinicipal, correo_secundario
+    FROM sat_unidad_administrativa WHERE id_unidad_administrativa = $1`, [id_unidad_administrativa]);
+    administrativUnit = administrativUnit.rows[0];
+
+    var correo_principal = administrativUnit.correo_prinicipal;
+
     await db.query(`UPDATE sat_atencion_crisis SET analizada = true, id_accion_pddh = $1, analisis = $2, id_unidad_administrativa = $3, texto_mensaje = $4 WHERE id_atencion_crisis = $5`, [id_accion_pddh, analisis, id_unidad_administrativa, texto_mensaje, id_atencion_crisis], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
       } else {
         var CrisisAlert = results.rows[0];
+
+        //--- Envio de correo electronico
+
+        var mailOptions = {
+          from: 'sistemalertpddh2021@gmail.com',
+          to: correo_principal,
+          subject: 'ANÁLISIS DE CRISIS ',
+          text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia sit facere. In doloribus nemo, voluptas natus velit, qui magnam assumenda, tempore eos obcaecati provident? Praesentium, doloribus sint.`
+        };
+
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+
+
         return res.status(200).json({ CrisisAlert });
       }
     });
@@ -1031,15 +1067,15 @@ let analyzeCrisisAlert = async (req,res) => {
   }
 
 
-}
+};
 
-let searchCrisisAlert = async (req,res) => {
+let searchCrisisAlert = async (req, res) => {
   const { delegate } = req.query;
 
   try {
     var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "crisis-alert/searchCrisisAlert" });
 
-    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE texto_mensaje ILIKE '%${delegate}%'`,(err,results) => {
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE texto_mensaje ILIKE '%${delegate}%'`, (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -1050,7 +1086,7 @@ let searchCrisisAlert = async (req,res) => {
 
     });
 
-  } catch (e){
+  } catch (e) {
     log('src/controllers/back', 'crisis-alert', 'searchCrisisAlert', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
