@@ -11,7 +11,7 @@ router.get('/api-sat/actions-pddh-list', isLoggedIn, actionsPDDHList);
 router.get('/api-sat/actions-pddh/create-view', isLoggedIn, viewCreateActionPDHH);
 router.post('/api-sat/actions-pddh/create', isLoggedIn, createActionPDHH);
 
-router.get('/api-sat/actions-pddh/:id_referencia_emision/update-view', isLoggedIn, getById);
-router.post('/api-sat/actions-pddh/:id_referencia_emision/update', isLoggedIn, updateActionPDDH);
+router.get('/api-sat/actions-pddh/:id_accion_pddh/update-view', isLoggedIn, getById);
+router.post('/api-sat/actions-pddh/:id_accion_pddh/update', isLoggedIn, updateActionPDDH);
 
 module.exports = router;

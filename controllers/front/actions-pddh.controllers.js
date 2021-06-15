@@ -46,6 +46,7 @@ let createActionPDHH = async (req, res) => {
 
 let getById = async (req, res)=>{
     const { id_accion_pddh } = req.params;
+
     try {
         await db.query(`SELECT id_accion_pddh, nombre_accion, estado FROM sat_accion_pddh
         WHERE id_accion_pddh = $1`,[id_accion_pddh], 
@@ -54,6 +55,7 @@ let getById = async (req, res)=>{
                 log('src/controllers/front', 'actions-pddh', 'getById', err, false, req, res);
             }else{
                 var actionPDDH = results.rows[0];
+
                 return res.render('actions-pddh/actions_pddh_edit', { actionPDDH });
             }
         });   

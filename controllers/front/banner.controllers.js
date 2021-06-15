@@ -104,7 +104,7 @@ let updatePhotoBanner = async(req, res) =>{
    
         if (req.files[0] != undefined) {
             photo = req.files[0].filename;
-            photoRoute = 'http://localhost:4000/uploads/' + photo;
+            photoRoute = '/uploads/' + photo;
 
             var localDate = new Date();
             var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
