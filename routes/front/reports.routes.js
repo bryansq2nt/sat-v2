@@ -2,7 +2,10 @@ const { Router } = require('express');
 const router = Router();
 
 const { isLoggedIn } = require('@middlewares/auth');
-const {reportTypeAlert, reportPhasesConflict, reportConflictSituation,  getHeatMap} = require('@controllers/front/reports.controllers');
+const { reportIndicators, reportTypeAlert, reportPhasesConflict, reportConflictSituation, getHeatMap} = require('@controllers/front/reports.controllers');
+
+// Get Report Indicators
+router.get('/api-sat/report/indicators', isLoggedIn, reportIndicators);
 
 // Get Report Type Alert 
 router.get('/api-sat/report/type-alert', isLoggedIn, reportTypeAlert);

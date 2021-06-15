@@ -2,6 +2,14 @@ const db = require('@config/db');
 const log = require('@lib/catch-error');
 
 
+let reportIndicators = async(req, res) =>{
+    try {
+        return res.render('reports/indicators');   
+    } catch (error) {
+        log('src/controllers/front', 'reports', 'indicators', error, false, req, res);
+    }
+};
+
 let reportTypeAlert = async(req, res) =>{
     try {
         return res.render('reports/alert_type');   
@@ -36,8 +44,9 @@ let getHeatMap = async(req, res) =>{
 };
 
 module.exports = {
+    reportIndicators,
     reportTypeAlert,
     reportPhasesConflict,
     reportConflictSituation,
-    getHeatMap,
+    getHeatMap
 }
