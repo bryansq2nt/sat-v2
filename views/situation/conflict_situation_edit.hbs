@@ -17,24 +17,11 @@
                                     </div>
                                 </div>
                             </div>
-                            {{!-- <div class="col-md-6">
-                                <div class="form-group">
-                                    <h5>Temas</h5>
-                                    <div class="controls">
-                                        <select name="id_tema" id="select" class="form-control" required
-                                            data-validation-required-message="Este campo es obligatorio">
-                                            {{#each topic}}
-                                            <option value="{{id_tema}}">{{nombre_tema}}</option>
-                                            {{/each}}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div> --}}
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <h5>SubTemas</h5>
+                                    <h5>Subtemas</h5>
                                     <div class="controls">
-                                        <select name="id_subtema" id="select" class="form-control" required
+                                        <select name="id_subtema" id="id_subtema" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="{{conflictSituation.id_subtema}}">{{conflictSituation.nombre_subtema}}</option>
                                             {{#each subtopic}}
@@ -48,7 +35,7 @@
                                 <div class="form-group">
                                     <h5>Estado</h5>
                                     <div class="controls">
-                                        <select name="estado" id="select" class="form-control" required
+                                        <select name="estado" id="id_situacion" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="1">Activo</option>
                                             <option value="0">Inactivo</option>

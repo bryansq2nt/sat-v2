@@ -21,7 +21,7 @@
                                 <div class="form-group">
                                     <h5>Temas</h5>
                                     <div class="controls">
-                                        <select id="id_tema" name="id_tema" class="form-control">
+                                        <select id="id_tema" name="id_tema" class="select2 form-control">
                                             <option value="{{criterion.id_tema}}">{{criterion.nombre_tema}}</option>
                                             {{#each topic}}
                                             <option value="{{id_tema}}">{{nombre_tema}}</option>
@@ -34,7 +34,7 @@
                                 <div class="form-group">
                                     <h5>SubTemas</h5>
                                     <div class="controls">
-                                        <select id="id_subtema" name="id_subtema" class="form-control">
+                                        <select id="id_subtema" name="id_subtema" class="select2 form-control">
                                             <option value="{{criterion.id_subtema}}">{{criterion.nombre_subtema}}</option>
                                             {{#each subtopic}}
                                             <option value="{{id_subtema}}">{{nombre_subtema}}</option>
@@ -47,7 +47,7 @@
                                 <div class="form-group">
                                     <h5>Situaci&oacute;n Conflictiva</h5>
                                     <div class="controls">
-                                        <select id="id_situacion_conflictiva"  name="id_situacion_conflictiva" class="form-control">
+                                        <select id="id_situacion_conflictiva"  name="id_situacion_conflictiva" class="select2 form-control">
                                             <option value="{{criterion.id_sit_conflictiva}}">{{criterion.nombre_sit_conflictiva}}</option>
                                             {{#each conflictSituation}}
                                             <option value="{{id_situacion_conflictiva}}">{{nombre_sit_conflictiva}}</option>
@@ -60,7 +60,7 @@
                                 <div class="form-group">
                                     <h5>Estado</h5>
                                     <div class="controls">
-                                        <select name="estado" id="select" class="form-control">
+                                        <select name="estado" id="estado_cri" class="select2 form-control">
                                             <option value="1">Activo</option>
                                             <option value="0">Inactivo</option>
                                         </select>

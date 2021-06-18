@@ -957,3 +957,17 @@ funcion: analyzeCrisisAlert
 error: TypeError: Cannot read property 'correo_prinicipal' of undefined
 --------------------------------------------------------------------------------------------
 
+2021.06.16, 21:53:29.0864 UTC -> 
+archivo: actions-pddh.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: la sintaxis de entrada no es válida para tipo numeric: «hola»
+--------------------------------------------------------------------------------------------
+
+2021.06.16, 22:07:26.0087 UTC -> 
+archivo: index.controller
+ruta: src/controllers/front
+funcion: viewIndex
+error: ReferenceError: unidad_administrativa is not defined
+--------------------------------------------------------------------------------------------
+

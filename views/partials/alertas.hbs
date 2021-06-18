@@ -1,147 +1,21 @@
 {{#if warning}}
-    <div class="alert alert-warning text-center" style="margin:0;"> <i class="ti-user"></i> {{warning}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span>
+    <div class="alert alert-warning text-center" style="margin: 0; width: 40%; position:absolute; top:2%; left:50%; margin-right:50%; transform: translate(-50%, -50%);"> <i class="ti-user"></i> {{warning}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span
+                aria-hidden="true">&times;</span>
         </button>
     </div>
 {{/if}}
 
 {{#if delete}}
-<div class="alert alert-danger text-center" style="margin:0;"> <i class="ti-user"></i> {{delete}}
+<div class="alert alert-danger text-center" style="margin: 0; width: 40%; position:absolute; top:2%; left:50%; margin-right:50%; transform: translate(-50%, -50%);"> <i class="ti-user"></i> {{delete}}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span>
     </button>
 </div>
 {{/if}}
-
-<!--
-    {{#if success}}
-    <div class="container p-4">
-        <div class="row">
-            <div class="col-md-4 mx-auto">
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{success}}
-                    <button type="button" class="close" data-dismiss = "alert" aria-label="close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{/if}}
-
-
-{{#if warning}}
-<div class="container p-4">
-    <div class="row">
-        <div class="col-md-4 mx-auto">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                {{warning}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-{{/if}}
--->
-
-{{!-- {{#if error}}
-<div class="container p-4">
-    <div class="row">
-        <div class="col-md-4 mx-auto">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{error}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-{{/if}} --}}
 
 {{#if success}}
-<div class="alert alert-success text-center" style="margin:0;" > <i class="ti-user"></i> {{success}}
+<div class="alert alert-success text-center" style="margin: 0; width: 40%; position:absolute; top:2%; left:50%; margin-right:50%; transform: translate(-50%, -50%);"> <i class="ti-user"></i> {{success}}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span>
     </button>
 </div>
-{{/if}}
-
-{{#if error}}
-<div class="alert alert-danger text-center" style="margin:0;" > <i class="ti-user"></i> {{error}}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-{{/if}}
-
-{{#if login}}
-<div class="alert alert-warning text-center" style="margin:0;" > <i class="ti-user"></i> {{login}}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-{{/if}}
-
-{{#if sendcode}}
-    <div class="jq-toast-wrap" style="position: absolute;left: 30%; right30%; top: 44px;padding: 2px; text-align:center;">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{sendcode}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
-{{/if}}
-
-{{#if errorsendcode}}
-<div class="alert alert-danger" style="margin:0;"> <i class="ti-user"></i> {{errorsendcode}}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-{{/if}} 
-
-{{#if verifycode}}
-    <div class="jq-toast-wrap" style="position: absolute;left: 72%;top: 45px;padding: 2px;">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{verifycode}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
-{{/if}}
-
-
-{{#if verifypass}}
-    <div class="jq-toast-wrap" style="position: absolute;left: 72%;top: 75px;padding: 2px;">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{verifypass}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
-{{/if}}
-
-
-{{#if errorverifycode}}
-    <div class="jq-toast-wrap" style="position: absolute; left: 30%; right:30%; text-align:center; top: 45px;padding: 2px;">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{errorverifycode}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
-{{/if}}
-
-
-{{#if newpassword}}
-    <div class="jq-toast-wrap" style="position: absolute;left: 77%;top: 43px;padding: 2px;">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{newpassword}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
 {{/if}}

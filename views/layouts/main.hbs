@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <!-- Favicon icon -->
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/logo-light-icon.png">
   <title>SAT-PDDH</title>
   <link rel="canonical" href="https://www.wrappixel.com/templates/adminwrap/" />
   <link href="/assets/node_modules/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -53,9 +53,7 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-
 <body class="card-no-border">
-
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
@@ -68,11 +66,8 @@
   <!-- ============================================================== -->
   <!-- Main wrapper - style you can find in pages.scss -->
   <!-- ============================================================== -->
-
   <div id="main-wrapper">
-
     {{#if user.id_usuario}}
-
     <!-- ============================================================== -->
     <!-- Topbar header - style you can find in pages.scss -->
     <!-- ============================================================== -->
@@ -80,8 +75,6 @@
     <!-- ============================================================== -->
     <!-- End Topbar header -->
     <!-- ============================================================== -->
-
-
     <!-- ============================================================== -->
     <!-- Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
@@ -89,16 +82,16 @@
     <!-- ============================================================== -->
     <!-- End Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
-
     <!-- ============================================================== -->
     <!-- Page wrapper Page-content -->
     <!-- ============================================================== -->
     <div class="page-wrapper">
       <div class="container-fluid">
-        {{>alertas}}
+        <div class="containt-alert" style="margin-bottom: 10px; padding-top: 25px; position;relative">
+          {{>alertas}}
+        </div>
         {{{body}}}
       </div>
-
       <!-- ============================================================== -->
       <!-- footer -->
       <!-- ============================================================== -->
@@ -106,7 +99,6 @@
       <!-- ============================================================== -->
       <!-- End footer -->
       <!-- ============================================================== -->
-
     </div>
     {{else}}
     {{>alertas}}
@@ -115,16 +107,13 @@
     <!-- ============================================================== -->
     <!-- End Page wrapper  -->
     <!-- ============================================================== -->
-
   </div>
   <!-- ============================================================== -->
   <!-- End Wrapper -->
   <!-- ============================================================== -->
-
   <!-- ============================================================== -->
   <!-- All Jquery -->
   <!-- ============================================================== -->
-
   <script src="/assets/node_modules/jquery/jquery.min.js"></script>
   <!-- Bootstrap popper Core JavaScript -->
   <script src="/assets/node_modules/bootstrap/js/popper.min.js"></script>
@@ -137,7 +126,6 @@
   <script src="/js/sidebarmenu.js"></script>
   <!--Custom JavaScript -->
   <script src="/js/custom.min.js"></script>
-
   <!-- ============================================================== -->
   <!-- This page plugins -->
   <!-- ============================================================== -->
@@ -194,5 +182,4 @@
   <!-- ============================================================== -->
   <script src="/assets/node_modules/styleswitcher/jQuery.style.switcher.js"></script>
 </body>
-
 </html>

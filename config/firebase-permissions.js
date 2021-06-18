@@ -4,9 +4,11 @@ require("firebase/auth");
 
 var serviceAccount = require('./pddh-sat-firebase-adminsdk-10sjw-664b8bd688.json');
 
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
+
 
 
 const firebaseConfig = {
@@ -19,7 +21,11 @@ const firebaseConfig = {
   measurementId: "G-9LY8W9CM20"
   };
 
+
+
 firebase.initializeApp(firebaseConfig);
+
+
 
 const auth = firebase.auth();
 module.exports = {

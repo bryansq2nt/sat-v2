@@ -22,7 +22,7 @@
                                 <div class="form-group">
                                     <h5>Temas</h5>
                                     <div class="controls">
-                                        <select id="id_tema" name="id_tema" class="form-control" required
+                                        <select id="id_tema" name="id_tema" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="">No seleccionado</option>
                                             {{#each topic}}
@@ -36,12 +36,9 @@
                                 <div class="form-group">
                                     <h5>SubTemas</h5>
                                     <div class="controls">
-                                        <select name="id_subtema" id="id_subtema" class="form-control" required
+                                        <select name="id_subtema" id="id_subtema" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="">Seleccionar un tema</option>
-                                            {{!-- {{#each subtopic}}
-                                            <option value="{{id_subtema}}">{{nombre_subtema}}</option>
-                                            {{/each}} --}}
                                         </select>
                                     </div>
                                 </div>
@@ -50,12 +47,9 @@
                                 <div class="form-group">
                                     <h5>Situaci&oacute;n Conflictiva</h5>
                                     <div class="controls">
-                                        <select id="id_situacion_conflictiva" name="id_situacion_conflictiva" class="form-control" required
+                                        <select id="id_situacion_conflictiva" name="id_situacion_conflictiva" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="">Seleccionar un sub-tema</option>
-                                            {{!-- {{#each conflictSituation}}
-                                            <option value="{{id_situacion_conflictiva}}">{{nombre_sit_conflictiva}}</option>
-                                            {{/each}} --}}
                                         </select>
                                     </div>
                                 </div>
@@ -64,7 +58,7 @@
                                 <div class="form-group">
                                     <h5>Estado</h5>
                                     <div class="controls">
-                                        <select name="estado" id="select" class="form-control" required
+                                        <select name="estado" id="estado_cr" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="1">Activo</option>
                                             <option value="0">Inactivo</option>

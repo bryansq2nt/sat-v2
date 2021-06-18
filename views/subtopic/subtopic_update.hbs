@@ -22,7 +22,7 @@
                                 <div class="form-group">
                                     <h5>Temas</h5>
                                     <div class="controls">
-                                        <select name="id_tema" id="select" class="form-control" required
+                                        <select name="id_tema" id="id_tema" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="{{subtopic.id_tema}}">{{subtopic.nombre_tema}}</option>
                                             {{#each topic}}
@@ -36,7 +36,7 @@
                                 <div class="form-group">
                                     <h5>Estado</h5>
                                     <div class="controls">
-                                        <select name="estado" id="select" class="form-control" required
+                                        <select name="estado" id="estado_subtema" class="select2 form-control" required
                                             data-validation-required-message="Este campo es obligatorio">
                                             <option value="1">Activo</option>
                                             <option value="0">Inactivo</option>
