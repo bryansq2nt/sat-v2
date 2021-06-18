@@ -18,9 +18,6 @@ const cors = require('cors');
 const dotenv = require('dotenv').config();
 
 
-//require('./config/cron');
-
-
 require('module-alias/register');
 
 app.use(cors());
@@ -51,15 +48,6 @@ app.use((req, res, next) => {
     app.locals.success = req.flash('success');
     app.locals.warning = req.flash('warning');
     app.locals.delete = req.flash('delete');
-    app.locals.login = req.flash('login');
-    app.locals.sendcode = req.flash('sendcode');
-    app.locals.errorsendcode = req.flash('errorsendcode');
-    app.locals.verifycode = req.flash('verifycode');
-    app.locals.errorverifycode = req.flash('errorverifycode');
-    app.locals.verifypass = req.flash('verifypass');
-    app.locals.newpassword = req.flash('newpassword');
-    app.locals.error = req.flash('errorlogin');
-    app.locals.error = req.flash('error');
     next();
 });
 

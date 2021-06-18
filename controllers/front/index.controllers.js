@@ -28,6 +28,7 @@ let viewIndex = async(req, res) => {
         let unit_administrative = await db.query(`SELECT COUNT(id_unidad_administrativa) AS unidad_admin
         FROM sat_unidad_administrativa`);
         unit_administrative = unit_administrative.rows[0].unidad_admin;
+    
 
         var year = new Date().getFullYear();
         return res.render('home/home',{user: req.user, year, alertsTotal, totalCrisisAtention, expedients, imminentActions, usuarios, unit_administrative});
