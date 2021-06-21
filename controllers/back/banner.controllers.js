@@ -18,7 +18,7 @@ let bannerList = async(req, res) =>{
             }
         });   
     } catch (error) {
-        log('src/controllers/front', 'banner', 'bannerList', error, false, req, res);
+        return res.status(500).json(errorResponse.toJson());
     }
 };
 

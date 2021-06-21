@@ -35,7 +35,6 @@ let crisisAlertsList = async (req, res) => {
       }
     });
   } catch (error) {
-    log('src/controllers/back', 'crisis-alert', 'crisisAlertsList', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 };
@@ -832,7 +831,6 @@ let getById = async (req, res) => {
     })
 
   } catch (error) {
-    log('src/controllers/back', 'crisis-alert', 'getCrisisAlertsForm', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -889,7 +887,7 @@ let createCrisisAlert = async (req, res) => {
 
 
   } catch (error) {
-    log('src/controllers/back', 'crisis-alert', 'createCrisisAlert', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
   }
 
 };
@@ -938,7 +936,7 @@ let updateCrisisAlert = async (req, res) => {
         }
       });
   } catch (error) {
-    log('src/controllers/back', 'crisis-alert', 'updateCrisisAlert', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
   }
 
 };
@@ -1009,7 +1007,6 @@ let getFormToAnalyze = async (req, res) => {
     });
 
   } catch (error) {
-    log('src/controllers/back', 'crisis-alert', 'getAnalyzedForm', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -1040,7 +1037,7 @@ let analyzeCrisisAlert = async (req, res) => {
         //--- Envio de correo electronico
 
         var mailOptions = {
-          from: 'sistemalertpddh2021@gmail.com',
+          from: 'UNIDAD INFORMATICA <correo@nextdeployed.com>',
           to: correo_principal,
           subject: 'ANÁLISIS DE CRISIS ',
           text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia sit facere. In doloribus nemo, voluptas natus velit, qui magnam assumenda, tempore eos obcaecati provident? Praesentium, doloribus sint.`
@@ -1054,13 +1051,10 @@ let analyzeCrisisAlert = async (req, res) => {
             console.log('Email sent: ' + info.response);
           }
         });
-
-
         return res.status(200).json({ CrisisAlert });
       }
     });
   } catch (error) {
-    log('src/controllers/back', 'crisi-alert', 'analyzeCrisisAlert', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -1085,7 +1079,6 @@ let searchCrisisAlert = async (req, res) => {
     });
 
   } catch (e) {
-    log('src/controllers/back', 'crisis-alert', 'searchCrisisAlert', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 

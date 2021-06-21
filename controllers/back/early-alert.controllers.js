@@ -32,98 +32,9 @@ let earlyAlertsList = async (req, res) => {
       }
     });
   } catch (error) {
-    log('src/controllers/back', 'earlt-alert', 'earlyAlertsList', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 };
-
-/*let createEarlyAlert = async (req, res) => {
-  const {
-    id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
-    fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
-    fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
-    pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
-    nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
-    contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
-    contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-    fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
-    descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
-    id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
-    id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
-    proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
-    id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-    presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
-
-
-
-  var cod_usu = req.user.user_id;
-
-  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
-
- 
-  try {
-
-    var cantidad_aproximada = 0;
-    cantidad_aproximada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres, 
-    poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor;
-
-
-    var pais = await db.query(`SELECT id_pais FROM public.admi_pais WHERE codigo = 'SV'`);
-    pais = pais.rows[0].id_pais;
-  
-    await db.query(`INSERT INTO sat_alerta_temprana(
-      id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
-    fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
-    fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
-    pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
-    nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
-    contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
-    contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-    fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
-    descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
-    id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
-    id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
-    proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
-    id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-    presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu_ing )
-            VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, 
-                    $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, 
-                    $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, 
-                    $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $82, $83, $84,
-                    $85)`,
-      [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
-        fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
-        fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
-        pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
-        nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
-        contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
-        contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-        fecha_hechos, fecha_futura_hechos, fecha_reporte, pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
-        descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
-        id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
-        id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
-        proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
-        id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-        presencia_fuerza_publica, intervencion_fuerza_publica , cod_usu], (err, results) => {
-          if (err) {
-            console.log(err);
-            errorResponse.detail = err.message;
-            return res.status(500).json(errorResponse.toJson());
-          } else {
-
-            var earlyAlerts = results.rows[0];
-            return res.status(201).json({
-              earlyAlerts
-            });
-          }
-        });
-  } catch (error) {
-    log('src/controllers/front', 'actions-pddh', 'createConflictPhase', error, false, req, res);
-  }
-};*/
 
 let getById = async (req, res) => {
   const { id_alerta_temprana } = req.params;
@@ -973,7 +884,7 @@ let getById = async (req, res) => {
     })
 
   } catch (error) {
-    log('src/controllers/back', 'early-alert', 'getById', error, false, req, res);
+    return res.status(500).json(errorResponse.toJson());
   }
 };
 
@@ -1057,7 +968,7 @@ let updateEarlyAlert = async (req, res) => {
     });
 
   } catch (error) {
-    log('src/controllers/back', 'early-alert', 'updateEarlyAlert', error, false, req, res);
+    return res.status(500).json(errorResponse.toJson());
   }
 
 };
@@ -1824,7 +1735,7 @@ let getEarlyAlertForm = async (req, res) => {
     })
 
   } catch (error) {
-    log('src/controllers/back', 'early-alert', 'geEarlyAlertList', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
   }
 
 
@@ -1920,7 +1831,6 @@ let getFormToAnalyze = async (req,res) => {
     });
 
   } catch (error) {
-    log('src/controllers/back', 'earlt-alert', 'getAnalyzedForm', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -1949,9 +1859,9 @@ let analyzeEarlyAlert = async (req,res) => {
         var earlyAlert = results.rows[0];
 
         var mailOptions = {
-          from: 'sistemalertpddh2021@gmail.com',
+          from: 'UNIDAD INFORMATICA <correo@nextdeployed.com>',
           to: correo_principal,
-          subject: 'ANÁLISIS DE ALERTA',
+          subject: 'ANÁLISIS DE CRISIS ',
           text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia sit facere. In doloribus nemo, voluptas natus velit, qui magnam assumenda, tempore eos obcaecati provident? Praesentium, doloribus sint.`
         };
 
@@ -1969,7 +1879,6 @@ let analyzeEarlyAlert = async (req,res) => {
       }
     });
   } catch (error) {
-    log('src/controllers/back', 'earlt-alert', 'analyzeEarlyAlert', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -1994,7 +1903,6 @@ let searchEarlyAlert = async (req,res) => {
     });
 
   } catch (e){
-    log('src/controllers/back', 'earlt-alert', 'searchEarlyAlert', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -2150,7 +2058,7 @@ let createEarlyAlert = async (req, res) => {
           }
         });
   } catch (error) {
-    log('src/controllers/front', 'actions-pddh', 'createConflictPhase', error, false, req, res);
+    return res.status(500).json(errorResponse.toJson());
   }
 };
 
