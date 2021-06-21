@@ -2,19 +2,7 @@ const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
-const nodemailer = require('nodemailer');
-
-
-nodemailer.createTransport({
-  host: "mail.nextdeployed.com",
-  port: 465,
-  secure: false, // upgrade later with STARTTLS
-  auth: {
-    user: "correo@nextdeployed.com",
-    pass: "NextServices2021#"
-  }
-});
-
+const sendemail = require('@lib/emails');
 
 let crisisAlertsList = async (req, res) => {
   const { offset } = req.query;
@@ -1035,22 +1023,13 @@ let analyzeCrisisAlert = async (req, res) => {
         var CrisisAlert = results.rows[0];
 
         //--- Envio de correo electronico
-
-        var mailOptions = {
-          from: 'UNIDAD INFORMATICA <correo@nextdeployed.com>',
-          to: correo_principal,
-          subject: 'ANÁLISIS DE CRISIS ',
-          text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia sit facere. In doloribus nemo, voluptas natus velit, qui magnam assumenda, tempore eos obcaecati provident? Praesentium, doloribus sint.`
-        };
-
-
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-          }
+          sendemail('correo@nextdeployed.com', correo_principal, 'ANÁLISIS DE CRISIS', `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia`).then((result) => {
+          console.log(result);
+          console.log("correo enviado.");
+        }, function (error) {
+          console.log(error.stack);
         });
+
         return res.status(200).json({ CrisisAlert });
       }
     });
