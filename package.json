@@ -1,7 +1,7 @@
 {
   "name": "pddh-sat",
   "version": "1.0.1",
-  "description": "Booking app",
+  "description": "Insert data",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
