@@ -1134,7 +1134,7 @@ let getEarlyAlertForm = async (req, res) => {
       dependent_answer: 1,
       section_title: "Prensa escrita",
       questions: [
-        {
+          {
           question_id: "titulo_noticia",
           question_type: "open",
           question: "Titulo de la noticia"
