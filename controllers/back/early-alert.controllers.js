@@ -4,11 +4,13 @@ const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
 const nodemailer = require('nodemailer');
 
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
+nodemailer.createTransport({
+  host: "mail.nextdeployed.com",
+  port: 465,
+  secure: false, // upgrade later with STARTTLS
   auth: {
-    user: 'sistemalertpddh2021@gmail.com',
-    pass: '$Pddh2021'
+    user: "correo@nextdeployed.com",
+    pass: "NextServices2021#"
   }
 });
 

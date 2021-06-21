@@ -5,11 +5,13 @@ const dateFormat = require('dateformat');
 const nodemailer = require('nodemailer');
 
 
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
+nodemailer.createTransport({
+  host: "mail.nextdeployed.com",
+  port: 465,
+  secure: false, // upgrade later with STARTTLS
   auth: {
-    user: 'sistemalertpddh2021@gmail.com',
-    pass: '$Pddh2021'
+    user: "correo@nextdeployed.com",
+    pass: "NextServices2021#"
   }
 });
 
@@ -592,7 +594,7 @@ let getById = async (req, res) => {
           question_type: "closed",
           question: "Edad aproximada",
           answers: age,
-          answer: crisisAttention.edad
+          answer: Number.parseInt(crisisAttention.edad)
         },
         {
           question_id: "id_sexo_solicitante",
@@ -618,7 +620,6 @@ let getById = async (req, res) => {
         {
           question_id: "id_ocupacion",
           question_type: "closed_searchable",
-          required: 1,
           question: "Ocupación",
           answers: occupation,
           answer: occupation_answer
