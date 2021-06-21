@@ -2,7 +2,6 @@ const db = require('@config/db');
 const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const md5 = require('md5');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 

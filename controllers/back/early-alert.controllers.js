@@ -1848,6 +1848,10 @@ let getFormToAnalyze = async (req,res) => {
     var acciones_pddh = await db.query('SELECT id_accion_pddh::integer AS answer_id, nombre_accion AS answer FROM sat_accion_pddh WHERE estado = 1');
     acciones_pddh = acciones_pddh.rows;
 
+    var administrative_unit = await db.query(`SELECT id_unidad_administrativa:: integer AS answer_id, nombre_unidad AS answer
+    FROM sat_unidad_administrativa WHERE estado = 1`);
+    administrative_unit = administrative_unit.rows;
+
 
     var section = {
       section_id: 0,
@@ -1886,7 +1890,7 @@ let getFormToAnalyze = async (req,res) => {
           question_id: "notificar",
           question_type: "closed",
           question: "Notificar a:",
-          answers: [],
+          answers: administrative_unit,
           answer: Number.parseInt(earlyAlert.notificar)
         },
         {
@@ -1930,7 +1934,7 @@ let analyzeEarlyAlert = async (req,res) => {
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar analizar la Alerta.", instance: "early-alert/analyzeEarlyAlert" });
 
     let administrativUnit = await db.query(`SELECT nombre_unidad, correo_prinicipal, correo_secundario
-    FROM sat_unidad_administrativa WHERE id_unidad_administrativa = $1`, [notificar ]);
+    FROM sat_unidad_administrativa WHERE id_unidad_administrativa = $1`, [notificar]);
     administrativUnit = administrativUnit.rows[0];
 
     var correo_principal = administrativUnit.correo_prinicipal;

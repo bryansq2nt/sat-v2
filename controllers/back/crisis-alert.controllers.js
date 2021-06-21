@@ -57,7 +57,8 @@ let getCrisisAlertsForm = async (req, res) => {
     var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
     personalDocuments = personalDocuments.rows;
 
-    var age = [];
+    var age = await db.query(`SELECT id_grp_etario::integer AS answer_id, descripcion AS answer FROM admi_grp_etario WHERE estado = 'A' ORDER BY id_grp_etario ASC`);
+    age = age.rows;
 
     var sex = await db.query('SELECT id_sexo::integer AS answer_id, nombre_sexo AS answer FROM sat_sexo WHERE estado = 1 ORDER BY id_sexo ASC');
     sex = sex.rows;
