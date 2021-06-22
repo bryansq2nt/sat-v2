@@ -685,7 +685,7 @@ let getById = async (req, res) => {
     }
 
     //Poblacion Determinada
-    /*var numberPopulationDetermined = {
+    var numberPopulationDetermined = {
       section_id: 14,
       section_title: "Población indeterminada",
       questions: [
@@ -696,7 +696,7 @@ let getById = async (req, res) => {
           answer: early_alert.cantidad_aproximada
         }
       ]
-    }*/
+    }
 
     //Valoracion de Fase de Conflicto
     var conflictPhaseAssessment = {
@@ -862,7 +862,7 @@ let getById = async (req, res) => {
       questions: array_questions
     }
     sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
-      governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,
+      governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,numberPopulationDetermined,
       conflictPhaseAssessment);
     //1
     var formEarlyAlert = {
@@ -893,7 +893,7 @@ let updateEarlyAlert = async (req, res) => {
     descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
     id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
     id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, id_acciones_hecho, 
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor,cantidad_aproximada, id_acciones_hecho, 
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
@@ -908,9 +908,8 @@ let updateEarlyAlert = async (req, res) => {
 
   try {
 
-    var cantidad_aproximada = 0;
-    cantidad_aproximada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres, 
-    poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor;
+    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
+
 
 
     var pais = await db.query(`SELECT id_pais FROM public.admi_pais WHERE codigo = 'SV'`);
@@ -931,8 +930,8 @@ let updateEarlyAlert = async (req, res) => {
     adolecentes_hombres=$65, poblacion_hombres=$66, poblacion_mujeres=$67, poblacion_hombre_mayor=$68, poblacion_mujer_mayor=$69, cantidad_aproximada=$70, 
     id_acciones_hecho=$71, proteccion_vigente=$72, hubo_agresion=$73, id_tipo_agresion=$74, dialogo_conflicto=$75, medida_conflicto=$76, dialogo_roto_conflicto=$77, 
     crisis_conflicto=$78, id_acciones_hecho_anterior=$79, resolucion_conflicto=$80, id_situacion_conflicto=$81, cant_persona_involucrada=$82, presencia_fuerza_publica=$83, 
-    intervencion_fuerza_publica=$84, fecha_mod_reg=$85, cod_usu_mod=$86
-    WHERE id_alerta_temprana = $87`, 
+    intervencion_fuerza_publica=$84, fecha_mod_reg=$85, cod_usu_mod=$86, cantidad_poblacion_afectada = $87
+    WHERE id_alerta_temprana = $88`, 
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
       fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
       fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
@@ -947,7 +946,7 @@ let updateEarlyAlert = async (req, res) => {
       poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
       proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
       id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-      presencia_fuerza_publica, intervencion_fuerza_publica, fecha_mod_reg, cod_usu_mod, id_alerta_temprana], (err, results) => {
+      presencia_fuerza_publica, intervencion_fuerza_publica, fecha_mod_reg, cod_usu_mod, cantidad_poblacion_afectada, id_alerta_temprana], (err, results) => {
       if (err) {
         console.log(err);
         errorResponse.detail = err.message;
@@ -1891,12 +1890,12 @@ let createEarlyAlert = async (req, res) => {
     descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
     id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
     id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, id_acciones_hecho,
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor,cantidad_aproximada, id_acciones_hecho,
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
-    var cantidad_aproximada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor;
+    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
 
   var cod_usu = req.user.user_id;
 
@@ -1919,7 +1918,7 @@ let createEarlyAlert = async (req, res) => {
     descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
     id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
     id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada,cantidad_poblacion_afectada, id_acciones_hecho, 
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu_ing )
@@ -1927,7 +1926,7 @@ let createEarlyAlert = async (req, res) => {
                     $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, 
                     $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, 
                     $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $82, $83, $84,
-                    $85) RETURNING *`,
+                    $85, $86) RETURNING *`,
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
         fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
         fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
@@ -1939,7 +1938,7 @@ let createEarlyAlert = async (req, res) => {
         descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
         id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
         id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
-        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho,
+        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada,cantidad_poblacion_afectada, id_acciones_hecho,
         proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
         id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
         presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu], async(err, results) => {
@@ -1951,6 +1950,7 @@ let createEarlyAlert = async (req, res) => {
 
             var earlyAlerts = results.rows[0];
 
+            var clasificada = false;
 
             //Obtener Alerta temprana latente
             let lantenteEarlyAlert = await db.query(`SELECT id_alerta_temprana 
@@ -1959,66 +1959,101 @@ let createEarlyAlert = async (req, res) => {
   
 
             //Obtener alerta temprana escalada 
-            let escaladaEarlyAlert = await db.query(`SELECT id_alerta_temprana 
-            from sat_alerta_temprana where ((id_criterio =56 and cantidad_poblacion_afectada>15) or id_criterio =57 or id_criterio =62 or id_criterio =65 or (id_criterio =44 and proteccion_vigente='false') or (id_criterio =35 and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>12 and cantidad<20) or (id_criterio =4 and id_temporalidad='2') or (id_criterio =34 and presencia_fuerza_publica='true')  or (id_criterio =18 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =20 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =13 and presencia_fuerza_publica='true') or (id_criterio =16 and presencia_fuerza_publica='true') or (id_criterio =37 and presencia_fuerza_publica='true') or id_criterio =11  or id_criterio =68  or (id_criterio =76 and cantidad_poblacion_afectada<16)  or id_criterio =78 or id_criterio =50 or (id_criterio =51 and presencia_fuerza_publica='true') or id_criterio =53 or (id_criterio =54 and presencia_fuerza_publica='true') or id_criterio =22 or id_criterio =23 or (id_criterio =25 and presencia_fuerza_publica='true') or (id_criterio =31 and cantidad_poblacion_afectada>10 and cantidad_poblacion_afectada<15) or id_criterio =72 or (id_criterio =74 and  cantidad_poblacion_afectada>75 and cantidad_poblacion_afectada<161) or id_criterio =46) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
-            escaladaEarlyAlert = escaladaEarlyAlert.rows[0];
+            let escaladaEarlyAlert;
+
+            if(lantenteEarlyAlert == undefined){
+              escaladaEarlyAlert =  await db.query(`SELECT id_alerta_temprana 
+              from sat_alerta_temprana where ((id_criterio =56 and cantidad_poblacion_afectada>15) or id_criterio =57 or id_criterio =62 or id_criterio =65 or (id_criterio =44 and proteccion_vigente='false') or (id_criterio =35 and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>12 and cantidad<20) or (id_criterio =4 and id_temporalidad='2') or (id_criterio =34 and presencia_fuerza_publica='true')  or (id_criterio =18 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =20 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =13 and presencia_fuerza_publica='true') or (id_criterio =16 and presencia_fuerza_publica='true') or (id_criterio =37 and presencia_fuerza_publica='true') or id_criterio =11  or id_criterio =68  or (id_criterio =76 and cantidad_poblacion_afectada<16)  or id_criterio =78 or id_criterio =50 or (id_criterio =51 and presencia_fuerza_publica='true') or id_criterio =53 or (id_criterio =54 and presencia_fuerza_publica='true') or id_criterio =22 or id_criterio =23 or (id_criterio =25 and presencia_fuerza_publica='true') or (id_criterio =31 and cantidad_poblacion_afectada>10 and cantidad_poblacion_afectada<15) or id_criterio =72 or (id_criterio =74 and  cantidad_poblacion_afectada>75 and cantidad_poblacion_afectada<161) or id_criterio =46) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
+              escaladaEarlyAlert = escaladaEarlyAlert.rows[0];
+            }
 
 
             //Obtenet alerta vigente
-            let vigenteAlert = await db.query(`SELECT id_alerta_temprana 
-            from sat_alerta_temprana where (id_criterio=63  or (id_criterio =66 and cantidad_poblacion_afectada>50) or (id_criterio =35 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>20) or (id_criterio =4 and id_temporalidad='2' and cantidad=2)  or (id_criterio =34 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =18 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =20 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =16 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')   or (id_criterio =37 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =76 and cantidad_poblacion_afectada>16)  or (id_criterio =51 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =78 or (id_criterio =54 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =25 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =33 or (id_criterio =74 and cantidad_poblacion_afectada>160)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
-            vigenteAlert = vigenteAlert.rows[0];
+
+            let vigenteAlert;
+            if(lantenteEarlyAlert == undefined && escaladaEarlyAlert == undefined){
+              vigenteAlert = await db.query(`SELECT id_alerta_temprana 
+              from sat_alerta_temprana where (id_criterio=63  or (id_criterio =66 and cantidad_poblacion_afectada>50) or (id_criterio =35 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>20) or (id_criterio =4 and id_temporalidad='2' and cantidad=2)  or (id_criterio =34 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =18 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =20 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =16 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')   or (id_criterio =37 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =76 and cantidad_poblacion_afectada>16)  or (id_criterio =51 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =78 or (id_criterio =54 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =25 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =33 or (id_criterio =74 and cantidad_poblacion_afectada>160)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
+              vigenteAlert = vigenteAlert.rows[0];
+            }
 
 
             //Obtener alerta continua, 
-            let continuaAlert = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where ((id_criterio = 35 and cant_persona_involucrada='true') or (id_criterio = 34 and cant_persona_involucrada='true') or (id_criterio = 18 and cant_persona_involucrada='true' and presencia_fuerza_publica='true' and crisis_conflicto='true')  or (id_criterio = 13 and cant_persona_involucrada='true')  or (id_criterio = 16 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 37 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio =76 and cantidad_poblacion_afectada<17) or (id_criterio = 51 and cant_persona_involucrada='true' and presencia_fuerza_publica='true')  or (id_criterio = 54 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 76 and cantidad_poblacion_afectada<161)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
-            continuaAlert = continuaAlert.rows[0];
+            let continuaAlert;
+
+            if(lantenteEarlyAlert == undefined && escaladaEarlyAlert == undefined && vigenteAlert == undefined){
+              continuaAlert = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where ((id_criterio = 35 and cant_persona_involucrada='true') or (id_criterio = 34 and cant_persona_involucrada='true') or (id_criterio = 18 and cant_persona_involucrada='true' and presencia_fuerza_publica='true' and crisis_conflicto='true')  or (id_criterio = 13 and cant_persona_involucrada='true')  or (id_criterio = 16 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 37 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio =76 and cantidad_poblacion_afectada<17) or (id_criterio = 51 and cant_persona_involucrada='true' and presencia_fuerza_publica='true')  or (id_criterio = 54 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 76 and cantidad_poblacion_afectada<161)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
+              continuaAlert = continuaAlert.rows[0];
+            }
 
 
             //Clasificar alerta temprana latente
             if (lantenteEarlyAlert != undefined) {
-              await db.query(`UPDATE public.sat_alerta_temprana SET id_fase_conflicto='1', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [lantenteEarlyAlert.id_alerta_temprana]);
+              db.query(`UPDATE public.sat_alerta_temprana SET id_fase_conflicto='1', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [lantenteEarlyAlert.id_alerta_temprana]);
+              clasificada = true;
             }
 
             //Clasificar alerta temprana escalada
-            if (escaladaEarlyAlert != undefined) {
-              await db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='2', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [escaladaEarlyAlert.id_alerta_temprana])
-            } else {
-              let escaladaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and cant_persona_involucrada='false' and presencia_fuerza_publica='true' and intervencion_fuerza_publica='false' and dialogo_roto_conflicto='true' and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
-              escaladaVerificationSecond = escaladaVerificationSecond.rows[0];
+            if (escaladaEarlyAlert != undefined && !clasificada) {
+              db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='2', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [escaladaEarlyAlert.id_alerta_temprana])
+              clasificada = true;
 
-              if (escaladaVerificationSecond != undefined) {
-                await db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='2', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [escaladaVerificationSecond.id_alerta_temprana]);
+            } else {
+              if(!clasificada){
+                let escaladaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and cant_persona_involucrada='false' and presencia_fuerza_publica='true' and intervencion_fuerza_publica='false' and dialogo_roto_conflicto='true' and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
+                escaladaVerificationSecond = escaladaVerificationSecond.rows[0];
+  
+                if (escaladaVerificationSecond != undefined) {
+                  db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='2', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [escaladaVerificationSecond.id_alerta_temprana]);
+                  clasificada = true;
+
+                }
               }
+             
 
             }
 
             //Clasificar alerta vigente
-            if (vigenteAlert != undefined) {
-              await db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='3', id_tipo_alerta='2' WHERE id_alerta_temprana=$1`, [vigenteAlert.id_alerta_temprana]);
+            if (vigenteAlert != undefined && !clasificada) {
+              db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='3', id_tipo_alerta='2' WHERE id_alerta_temprana=$1`, [vigenteAlert.id_alerta_temprana]);
+              clasificada = true;
+
             } else {
 
+             if(!clasificada){
               let vigenteVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='true' and presencia_fuerza_publica='true' and intervencion_fuerza_publica='true' and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
               vigenteVerificationSecond = vigenteVerificationSecond.rows[0];
 
               if (vigenteVerificationSecond != undefined) {
-                await db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='3', id_tipo_alerta='2' WHERE id_alerta_temprana=$1`, [vigenteVerificationSecond.id_alerta_temprana]);
+                db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='3', id_tipo_alerta='2' WHERE id_alerta_temprana=$1`, [vigenteVerificationSecond.id_alerta_temprana]);
+                clasificada = true;
+
               }
+             }
 
             }
 
             //Clasificar alerta continua
-            if (continuaAlert != undefined) {
-              await db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='4', id_tipo_alerta='3' WHERE id_alerta_temprana=$1`, [continuaAlert.id_alerta_temprana]);
+            if (continuaAlert != undefined && !clasificada) {
+              db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='4', id_tipo_alerta='3' WHERE id_alerta_temprana=$1`, [continuaAlert.id_alerta_temprana]);
+              clasificada = true;
+
             } else {
-              let continuaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and presencia_fuerza_publica='false' and intervencion_fuerza_publica='false' and cant_persona_involucrada='true' and (id_situacion_conflicto=2 or id_situacion_conflicto=3 or id_situacion_conflicto=4) and  id_alerta_temprana=$1`,[earlyAlerts.id_alerta_temprana]);
-              continuaVerificationSecond = continuaVerificationSecond.rows[0];
+              if(!clasificada){
+                let continuaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and presencia_fuerza_publica='false' and intervencion_fuerza_publica='false' and cant_persona_involucrada='true' and (id_situacion_conflicto=2 or id_situacion_conflicto=3 or id_situacion_conflicto=4) and  id_alerta_temprana=$1`,[earlyAlerts.id_alerta_temprana]);
+                continuaVerificationSecond = continuaVerificationSecond.rows[0];
+  
+                if (continuaVerificationSecond != undefined) {
+                  db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='4', id_tipo_alerta='3' WHERE id_alerta_temprana=$1`, [continuaVerificationSecond.id_alerta_temprana]);
+                  clasificada = true;
 
-              if (continuaVerificationSecond != undefined) {
-                await db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='4', id_tipo_alerta='3' WHERE id_alerta_temprana=$1`, [continuaVerificationSecond.id_alerta_temprana]);
+                }
               }
-
+              
             }
+
+
+
 
             return res.status(201).json({
               earlyAlerts
@@ -2030,6 +2065,98 @@ let createEarlyAlert = async (req, res) => {
     return res.status(500).json(errorResponse.toJson());
   }
 };
+
+
+let insertStats = (id_departamento,id_municipio,fecha_hecho,fecha_ingreso, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto) => {
+  if(id_criterio == 55){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+      VALUES (1, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+      return;
+  } else if(id_criterio == 56 || id_criterio == 57){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (1, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 61){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (2, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 62 && !intervencion_fuerza_publica ){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (2, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 62 && intervencion_fuerza_publica || id_criterio == 63 && intervencion_fuerza_publica){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (2, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } 
+  else if(id_criterio == 44 && proteccion_vigente ){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (4, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  }  else if(id_criterio == 7 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 6 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 35 && id_temporalidad == 21 && cantidad < 24){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (5, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } 
+  //Nunca se va a cumplir, validar esta verificacion
+  else if(id_criterio == 34 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && ( !crisis_conflicto || fecha_futura_hechos) || id_criterio == 35 && id_temporalidad == 2 && cantidad < 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad < 2){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (5, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  }  else if(id_criterio == 34 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 31 || id_criterio == 35 && id_temporalidad == 2 && cantidad > 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad > 1){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (5, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 34 && cant_persona_involucrada){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (5, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 17 && id_temporalidad == 2 && cantidad > 90){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (6, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 18 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && (!crisis_conflicto && dialogo_roto_conflicto)){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (6, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 18 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica || id_criterio == 20 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (6, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if((id_criterio == 18 || id_criterio == 20) && !hubo_agresion && crisis_conflicto && !presencia_fuerza_publica && (presencia_fuerza_publica && intervencion_fuerza_publica)){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (6, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 14 && id_temporalidad == 2 && cantidad < 60){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (8, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 15 && id_temporalidad == 2 && cantidad < 30){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (8, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 16 && fecha_futura_hechos || (!hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 8 ))){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (8, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 16 && !fecha_futura_hechos && hubo_agresion && presencia_fuerza_publica && id_temporalidad == 2 && cantidad < 8){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (8, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 16 && !fecha_futura_hechos && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad == 2 && cantidad < 8){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (8, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 36){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (9, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 36){
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (9, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  }
+}
 
 
 
