@@ -569,6 +569,7 @@ CREATE TABLE sat_alerta_temprana (
     cant_persona_involucrada BOOLEAN DEFAULT false, 
     presencia_fuerza_publica BOOLEAN DEFAULT false, 
     intervencion_fuerza_publica BOOLEAN DEFAULT false, 
+    cantidad_poblacion_afectada NUMERIC,
     id_fase_conflicto NUMERIC,
     id_tipo_alerta NUMERIC, 
     id_accion_pddh NUMERIC, 

@@ -1895,9 +1895,11 @@ let createEarlyAlert = async (req, res) => {
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
-    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
+    console.log('------------', intervencion_fuerza_publica);
 
-  var cod_usu = req.user.user_id;
+    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
+    var cod_usu = 1
+  //var cod_usu = req.user.user_id;
 
   var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
 
@@ -2053,6 +2055,7 @@ let createEarlyAlert = async (req, res) => {
             }
 
 
+            insertStats(id_departamento,id_municipio,fecha_hechos,fecha_hechos, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto);
 
 
             return res.status(201).json({
@@ -2067,95 +2070,135 @@ let createEarlyAlert = async (req, res) => {
 };
 
 
-let insertStats = (id_departamento,id_municipio,fecha_hecho,fecha_ingreso, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto) => {
+let insertStats = async (id_departamento,id_municipio,fecha_hecho,fecha_ingreso, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto) => {
   if(id_criterio == 55){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    console.log('entro ------ criterio 55');
+   await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
       VALUES (1, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
       return;
   } else if(id_criterio == 56 || id_criterio == 57){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (1, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 61){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (2, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 62 && !intervencion_fuerza_publica ){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    console.log('entro con criterio 62 y verdadero');
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (2, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 62 && intervencion_fuerza_publica || id_criterio == 63 && intervencion_fuerza_publica){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (2, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } 
   else if(id_criterio == 44 && proteccion_vigente ){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (4, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   }  else if(id_criterio == 7 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 6 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 35 && id_temporalidad == 21 && cantidad < 24){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (5, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } 
   //Nunca se va a cumplir, validar esta verificacion
   else if(id_criterio == 34 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && ( !crisis_conflicto || fecha_futura_hechos) || id_criterio == 35 && id_temporalidad == 2 && cantidad < 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad < 2){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (5, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   }  else if(id_criterio == 34 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 31 || id_criterio == 35 && id_temporalidad == 2 && cantidad > 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad > 1){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (5, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 34 && cant_persona_involucrada){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (5, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 17 && id_temporalidad == 2 && cantidad > 90){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (6, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 18 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && (!crisis_conflicto && dialogo_roto_conflicto)){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (6, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 18 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica || id_criterio == 20 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (6, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if((id_criterio == 18 || id_criterio == 20) && !hubo_agresion && crisis_conflicto && !presencia_fuerza_publica && (presencia_fuerza_publica && intervencion_fuerza_publica)){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (6, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 14 && id_temporalidad == 2 && cantidad < 60){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (8, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 15 && id_temporalidad == 2 && cantidad < 30){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (8, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 16 && fecha_futura_hechos || (!hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 8 ))){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (8, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 16 && !fecha_futura_hechos && hubo_agresion && presencia_fuerza_publica && id_temporalidad == 2 && cantidad < 8){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (8, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 16 && !fecha_futura_hechos && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad == 2 && cantidad < 8){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (8, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
   } else if(id_criterio == 36){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
     VALUES (9, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
-  } else if(id_criterio == 36){
-    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (9, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+  } else if(id_criterio == 11 && id_temporalidad == 2 && cantidad < 31){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (9, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
     return;
-  }
+    //*****
+  } else if(id_criterio == 37 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && !crisis_conflicto && dialogo_roto_conflicto && id_temporalidad ==2 && cantidad < 8){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (9, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 37 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad ==2 && cantidad < 8){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (9, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 37 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad==2 && cantidad < 8){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (9, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 68 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 76 && id_temporalidad == 2 && cantidad < 8){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (12, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 76 && cantidad_poblacion_afectada > 1 && cantidad_poblacion_afectada < 16 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 78 && cantidad < 8){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (12, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 76 && id_temporalidad == 2 && cantidad >15 || id_criterio == 78 && cantidad < 8){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (12, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 22 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 21 && id_temporalidad ==2 && cantidad < 30){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (17, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 25 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && !crisis_conflicto){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (17, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  } else if(id_criterio == 46 && id_temporalidad ==2 && cantidad<8 || id_criterio == 47 && id_temporalidad == 2 && cantidad < 16){
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (19, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    return;
+  }        
+
 }
 
 
