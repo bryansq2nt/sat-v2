@@ -1308,6 +1308,7 @@ let getEarlyAlertForm = async (req, res) => {
       questions: [
         {
           question_id: "fecha_hechos",
+          required: 1,
           question_type: "date_time_before",
           question: "Fecha y hora del hecho/Situación/Problema"
         },
@@ -1403,15 +1404,10 @@ let getEarlyAlertForm = async (req, res) => {
           question: "Cantidad"
         },
         {
-          question_id: "id_escenario",
-          question_type: "closed",
-          question: "Escenario",
-          answers: scenario
-        },
-        {
           question_id: "id_tematica_relacionada",
           question_type: "closed_with_child",
           has_child: 1,
+          required: 1,
           principal_child: "id_sub_tematica",
           children: ["id_situacion_conflictiva","id_criterio"],
           question: "Temática",
@@ -1421,6 +1417,7 @@ let getEarlyAlertForm = async (req, res) => {
           question_id: "id_sub_tematica",
           question_type: "closed_with_child",
           has_child: 1,
+          required: 1,
           principal_child: "id_situacion_conflictiva",
           children: ["id_criterio"],
           question: "Sub Temática",
@@ -1430,12 +1427,14 @@ let getEarlyAlertForm = async (req, res) => {
           question_id: "id_situacion_conflictiva",
           question_type: "closed_with_child",
           has_child: 1,
+          required: 1,
           principal_child: "id_criterio",
           question: "Situación conflictiva",
           answers: conflictSituations
         },
         {
           question_id: "id_criterio",
+          required: 1,
           question_type: "closed",
           question: "Criterio",
           answers: criteria
@@ -1555,7 +1554,7 @@ let getEarlyAlertForm = async (req, res) => {
     }
 
     //Poblacion Determinada
-    /*var numberPopulationDetermined = {
+    var numberPopulationDetermined = {
       section_id: 14,
       section_title: "Población indeterminada",
       questions: [
@@ -1566,7 +1565,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "Cantidad aproximada"
         }
       ]
-    }*/
+    }
 
     //Valoracion de Fase de Conflicto
     var conflictPhaseAssessment = {
@@ -1582,19 +1581,16 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "proteccion_vigente",
-          required: 1,
           question_type: "switch",
           question: "¿Existen medidas de protección vigentes? "
         },
         {
           question_id: "hubo_agresion", 
-          required: 1,
           question_type: "switch",
           question: "¿Se ha producido algún tipo de agresión?"
         },
         {
           question_id: "id_tipo_agresion",
-          required: 1,
           dependent: 1,
           dependent_section_id: 15,
           dependent_question_id: "hubo_agresion",
@@ -1605,25 +1601,21 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "dialogo_conflicto",
-          required: 1,
           question_type: "switch",
           question: "¿Existe disposición al diálogo?"
         },
         {
           question_id: "medida_conflicto",
-          required: 1,
           question_type: "switch",
           question: "¿Se ha expresado/anunciado la realización de algún tipo de medida de presión?"
         },
         {
           question_id: "dialogo_roto_conflicto",
-          required: 1,
           question_type: "switch",
           question: "¿Se rompió dialogo?"
         },
         {
           question_id: "crisis_conflicto",
-          required: 1,
           question_type: "switch",
           question: "¿Hubo crisis?"
         },
@@ -1640,7 +1632,6 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "resolucion_conflicto",
-          required: 1,
           question_type: "switch",
           dependent: 1,
           dependent_section_id: 15,
@@ -1650,26 +1641,22 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_situacion_conflicto",
-          required: 1,
           question_type: "closed",
           question: "Situación actual del conflicto",
           answers: conflictSituation
         },
         {
           question_id: "cant_persona_involucrada",
-          required: 1,
           question_type: "switch",
           question: "¿A disminuido la cantidad de personas involucradas?"
         },
         {
           question_id: "presencia_fuerza_publica",
-          required: 1,
           question_type: "switch",
           question: "¿Hubo Presencia de fuerzas públicas"
         },
         {
           question_id: "intervencion_fuerza_publica",
-          required: 1,
           question_type: "switch",
           dependent: 1,
           dependent_section_id: 15,
@@ -1713,7 +1700,7 @@ let getEarlyAlertForm = async (req, res) => {
       questions: array_questions
     }
     sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
-      governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,
+      governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation, numberPopulationDetermined,
       conflictPhaseAssessment);
     //1
     var formEarlyAlert = {
@@ -1850,7 +1837,7 @@ let analyzeEarlyAlert = async (req,res) => {
         var earlyAlert = results.rows[0];
 
         //--- Envio de correo electronico
-          sendemail('correo@nextdeployed.com', correo_principal, 'ANÁLISIS DE CRISIS', `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia`).then((result) => {
+          sendemail('"NOTIFICACIÓN DEL SISTEMA SAT" <correo@nextdeployed.com>', correo_principal, 'ANÁLISIS DE ALERTA', `Por este medio se le notifica que se ha asignado un caso desde el Sistema SAT, el cual se encuentra en la etapa de análisis del cual se considera usted debe tener conocimiento, por lo que puede ingresar al Sistema SAT para mayor detalle. Mensaje Ingresado ${texto_mensaje}`).then((result) => {
           console.log(result);
           console.log("correo enviado.");
         }, function (error) {
@@ -1969,26 +1956,26 @@ let createEarlyAlert = async (req, res) => {
             let lantenteEarlyAlert = await db.query(`SELECT id_alerta_temprana 
             from sat_alerta_temprana where (id_criterio = 1 or id_criterio =55  or (id_criterio =56 and cantidad_poblacion_afectada<15)  or id_criterio =61 or id_criterio =64 or id_criterio =40 or id_criterio =35 or id_criterio =3  or id_criterio =3 or (id_criterio =5 and id_temporalidad='1' and cantidad<13) or id_criterio =6 or id_criterio =7  or id_criterio =7 or id_criterio =17  or id_criterio =12 or id_criterio =14 or id_criterio =9  or id_criterio =36  or id_criterio =67  or id_criterio =75  or id_criterio =76  or id_criterio =49 or id_criterio =52 or id_criterio =21 or id_criterio =30 or id_criterio =71 or (id_criterio =74 and cantidad_poblacion_afectada<76) or id_criterio =26 or id_criterio =45) and id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
             lantenteEarlyAlert = lantenteEarlyAlert.rows[0];
-            console.log('latente',lantenteEarlyAlert);
+  
 
             //Obtener alerta temprana escalada 
             let escaladaEarlyAlert = await db.query(`SELECT id_alerta_temprana 
             from sat_alerta_temprana where ((id_criterio =56 and cantidad_poblacion_afectada>15) or id_criterio =57 or id_criterio =62 or id_criterio =65 or (id_criterio =44 and proteccion_vigente='false') or (id_criterio =35 and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>12 and cantidad<20) or (id_criterio =4 and id_temporalidad='2') or (id_criterio =34 and presencia_fuerza_publica='true')  or (id_criterio =18 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =20 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =13 and presencia_fuerza_publica='true') or (id_criterio =16 and presencia_fuerza_publica='true') or (id_criterio =37 and presencia_fuerza_publica='true') or id_criterio =11  or id_criterio =68  or (id_criterio =76 and cantidad_poblacion_afectada<16)  or id_criterio =78 or id_criterio =50 or (id_criterio =51 and presencia_fuerza_publica='true') or id_criterio =53 or (id_criterio =54 and presencia_fuerza_publica='true') or id_criterio =22 or id_criterio =23 or (id_criterio =25 and presencia_fuerza_publica='true') or (id_criterio =31 and cantidad_poblacion_afectada>10 and cantidad_poblacion_afectada<15) or id_criterio =72 or (id_criterio =74 and  cantidad_poblacion_afectada>75 and cantidad_poblacion_afectada<161) or id_criterio =46) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
             escaladaEarlyAlert = escaladaEarlyAlert.rows[0];
-            console.log('escalada',escaladaEarlyAlert);
+
 
             //Obtenet alerta vigente
             let vigenteAlert = await db.query(`SELECT id_alerta_temprana 
             from sat_alerta_temprana where (id_criterio=63  or (id_criterio =66 and cantidad_poblacion_afectada>50) or (id_criterio =35 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>20) or (id_criterio =4 and id_temporalidad='2' and cantidad=2)  or (id_criterio =34 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =18 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =20 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =16 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')   or (id_criterio =37 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =76 and cantidad_poblacion_afectada>16)  or (id_criterio =51 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =78 or (id_criterio =54 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =25 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =33 or (id_criterio =74 and cantidad_poblacion_afectada>160)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
             vigenteAlert = vigenteAlert.rows[0];
-            console.log('vigente',vigenteAlert);
+
 
             //Obtener alerta continua, 
             let continuaAlert = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where ((id_criterio = 35 and cant_persona_involucrada='true') or (id_criterio = 34 and cant_persona_involucrada='true') or (id_criterio = 18 and cant_persona_involucrada='true' and presencia_fuerza_publica='true' and crisis_conflicto='true')  or (id_criterio = 13 and cant_persona_involucrada='true')  or (id_criterio = 16 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 37 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio =76 and cantidad_poblacion_afectada<17) or (id_criterio = 51 and cant_persona_involucrada='true' and presencia_fuerza_publica='true')  or (id_criterio = 54 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 76 and cantidad_poblacion_afectada<161)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
             continuaAlert = continuaAlert.rows[0];
-            console.log('continua',continuaAlert);
 
-            //Clasificar temprana latente
+
+            //Clasificar alerta temprana latente
             if (lantenteEarlyAlert != undefined) {
               await db.query(`UPDATE public.sat_alerta_temprana SET id_fase_conflicto='1', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [lantenteEarlyAlert.id_alerta_temprana]);
             }

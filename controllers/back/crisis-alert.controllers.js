@@ -96,7 +96,7 @@ let getCrisisAlertsForm = async (req, res) => {
       questions: [
         {
           question_id: "fecha_ingreso",
-          question_type: "date",
+          question_type: "date_before",
           question: "Fecha Ingreso"
         },
         
@@ -164,35 +164,41 @@ let getCrisisAlertsForm = async (req, res) => {
         {
           question_id: "nombre_solicitante",
           question_type: "open",
+          required: 1,
           question: "Nombre"
         },
         {
           question_id: "id_documento_solicitante",
           question_type: "closed",
           question: "Documento de identificación",
+          required: 1,
           answers: personalDocuments
         },
         {
           question_id: "fecha_nacimiento",
           question_type: "date",
+          required: 1,
           question: "Fecha de nacimiento"
         },
         {
           question_id: "edad",
           question_type: "closed",
           question: "Edad aproximada",
+          required: 1,
           answers: age
         },
         {
           question_id: "id_sexo_solicitante",
           question_type: "closed",
           question: "Sexo",
+          required: 1,
           answers: sex
         },
         {
           question_id: "id_genero_solicitante",
           question_type: "closed",
           question: "Género",
+          required: 1,
           answers: gender
         },
         {
@@ -326,6 +332,7 @@ let getCrisisAlertsForm = async (req, res) => {
       questions: [
         {
           question_id: "resumen_hecho",
+          required: 1,
           question_type: "area",
           question: "Resumen de los hechos",
           hint: "Escriba aqui..."
@@ -1023,7 +1030,7 @@ let analyzeCrisisAlert = async (req, res) => {
         var CrisisAlert = results.rows[0];
 
         //--- Envio de correo electronico
-          sendemail('correo@nextdeployed.com', correo_principal, 'ANÁLISIS DE CRISIS', `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint id aliquid officia`).then((result) => {
+          sendemail('"NOTIFICACIÓN DEL SISTEMA SAT" <correo@nextdeployed.com>', correo_principal, 'ANÁLISIS DE CRISIS', `Por este medio se le notifica que se ha asignado un caso desde el Sistema SAT, el cual se encuentra en la etapa de análisis del cual se considera usted debe tener conocimiento, por lo que puede ingresar al Sistema SAT para mayor detalle. Mensaje Ingresado ${texto_mensaje}`).then((result) => {
           console.log(result);
           console.log("correo enviado.");
         }, function (error) {
