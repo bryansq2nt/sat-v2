@@ -13,7 +13,15 @@ let earlyAlertsList = async (req, res) => {
 
     var cod_usu_ing = req.user.user_id;
 
-    await db.query(`SELECT id_alerta_temprana::numeric AS form_id, analizada AS analyzed FROM sat_alerta_temprana WHERE cod_usu_ing = $1 ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2`, [cod_usu_ing,offset], (err, results) => {
+    await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_alerta_temprana 
+      LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
+      WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
+      AND cod_usu_ing = $1 
+      GROUP BY sat_alerta_temprana.id_alerta_temprana
+      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2`, [cod_usu_ing,offset], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -2071,6 +2079,9 @@ let createEarlyAlert = async (req, res) => {
 
 
 let insertStats = async (id_departamento,id_municipio,fecha_hecho,fecha_ingreso, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto) => {
+  
+  
+  
   if(id_criterio == 55){
     console.log('entro ------ criterio 55');
    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
@@ -2202,6 +2213,109 @@ let insertStats = async (id_departamento,id_municipio,fecha_hecho,fecha_ingreso,
 }
 
 
+let getRelatedCases = async (req, res) => {
+  const { id_alerta_temprana } = req.params;
+  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener los casos relacionados", instance: "Early-Alert/getRelatedCases" });
+
+  try {
+
+    await db.query(`SELECT id_alerta_temprana::integer AS form_id,
+    CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed 
+    FROM sat_alerta_temprana 
+    WHERE id_alerta_temprana = ANY(SELECT id_hijo FROM sat_alerta_temprana_relacionados WHERE id_padre = $1)
+    ORDER BY id_alerta_temprana ASC
+    `, [id_alerta_temprana], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var related_cases = results.rows;
+        return res.status(200).json({ related_cases });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+}
+
+let removeRelatedCase = async (req,res) => {
+  const { id_padre, id_hijo } = req.params;
+
+  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar remover el caso relacionado.", instance: "Early-Alert/removeRelatedCase" });
+
+  try {
+
+    await db.query(`DELETE FROM sat_alerta_temprana_relacionados WHERE id_padre = $1 AND id_hijo = $2`, [id_padre, id_hijo ], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        
+        return res.status(200).json();
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+}
+
+let searchForRelatedCase = async (req, res) => {
+  const { delegate } = req.query;
+  const { id_padre } = req.params;
+
+  try {
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "Early-Alert/searchForRelatedCase" });
+
+    await db.query(`SELECT id_alerta_temprana::integer AS form_id, 
+    analizada AS analyzed 
+    FROM sat_alerta_temprana  
+    WHERE NOT EXISTS ( SELECT id_hijo FROM sat_alerta_temprana_relacionados WHERE id_hijo = id_alerta_temprana)
+    AND id_alerta_temprana::TEXT LIKE '${delegate}%'`, [id_padre],
+     (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }
+
+      var earlyAlerts = results.rows;
+      return res.status(200).json({ earlyAlerts });
+
+    });
+
+  } catch (e) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+
+}
+
+let addRelatedCase = async (req,res) => {
+  const { id_padre, id_hijo } = req.params;
+
+  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar agregar el caso relacionado.", instance: "Early-Alert/addRelatedCase" });
+
+  try {
+
+    await db.query(`INSERT INTO sat_alerta_temprana_relacionados (id_padre,id_hijo) VALUES ($1,$2) RETURNING *`, [id_padre, id_hijo ], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+
+        var result = results.rows[0];
+        
+        return res.status(200).json({result});
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+}
 
 module.exports = {
   earlyAlertsList,
@@ -2211,5 +2325,9 @@ module.exports = {
   getEarlyAlertForm,
   getFormToAnalyze,
   analyzeEarlyAlert,
-  searchEarlyAlert
+  searchEarlyAlert,
+  getRelatedCases,
+  removeRelatedCase,
+  searchForRelatedCase,
+  addRelatedCase
 }

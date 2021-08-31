@@ -13,7 +13,15 @@ let crisisAlertsList = async (req, res) => {
 
     var cod_usu_ing = req.user.user_id;
 
-    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE cod_usu_ing = $1 ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset], (err, results) => {
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+    CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed,
+    COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+    FROM sat_atencion_crisis 
+    LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
+    WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
+    AND cod_usu_ing = $1 
+    GROUP BY sat_atencion_crisis.id_atencion_crisis
+    ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -99,7 +107,7 @@ let getCrisisAlertsForm = async (req, res) => {
           question_type: "date_before",
           question: "Fecha Ingreso"
         },
-        
+
         {
           question_id: "via_entrada",
           question_type: "open",
@@ -1030,7 +1038,7 @@ let analyzeCrisisAlert = async (req, res) => {
         var CrisisAlert = results.rows[0];
 
         //--- Envio de correo electronico
-          sendemail('"NOTIFICACIÓN DEL SISTEMA SAT" <correo@nextdeployed.com>', correo_principal, 'ANÁLISIS DE CRISIS', `Por este medio se le notifica que se ha asignado un caso desde el Sistema SAT, el cual se encuentra en la etapa de análisis del cual se considera usted debe tener conocimiento, por lo que puede ingresar al Sistema SAT para mayor detalle. Mensaje Ingresado ${texto_mensaje}`).then((result) => {
+        sendemail('"NOTIFICACIÓN DEL SISTEMA SAT" <correo@nextdeployed.com>', correo_principal, 'ANÁLISIS DE CRISIS', `Por este medio se le notifica que se ha asignado un caso desde el Sistema SAT, el cual se encuentra en la etapa de análisis del cual se considera usted debe tener conocimiento, por lo que puede ingresar al Sistema SAT para mayor detalle. Mensaje Ingresado ${texto_mensaje}`).then((result) => {
           console.log(result);
           console.log("correo enviado.");
         }, function (error) {
@@ -1053,7 +1061,7 @@ let searchCrisisAlert = async (req, res) => {
   try {
     var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "crisis-alert/searchCrisisAlert" });
 
-    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE texto_mensaje ILIKE '%${delegate}%'`, (err, results) => {
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id, analizada AS analyzed FROM sat_atencion_crisis WHERE id_atencion_crisis::TEXT LIKE '${delegate}%'`, (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -1071,6 +1079,110 @@ let searchCrisisAlert = async (req, res) => {
 
 }
 
+let getRelatedCases = async (req, res) => {
+  const { id_atencion_crisis } = req.params;
+  var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener los casos relacionados", instance: "crisis-alert/getRelatedCases" });
+
+  try {
+
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+    CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed 
+    FROM sat_atencion_crisis 
+    WHERE id_atencion_crisis = ANY(SELECT id_hijo FROM sat_atencion_crisis_relacionados WHERE id_padre = $1)
+    ORDER BY id_atencion_crisis ASC
+    `, [id_atencion_crisis], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var related_cases = results.rows;
+        return res.status(200).json({ related_cases });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+}
+
+let removeRelatedCase = async (req,res) => {
+  const { id_padre, id_hijo } = req.params;
+
+  var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar remover el caso relacionado.", instance: "crisis-alert/removeRelatedCase" });
+
+  try {
+
+    await db.query(`DELETE FROM sat_atencion_crisis_relacionados WHERE id_padre = $1 AND id_hijo = $2`, [id_padre, id_hijo ], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        
+        return res.status(200).json();
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+}
+
+let searchForRelatedCase = async (req, res) => {
+  const { delegate } = req.query;
+  const { id_padre } = req.params;
+
+  try {
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "crisis-alert/searchForRelatedCase" });
+
+    await db.query(`SELECT id_atencion_crisis::integer AS form_id, 
+    analizada AS analyzed 
+    FROM sat_atencion_crisis  
+    WHERE NOT EXISTS ( SELECT id_hijo FROM sat_atencion_crisis_relacionados WHERE id_hijo = id_atencion_crisis)
+    AND id_atencion_crisis::TEXT LIKE '${delegate}%'`, [id_padre],
+     (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }
+
+      var crisisAlerts = results.rows;
+      return res.status(200).json({ crisisAlerts });
+
+    });
+
+  } catch (e) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+
+}
+
+let addRelatedCase = async (req,res) => {
+  const { id_padre, id_hijo } = req.params;
+
+  var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar agregar el caso relacionado.", instance: "crisis-alert/addRelatedCase" });
+
+  try {
+
+    await db.query(`INSERT INTO sat_atencion_crisis_relacionados (id_padre,id_hijo) VALUES ($1,$2) RETURNING *`, [id_padre, id_hijo ], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+
+        var result = results.rows[0];
+        
+        return res.status(200).json({result});
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+}
+
 module.exports = {
   getCrisisAlertsForm,
   crisisAlertsList,
@@ -1079,5 +1191,9 @@ module.exports = {
   updateCrisisAlert,
   getFormToAnalyze,
   analyzeCrisisAlert,
-  searchCrisisAlert
+  searchCrisisAlert,
+  getRelatedCases,
+  removeRelatedCase,
+  searchForRelatedCase,
+  addRelatedCase
 }

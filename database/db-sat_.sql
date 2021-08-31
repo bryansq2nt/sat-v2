@@ -641,3 +641,16 @@ CREATE TABLE sat_atencion_crisis(
     CONSTRAINT sat_atencion_crisis_pkey PRIMARY KEY (id_atencion_crisis)
 );
 
+
+CREATE TABLE sat_atencion_crisis_relacionados (
+id_padre NUMERIC NOT NULL,
+id_hijo NUMERIC NOT NULL,
+CONSTRAINT sat_atencion_crisis_relacionados_pkey PRIMARY KEY (id_padre,id_hijo)
+);
+
+CREATE TABLE sat_alerta_temprana_relacionados (
+id_padre NUMERIC NOT NULL,
+id_hijo NUMERIC NOT NULL,
+CONSTRAINT sat_alerta_temprana_relacionados_pkey PRIMARY KEY (id_padre,id_hijo)
+);
+
