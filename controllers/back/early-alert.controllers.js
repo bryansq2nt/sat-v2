@@ -2273,7 +2273,9 @@ let searchForRelatedCase = async (req, res) => {
     analizada AS analyzed 
     FROM sat_alerta_temprana  
     WHERE NOT EXISTS ( SELECT id_hijo FROM sat_alerta_temprana_relacionados WHERE id_hijo = id_alerta_temprana)
-    AND id_alerta_temprana::TEXT LIKE '${delegate}%'`, [id_padre],
+    AND id_alerta_temprana::TEXT LIKE '${delegate}%'
+    ORDER BY id_alerta_temprana ASC
+    `,
      (err, results) => {
       if (err) {
         console.log(err.message);

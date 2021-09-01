@@ -1139,7 +1139,9 @@ let searchForRelatedCase = async (req, res) => {
     analizada AS analyzed 
     FROM sat_atencion_crisis  
     WHERE NOT EXISTS ( SELECT id_hijo FROM sat_atencion_crisis_relacionados WHERE id_hijo = id_atencion_crisis)
-    AND id_atencion_crisis::TEXT LIKE '${delegate}%'`, [id_padre],
+    AND id_atencion_crisis::TEXT LIKE '${delegate}%'
+    ORDER BY id_atencion_crisis ASC
+    `,
      (err, results) => {
       if (err) {
         console.log(err.message);
