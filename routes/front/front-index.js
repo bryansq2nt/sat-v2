@@ -90,4 +90,6 @@ module.exports = (app, passport) => {
     //Heat-Map
     app.use(require('./reports.routes'));
 
+    app.use(require('./early-alert.routes'));
+
 };

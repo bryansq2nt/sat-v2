@@ -481,6 +481,19 @@ CREATE TABLE sat_acciones_hecho(
     CONSTRAINT sat_acciones_hecho_pkey PRIMARY KEY (id_acciones_hecho)
 );
 
+CREATE SEQUENCE seq_sat_estadistica_indicadores_id_est_indicador;
+CREATE TABLE sat_estadistica_indicadores
+(
+    id_est_indicador numeric(7) DEFAULT nextval('seq_sat_estadistica_indicadores_id_est_indicador') NOT NULL,
+    id_indicador numeric(3),
+    id_departamento numeric(2),
+    id_municipio numeric(5),
+    tipo_alerta numeric,
+    fase_conflicto numeric,
+    fecha_hecho date,
+    fecha_ingreso date,
+    CONSTRAINT sat_estadistica_indicadores_pkey PRIMARY KEY (id_est_indicador)
+);
 
 CREATE SEQUENCE seq_sat_alerta_temprana_id_alerta_temprana;
 CREATE TABLE sat_alerta_temprana (
@@ -576,7 +589,9 @@ CREATE TABLE sat_alerta_temprana (
     analisis VARCHAR,
     notificar NUMERIC,
     texto_mensaje TEXT,
-    analizada boolean,
+    analizada BOOLEAN,
+    enviada_analizar BOOLEAN DEFAULT false;
+    alerta_relacionada BOOLEAN DEFAULT false
     fecha_ing_reg TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_mod_reg TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     cod_usu_ing NUMERIC NOT NULL,
@@ -618,7 +633,7 @@ CREATE TABLE sat_atencion_crisis(
     id_poblacion NUMERIC,
     cantidad_aproximada NUMERIC(5),
     sector_poblacion_afectada VARCHAR(50),
-    grupo_vulnerabilidad VARCHAR(250),
+    grupo_vulnerabilidad NUMERIC[],
     nombre_notificacion_medio VARCHAR(150), 
     resumen_hecho TEXT,
     id_calificacion NUMERIC, 
@@ -641,16 +656,15 @@ CREATE TABLE sat_atencion_crisis(
     CONSTRAINT sat_atencion_crisis_pkey PRIMARY KEY (id_atencion_crisis)
 );
 
-
-CREATE TABLE sat_atencion_crisis_relacionados (
-id_padre NUMERIC NOT NULL,
-id_hijo NUMERIC NOT NULL,
-CONSTRAINT sat_atencion_crisis_relacionados_pkey PRIMARY KEY (id_padre,id_hijo)
+CREATE SEQUENCE seq_sat_alertas_relacionadas_id_alerta_relacionada;
+CREATE TABLE sat_alertas_relacionadas(
+    id_alerta_relacionada NUMERIC NOT NULL DEFAULT nextval('seq_sat_alertas_relacionadas_id_alerta_relacionada'),
+    id_alerta_temprana integer NOT NULL,
+    id_alerta_relacionada integer NOT NULL,
+    fecha_ing_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_mod_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cod_usu_ing NUMERIC NOT NULL,
+    cod_usu_mod NUMERIC NOT NULL,
+    estado NUMERIC(2) NOT NULL DEFAULT 1,
+    CONSTRAINT sat_acciones_hecho_pkey PRIMARY KEY (id_acciones_hecho)
 );
-
-CREATE TABLE sat_alerta_temprana_relacionados (
-id_padre NUMERIC NOT NULL,
-id_hijo NUMERIC NOT NULL,
-CONSTRAINT sat_alerta_temprana_relacionados_pkey PRIMARY KEY (id_padre,id_hijo)
-);
-

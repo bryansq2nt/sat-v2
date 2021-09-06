@@ -54,6 +54,12 @@
                         <li><a href="/api-sat/report/heat-map">Mapa de Calor</a></li>
                     </ul>
                 </li>
+                <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="icon-Bell"></i><span
+                            class="hide-menu">Alertas</span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="/api-sat/early-alert/list">Alertas Registradas</a></li>
+                    </ul>
+                </li>
                 <li></li>
                 {{else}}
                 {{#siderbardOptionsAdministracion user.administracion}}
@@ -108,6 +114,15 @@
                 </li>
                 <li></li>
                 {{/siderbardOptionsDashboard}}
+                {{#siderbardOptionsAlert user.alert}}
+                <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="icon-Bell"></i><span
+                            class="hide-menu">Alertas</span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="/api-sat/early-alert/list">Alertas Registradas</a></li>
+                    </ul>
+                </li>
+                <li></li>
+                {{/siderbardOptionsAlert}}
                 {{/isAdmin}}
             </ul>
         </nav>
