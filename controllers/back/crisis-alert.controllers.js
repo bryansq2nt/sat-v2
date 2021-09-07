@@ -14,7 +14,7 @@ let crisisAlertsList = async (req, res) => {
     var cod_usu_ing = req.user.user_id;
 
     await db.query(`SELECT id_atencion_crisis::integer AS form_id,
-    CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed,
+    CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
     COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
     FROM sat_atencion_crisis 
     LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
@@ -1185,6 +1185,34 @@ let addRelatedCase = async (req,res) => {
 
 }
 
+//Enviar a Crisis
+let SendAlerttoAnalyze = async (req, res) =>{
+  
+  const {id_atencion_crisis} = req.params;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar a analizar.", instance: "crisis-alert/SendAlerttoAnalyze" });
+
+    await db.query(`UPDATE sat_atencion_crisis SET enviada_analizar = true 
+    WHERE id_atencion_crisis = $1 RETURNING *`, [id_atencion_crisis], (err, results)=>{
+      if(err){
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+        var crisisAlerts = results.rows[0];
+        return res.status(200).json({
+          crisisAlerts
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
 module.exports = {
   getCrisisAlertsForm,
   crisisAlertsList,
@@ -1197,5 +1225,6 @@ module.exports = {
   getRelatedCases,
   removeRelatedCase,
   searchForRelatedCase,
-  addRelatedCase
+  addRelatedCase,
+  SendAlerttoAnalyze
 }

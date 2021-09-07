@@ -14,7 +14,7 @@ let earlyAlertsList = async (req, res) => {
     var cod_usu_ing = req.user.user_id;
 
     await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
-      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_alerta_temprana 
       LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
@@ -2319,6 +2319,34 @@ let addRelatedCase = async (req,res) => {
 
 }
 
+//Enviar Alerta a Analizar
+let SendAlerttoAnalyze = async (req, res) =>{
+  
+  const {id_alerta_temprana} = req.params;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar a analizar la Alerta.", instance: "early-alert/SendAlerttoAnalyze" });
+
+    await db.query(`UPDATE sat_alerta_temprana SET enviada_analizar = true 
+    WHERE id_alerta_temprana = $1 RETURNING*`, [id_alerta_temprana], (err, results)=>{
+      if(err){
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+        var Alert = results.rows[0];
+        return res.status(200).json({
+          Alert
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
 module.exports = {
   earlyAlertsList,
   createEarlyAlert,
@@ -2331,5 +2359,6 @@ module.exports = {
   getRelatedCases,
   removeRelatedCase,
   searchForRelatedCase,
-  addRelatedCase
+  addRelatedCase,
+  SendAlerttoAnalyze
 }

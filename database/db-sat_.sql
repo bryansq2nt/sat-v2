@@ -648,6 +648,7 @@ CREATE TABLE sat_atencion_crisis(
     id_unidad_administrativa NUMERIC, 
     texto_mensaje TEXT,
     analizada BOOLEAN DEFAULT false,
+    enviada_analizar BOOLEAN DEFAULT false;
     fecha_ing_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_mod_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cod_usu_ing NUMERIC,

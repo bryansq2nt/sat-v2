@@ -15,4 +15,7 @@ module.exports = (app) => {
     //upload
     app.use(require('./upload'));
 
+    //Case Processing
+    app.use(require('./case-processing.routes'));
+
 };
