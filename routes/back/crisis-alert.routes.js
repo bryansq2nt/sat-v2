@@ -19,7 +19,7 @@ router.get('/api/crisis/form/empty', usersTokenVerification, getCrisisAlertsForm
 router.get('/api/crisis/form/analyze/:id_atencion_crisis', usersTokenVerification, getFormToAnalyze);
 router.put('/api/crisis/form/analyze/:id_atencion_crisis', usersTokenVerification, analyzeCrisisAlert);
 
-router.put('/api/crisis/:id_atencion_crisis/sen-to-analize', SendAlerttoAnalyze)
+router.put('/api/crisis/:id_atencion_crisis/sen-to-analize',usersTokenVerification, SendAlerttoAnalyze)
 
 
 

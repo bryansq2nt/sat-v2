@@ -21,7 +21,7 @@ router.get('/api/alerts/form/empty',usersTokenVerification, getEarlyAlertForm);
 router.get('/api/alerts/form/analyze/:id_alerta_temprana',usersTokenVerification, getFormToAnalyze);
 router.put('/api/alerts/form/analyze/:id_alerta_temprana',usersTokenVerification, analyzeEarlyAlert);
 
-router.put('/api/alerts/:id_alerta_temprana/sen-to-analize', SendAlerttoAnalyze)
+router.put('/api/alerts/:id_alerta_temprana/sen-to-analize',usersTokenVerification, SendAlerttoAnalyze)
 
 
 
