@@ -826,6 +826,8 @@ let getById = async (req, res) => {
 
     var formCrisisAlert = {
       form_id: id_atencion_crisis,
+      analyzed: crisisAttention.analizada,
+      sent_to_analyze: crisisAttention.enviada_analizar,
       sections: sections
     }
 

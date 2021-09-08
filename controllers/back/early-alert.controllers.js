@@ -717,7 +717,7 @@ let getById = async (req, res) => {
           question_type: "closed",
           question: "Acciones del Hecho",
           answers: actionsFact,
-          answer:early_alert.id_acciones_hecho
+          answer:Number.parseInt(early_alert.id_acciones_hecho)
         },
         {
           question_id: "proteccion_vigente",
@@ -875,6 +875,8 @@ let getById = async (req, res) => {
     //1
     var formEarlyAlert = {
       form_id: early_alert.id_alerta_temprana,
+      analyzed: early_alert.analizada,
+      sent_to_analyze: early_alert.enviada_analizar,
       sections: sections
     }
 
