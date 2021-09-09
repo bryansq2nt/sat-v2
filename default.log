@@ -971,3 +971,45 @@ funcion: viewIndex
 error: ReferenceError: unidad_administrativa is not defined
 --------------------------------------------------------------------------------------------
 
+2021.09.08, 15:07:47.0988 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.09.08, 15:08:09.0774 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.09.08, 15:12:57.0992 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.09.08, 16:51:50.0342 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: ReferenceError: natureCrisis is not defined
+--------------------------------------------------------------------------------------------
+
+2021.09.08, 21:12:36.0907 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: error: no existe la relación «admi_niv_academico»
+--------------------------------------------------------------------------------------------
+
+2021.09.08, 21:14:27.0757 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: ReferenceError: typeZone is not defined
+--------------------------------------------------------------------------------------------
+
