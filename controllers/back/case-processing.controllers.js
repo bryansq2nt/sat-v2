@@ -69,7 +69,7 @@ let getCaseProcessingForm = async (req, res) => {
           question: "Tipo Vía Entrada",
           required: 1,
           answers: [
-            { v: 'V' },
+            { answer_id: 0, answer: 'V' },
             { e: 'E' },
             { o: 'O' }
           ]
@@ -85,7 +85,7 @@ let getCaseProcessingForm = async (req, res) => {
             { a: 'A' },
             { c: 'C' },
             { i: 'I' },
-            { o: 'O' }
+            { answer_id: 5, answer: 'O' }
           ]
         },
         {
@@ -93,7 +93,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: true,
+          dependent_answer: 'O',
           question_type: "open",
           question: "Otra vía Entrada"
         },
@@ -102,7 +102,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: true,
+          dependent_answer: 'O',
           question_type: "open",
           question: "Fuente Emisión"
         },
@@ -111,7 +111,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: true,
+          dependent_answer: 'O',
           question_type: "date",
           question: "Fecha Emisión"
         },
@@ -120,7 +120,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: true,
+          dependent_answer: 'O',
           question_type: "open",
           question: "Título Emisión"
         },
@@ -129,7 +129,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: true,
+          dependent_answer: 'O',
           question_type: "date_after",
           question: "Fecha Recepción"
         },
@@ -138,7 +138,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: true,
+          dependent_answer: 'O',
           question_type: "date_after",
           question: "Fecha Recepción"
         }

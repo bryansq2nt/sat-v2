@@ -68,6 +68,7 @@ const login = async (req, res) => {
 
         });
     } catch (error) {
+        console.log(error);
         log('src/controllers/back', 'users.auth', 'login', error, true, req, res);
         return res.status(500).json(errorResponse.toJson());
     }

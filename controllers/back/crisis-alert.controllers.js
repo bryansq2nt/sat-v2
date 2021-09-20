@@ -9,9 +9,11 @@ let crisisAlertsList = async (req, res) => {
 
   try {
 
+
     var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
 
     var cod_usu_ing = req.user.user_id;
+
 
     await db.query(`SELECT id_atencion_crisis::integer AS form_id,
     CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
