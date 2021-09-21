@@ -61,11 +61,13 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="/api-sat/early-alert/{{alerta_principal}}/relate-alert/{{id_alerta_temprana}}" class="btn btn-secondary"
-                                        aria-pressed="false">
-                                        <i class="ti-loop text" aria-hidden="true"></i>
-                                        <i class="ti-loop-alt text-active" aria-hidden="true"></i>
-                                    </a>
+                                    <form action="/api-sat/early-alert/{{alerta_principal}}/relate-alert/{{id_alerta_temprana}}" method="POST">
+                                        <button type="submit"
+                                            class="btn btn-secondary" aria-pressed="false">
+                                            <i class="ti-loop text" aria-hidden="true"></i>
+                                            <i class="ti-loop-alt text-active" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         

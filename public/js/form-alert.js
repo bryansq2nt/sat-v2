@@ -90,7 +90,7 @@ $(document).ready(function () {
                         document.getElementById('autor_prensa').value = '';
                         document.getElementById('fecha_publicacion_prensa').value = '';
                         document.getElementById('select_fotografia_prensa').value = 0;
-                        document.getElementById('fotografia_prensa').value = '';
+                        //document.getElementById('fotografia_prensa').value = '';
 
                         //--------- Clean Form Television/Radio
                         document.getElementById('nombre_medio_radio').value = '';
@@ -123,7 +123,7 @@ $(document).ready(function () {
                         document.getElementById('contacto_mensajeria').value = '';
                         document.getElementById('datos_mensajeria').value = '';
                         document.getElementById('select_fotografia_mensajeria').value = 0;
-                        document.getElementById('fotografia_mensajeria').value = '';
+                        //document.getElementById('fotografia_mensajeria').value = '';
 
                         //--------- Clean Form Otras
                         document.getElementById('otras_detalle').value = '';
@@ -135,7 +135,7 @@ $(document).ready(function () {
                         document.getElementById('url_red_social').value = '';
                         document.getElementById('fecha_pub_red_social').value = '';
                         document.getElementById('select_pantalla_red_social').value = 0;
-                        document.getElementById('pantalla_red_social').value = '';
+                        //document.getElementById('pantalla_red_social').value = '';
 
                         //--------- Show Forms
                         document.getElementById('prensa-escrita').style.display = 'none';
@@ -186,11 +186,11 @@ $(document).ready(function () {
         if ($.trim(optionSelectd) != '') {
               
             if (optionSelectd == 1) {
-                console.log('opcion seleccionada', optionSelectd)
                 document.getElementById('prensa-escrita').style.display = 'block';
                 document.getElementById('select_fotografia_prensa').value = 1;
             } else {
                 document.getElementById('prensa-escrita').style.display = 'none';
+                document.getElementById('select_fotografia_prensa').value = 0;
             }
 
             if (optionSelectd == 2) {
@@ -205,6 +205,7 @@ $(document).ready(function () {
                 document.getElementById('select_pantalla_red_social').value = 1;
             } else {
                 document.getElementById('medios-digitales').style.display = 'none';
+                document.getElementById('select_pantalla_red_social').value = 0;
             }
 
             if (optionSelectd == 5 || optionSelectd == 6 || optionSelectd == 7) {
@@ -230,6 +231,7 @@ $(document).ready(function () {
                 document.getElementById('select_fotografia_mensajeria').value = 1;
             } else {
                 document.getElementById('mensajeria').style.display = 'none';
+                document.getElementById('select_fotografia_mensajeria').value = 0;
             }
             
             if (optionSelectd == 15) {
@@ -242,13 +244,16 @@ $(document).ready(function () {
 
         } else {
             document.getElementById('prensa-escrita').style.display = 'none';
+            document.getElementById('select_fotografia_prensa').value = 0;
             document.getElementById('radio-tv').style.display = 'none';
             document.getElementById('colectivo').style.display = 'none';
             document.getElementById('inst-gub').style.display = 'none';
             document.getElementById('ong-internacionales').style.display = 'none';
             document.getElementById('mensajeria').style.display = 'none';
+            document.getElementById('select_fotografia_mensajeria').value = 0;
             document.getElementById('otras').style.display = 'none';
             document.getElementById('medios-digitales').style.display = 'none';
+            document.getElementById('select_pantalla_red_social').value = 0;
         }
     });
 });

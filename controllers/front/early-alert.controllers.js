@@ -13,8 +13,10 @@ let earlyAlertsList = async (req, res) => {
     let earlyAlerts;
 
     if(profile_user == 1){
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, enviada_analizar 
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
+      alerta_padre  
       FROM sat_alerta_temprana 
+      WHERE alerta_relacionada = false
       ORDER BY id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
     
@@ -29,9 +31,10 @@ let earlyAlertsList = async (req, res) => {
       //Perfil Tecnico
     }else if(rol_user == 2){
 
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, enviada_analizar 
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
+      alerta_padre 
       FROM sat_alerta_temprana 
-      WHERE cod_usu_ing = $1
+      WHERE cod_usu_ing = $1 AND alerta_relacionada = false 
       ORDER BY id_alerta_temprana DESC`, [cod_usu_ing]);
       earlyAlerts = earlyAlerts.rows;
 
@@ -46,11 +49,11 @@ let earlyAlertsList = async (req, res) => {
 
       //Perfil Analista 
     }else if(rol_user == 4){
-
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada 
-      FROM sat_alerta_temprana 
-      WHERE enviada_analizar = true 
-      ORDER BY id_alerta_temprana DESC`);
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
+       alerta_padre 
+       FROM sat_alerta_temprana 
+       WHERE enviada_analizar = true AND alerta_relacionada = false
+       ORDER BY id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
     }
 
@@ -167,7 +170,7 @@ let createAlert = async (req, res) => {
   // console.log('paginas_prensa---:', paginas_prensa); 
   // console.log('autor_prensa---:', autor_prensa);
   // console.log('fecha_publicacion_prensa---:', fecha_publicacion_prensa);
-  // console.log('fotografia_prensa---++++++++++:', fotografia_prensa);
+  console.log('fotografia_prensa---++++++++++:', fotografia_prensa);
   // console.log('nombre_medio_radio---:', nombre_medio_radio);
   // console.log('canal_radio---:', canal_radio);
   // console.log('nombre_programa_radio---:', nombre_programa_radio);
@@ -176,7 +179,7 @@ let createAlert = async (req, res) => {
   // console.log('nombre_red_social---:', nombre_red_social);
   // console.log('url_red_social---:', url_red_social);
   // console.log('fecha_pub_red_social---:', fecha_pub_red_social);
-  // console.log('pantalla_red_social---+++++++++:', pantalla_red_social);
+  console.log('pantalla_red_social---+++++++++:', pantalla_red_social);
   // console.log('nombre_colectivo---:', nombre_colectivo);
   // console.log('nombre_contacto_colectivo---:', nombre_contacto_colectivo);
   // console.log('telefono_colectivo---:', telefono_colectivo);
@@ -195,7 +198,7 @@ let createAlert = async (req, res) => {
   // console.log('nombre_contacto_mensajeria---:', nombre_contacto_mensajeria);
   // console.log('contacto_mensajeria---:', contacto_mensajeria);
   // console.log('datos_mensajeria---:', datos_mensajeria);
-  // console.log('fotografia_mensajeria---:', fotografia_mensajeria);
+  console.log('fotografia_mensajeria---:', fotografia_mensajeria);
   // console.log('otras_detalle---:', otras_detalle);
   // console.log('otras_adicionales---:', otras_adicionales);
   // console.log('fecha_hechos---:', fecha_hechos);
@@ -577,7 +580,7 @@ let createAlert = async (req, res) => {
                     $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79, $80, $81, $82, $83, $84,
                     $85, $86) RETURNING *`,
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
-        convertDatepublicacion, rutaFotoRedSocial, nombre_medio_radio, canal_radio, nombre_programa_radio,
+        convertDatepublicacion, rutaFotoPrensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
         convertDateEmisionRadio, titulo_redes, nombre_red_social, url_red_social, convertDateRedSocial,
         rutaFotoRedSocial, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
         nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
@@ -591,6 +594,7 @@ let createAlert = async (req, res) => {
         valueProteccionVigente, valueHuboAgresion, id_tipo_agresion, valueDialogoConflicto, valueMedidaConflicto, valueDialogoRoto, valueCrisisConflicto,
         id_acciones_hecho_anterior, valueResolucionConflicto, id_situacion_conflicto, valuePersonaInvolucrada,
         valueFuerzaPublica, valueIntervencionPublica, cod_usu], async (err, results) => {
+          //
           if (err) {
             log('src/controllers/front', 'early-alert', 'createAlert', err, false, req, res);
           } else {
@@ -847,7 +851,7 @@ let viewUpdateAlert = async (req, res) => {
 
   try {
 
-  let getAlert = await db.query(`SELECT st.*, to_char(st.fecha_hechos::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_fechos, to_char(st.fecha_publicacion_prensa::date , 'YYYY-MM-DD') as nueva_fecha_prensa, to_char(st.fecha_reporte::date , 'YYYY-MM-DD') as nueva_fecha_reporte, to_char(st.fecha_pub_red_social::date , 'YYYY-MM-DD') as nueva_red_social, to_char(st.fecha_emision_radio::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_radio, tf.nombre_tipo_fuente, f.nombre_fuente, p.descripcion, ad.descripcion AS departamento, m.descripcion as municipio,
+  let getAlert = await db.query(`SELECT st.*, to_char(st.fecha_hechos::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_fechos, to_char(st.fecha_publicacion_prensa::date , 'YYYY-MM-DD') as nueva_fecha_prensa, to_char(st.fecha_reporte::date , 'YYYY-MM-DD') as nueva_fecha_reporte, to_char(st.fecha_pub_red_social::date , 'YYYY-MM-DD') as nueva_fecha_red_social, to_char(st.fecha_emision_radio::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_radio, tf.nombre_tipo_fuente, f.nombre_fuente, p.descripcion, ad.descripcion AS departamento, m.descripcion as municipio,
   z.nombre_zona, s.nombre_escenario, d.descripcion AS derecho, tm.nombre_tema, sb.nombre_subtema,
   sc.nombre_sit_conflictiva, c.nombre_criterio, h.nombre_hecho, ha.nombre_hecho as hecho_anterior, stc.nombre_conflicto
   FROM sat_alerta_temprana AS st
@@ -1109,7 +1113,7 @@ let viewUpdateAlert = async (req, res) => {
         
       }
     }
-    console.log(agressionType);
+
     return res.render('early-alerts/early-alert-update', { getAlert, temporality, sourceType, law, topics, scenario, typeZone, state, ESAcountry, country, profileActors, vulnerableGroup, actionsFact, conflictSituation, listPerfiles, listGrpVulnerabilidad, agressionType});
 
 
@@ -1152,7 +1156,7 @@ let updateAlert = async (req, res) => {
   // console.log('paginas_prensa---:', paginas_prensa); 
   // console.log('autor_prensa---:', autor_prensa);
   // console.log('fecha_publicacion_prensa---:', fecha_publicacion_prensa);
-  // console.log('fotografia_prensa---:', fotografia_prensa);
+  console.log('fotografia_prensa---:', fotografia_prensa);
   // console.log('nombre_medio_radio---:', nombre_medio_radio);
   // console.log('canal_radio---:', canal_radio);
   // console.log('nombre_programa_radio---:', nombre_programa_radio);
@@ -1161,7 +1165,7 @@ let updateAlert = async (req, res) => {
   // console.log('nombre_red_social---:', nombre_red_social);
   // console.log('url_red_social---:', url_red_social);
   // console.log('fecha_pub_red_social---:', fecha_pub_red_social);
-  // console.log('pantalla_red_social---:', pantalla_red_social);
+  console.log('pantalla_red_social---:', pantalla_red_social);
   // console.log('nombre_colectivo---:', nombre_colectivo);
   // console.log('nombre_contacto_colectivo---:', nombre_contacto_colectivo);
   // console.log('telefono_colectivo---:', telefono_colectivo);
@@ -1180,7 +1184,7 @@ let updateAlert = async (req, res) => {
   // console.log('nombre_contacto_mensajeria---:', nombre_contacto_mensajeria);
   // console.log('contacto_mensajeria---:', contacto_mensajeria);
   // console.log('datos_mensajeria---:', datos_mensajeria);
-  // console.log('fotografia_mensajeria---:', fotografia_mensajeria);
+  console.log('fotografia_mensajeria---:', fotografia_mensajeria);
   //    console.log('otras_detalle---:', otras_detalle);
   // console.log('otras_adicionales---:', otras_adicionales);
   // console.log('fecha_hechos---:', fecha_hechos);
@@ -1237,6 +1241,64 @@ let updateAlert = async (req, res) => {
   // console.log('presencia_fuerza_publica---:', presencia_fuerza_publica);
   // console.log('intervencion_fuerza_publica---:', intervencion_fuerza_publica);
   // console.log('----------------------------------------------------------------------');
+
+    //---------------------------- imagenes
+
+    //imagen - prensa
+    var fotoPrensa;
+    var rutaFotoPrensa = '';
+    
+    if (fotografia_prensa === "") {
+      if (req.files[0] != undefined) {
+        fotoPrensa = req.files[0].filename;
+        rutaFotoPrensa = '/uploads/' + fotoPrensa;
+      }
+    } else {
+
+      if (req.files[0] != undefined) {
+        fotoPrensa = req.files[0].filename;
+        rutaFotoPrensa = '/uploads/' + fotoPrensa;
+      } else {
+        rutaFotoPrensa = fotografia_prensa;
+      }
+    }
+  
+    //imagen - pantalla red social
+    var fotoRedSocial;
+    var rutaFotoRedSocial='';
+  
+    if (pantalla_red_social === "") {
+      if (req.files[0] != undefined) {
+        fotoRedSocial = req.files[0].filename;
+        rutaFotoRedSocial = '/uploads/' + fotoRedSocial;
+      }
+    }else{
+      if (req.files[0] != undefined) {
+        fotoRedSocial = req.files[0].filename;
+        rutaFotoRedSocial = '/uploads/' + fotoRedSocial;
+      }else{
+        rutaFotoRedSocial = pantalla_red_social;
+      }
+    }
+  
+    //imagen - fotografia mensajeria
+    var fotoMensajeria;
+    var rutafotoMensajeria='';
+  
+    if (fotografia_mensajeria === "") {
+      if (req.files[0] != undefined) {
+        fotoMensajeria = req.files[0].filename;
+        rutafotoMensajeria = '/uploads/' + fotoMensajeria;
+      }
+    }else{
+      if (req.files[0] != undefined) {
+        fotoMensajeria = req.files[0].filename;
+        rutafotoMensajeria = '/uploads/' + fotoMensajeria;
+      }else{
+        rutafotoMensajeria = fotografia_mensajeria;
+      }
+    }
+
 
    // Convert value to int Poblacion Ninos
    let valuePoblacionNino = poblacion_ninos;
@@ -1344,7 +1406,7 @@ let updateAlert = async (req, res) => {
     convertDatepublicacion = datePublicacion;
   }
 
-  //Covert Fecha Red Socialºººººº
+  //Covert Fecha Red Social
   let dateRedSocial = fecha_pub_red_social;
   let convertDateRedSocial;
 
@@ -1527,12 +1589,12 @@ let updateAlert = async (req, res) => {
     intervencion_fuerza_publica=$84, fecha_mod_reg=$85, cod_usu_mod=$86, cantidad_poblacion_afectada = $87
     WHERE id_alerta_temprana = $88`,
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
-        convertDatepublicacion, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
+        convertDatepublicacion, rutaFotoPrensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
         convertDateEmisionRadio, titulo_redes, nombre_red_social, url_red_social, convertDateRedSocial,
-        pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
+        rutaFotoRedSocial, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
         nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
         contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
-        contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
+        contacto_mensajeria, datos_mensajeria, rutafotoMensajeria, otras_detalle, otras_adicionales,
         convertDateHechos, valueFechaHechos, convertDateReporte, pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
         descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
         id_criterio, id_temporalidad, newValueCantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
@@ -1606,6 +1668,7 @@ let viewRealteAlert = async(req, res) => {
           WHERE id_alerta_temprana != $1 
           AND enviada_analizar = true 
           AND alerta_relacionada = false 
+          AND alerta_padre = false
           ORDER BY id_alerta_temprana DESC`,[id_alerta_temprana],(err, results) =>{
       if(err){
         log('src/controllers/front', 'early-alert', 'viewRealteAlert', err, false, req, res);
@@ -1641,13 +1704,13 @@ let realteAlert = async(req, res) =>{
       } else {
 
         db.query(`UPDATE sat_alerta_temprana SET alerta_relacionada = true
-        WHERE id_alerta_temprana = $1`, [id_alerta_principal]);
-
-        db.query(`UPDATE sat_alerta_temprana SET alerta_relacionada = true
         WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
 
+        db.query(`UPDATE sat_alerta_temprana SET alerta_padre = true
+        WHERE id_alerta_temprana = $1`, [id_alerta_principal]);
+
         req.flash('success', 'Alerta relacionada correctamente');
-        return res.redirect('/api-sat/early-alert/list');
+        return res.redirect(`/api-sat/early-alert/${id_alerta_principal}/view-analize`);
       }
     });
 
@@ -1664,12 +1727,21 @@ let removeRelateedAlert = async(req, res)=>{
 
   try {
     await db.query(`UPDATE sat_alerta_temprana SET alerta_relacionada = false 
-    WHERE id_alerta_temprana = $1`, [id_alerta_relacionada], (err, results)=>{
+    WHERE id_alerta_temprana = $1`, [id_alerta_relacionada], async (err, results)=>{
       if(err){
         log('src/controllers/front', 'early-alert', 'removeRelateedAlert', err, false, req, res);
       }else{
+        db.query(`DELETE FROM sat_alertas_relacionadas WHERE id_alerta_temprana = $1 AND id_alerta_relacionada = $2`, [id_alerta_temprana, id_alerta_relacionada]);
+        
+        let updateAlertPrincipal = await db.query(`SELECT COUNT(id_alerta_temprana) AS alerta_padre 
+        FROM sat_alertas_relacionadas 
+        WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
+        updateAlertPrincipal = updateAlertPrincipal.rows[0].alerta_padre;
 
-        db.query(`DELETE FROM sat_alertas_relacionadas WHERE id_alerta_relacionada = $1`, [id_alerta_relacionada])
+        if(updateAlertPrincipal == 0){
+          db.query(`UPDATE sat_alerta_temprana SET alerta_padre = false
+          WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
+        }
 
         req.flash('delete', 'La alerta ha sido removida');
         res.redirect(`/api-sat/early-alert/${id_alerta_temprana}/view-analize`);

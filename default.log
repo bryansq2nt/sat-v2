@@ -1013,3 +1013,31 @@ funcion: getCaseProcessingForm
 error: ReferenceError: typeZone is not defined
 --------------------------------------------------------------------------------------------
 
+2021.09.16, 22:13:54.0944 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: earlyAlertsList
+error: error: error de sintaxis en o cerca de «id_alerta_temprana»
+--------------------------------------------------------------------------------------------
+
+2021.09.17, 04:32:35.0020 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: ReferenceError: dateFormat is not defined
+--------------------------------------------------------------------------------------------
+
+2021.09.17, 04:33:11.0252 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.09.17, 04:35:07.0235 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'name' of undefined
+--------------------------------------------------------------------------------------------
+

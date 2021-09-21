@@ -27,7 +27,7 @@ router.post('/api-sat/early-alert/create', isLoggedIn, upload.array("file", 2), 
 
 //Update Alert
 router.get('/api-sat/early-alert/:id_alerta_temprana/view-update', isLoggedIn, viewUpdateAlert);
-router.post('/api-sat/early-alert/:id_alerta_temprana/update', isLoggedIn, updateAlert);
+router.post('/api-sat/early-alert/:id_alerta_temprana/update', isLoggedIn, upload.array("file", 2), updateAlert);
 
 //Send Alerta to Analize
 router.get('/api-sat/early-alert/:id_alerta_temprana/sen-to-analize', isLoggedIn, SendAlerttoAnalyze)
@@ -38,7 +38,7 @@ router.post('/api-sat/early-alert/:id_alerta_temprana/analize', isLoggedIn, Anal
 
 //Realte Alert
 router.get('/api-sat/early-alert/:id_alerta_temprana/view-relate-alert', isLoggedIn, viewRealteAlert);
-router.get('/api-sat/early-alert/:id_alerta_principal/relate-alert/:id_alerta_temprana', isLoggedIn, realteAlert);
+router.post('/api-sat/early-alert/:id_alerta_principal/relate-alert/:id_alerta_temprana', isLoggedIn, realteAlert);
 
 //Remove Related Alert
 router.post('/api-sat/early-alert/:id_alerta_temprana/related-alert/:id_alerta_relacionada/remove-related-alert', isLoggedIn, removeRelateedAlert)

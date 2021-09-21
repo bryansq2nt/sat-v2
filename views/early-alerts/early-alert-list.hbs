@@ -59,7 +59,11 @@
                         <tbody>
                             {{#each earlyAlerts}}
                             <tr>
+                                {{#Relatedcase alerta_padre}}
+                                <td><i class="ti-loop"></i> {{id_alerta_temprana}}</td>
+                                {{else}}
                                 <td>{{id_alerta_temprana}}</td>
+                                {{/Relatedcase}}
                                 <td>
                                     <a href="/api-sat/early-alert/{{id_alerta_temprana}}/view-alert"
                                         class="btn btn-secondary" aria-pressed="false">
@@ -106,7 +110,11 @@
                         <tbody>
                             {{#each earlyAlerts}}
                             <tr>
+                                {{#Relatedcase alerta_padre}}
+                                <td><i class="ti-loop"></i> {{id_alerta_temprana}}</td>
+                                {{else}}
                                 <td>{{id_alerta_temprana}}</td>
+                                {{/Relatedcase}}
                                 <td>
                                     <a href="/api-sat/early-alert/{{id_alerta_temprana}}/view-alert"
                                         class="btn btn-secondary" aria-pressed="false">
@@ -213,8 +221,12 @@
                         </thead>
                         <tbody>
                             {{#each earlyAlerts}}
-                            <tr>
+                            <tr>   
+                                {{#Relatedcase alerta_padre}}
+                                <td><i class="ti-loop"></i> {{id_alerta_temprana}}</td>
+                                {{else}}
                                 <td>{{id_alerta_temprana}}</td>
+                                {{/Relatedcase}}
                                 <td>
                                     <a href="/api-sat/early-alert/{{id_alerta_temprana}}/view-alert"
                                         class="btn btn-secondary" aria-pressed="false">

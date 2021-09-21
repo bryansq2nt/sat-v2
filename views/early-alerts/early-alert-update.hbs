@@ -11,7 +11,7 @@
         <div class="card card-body">
             <h4 class="card-title">Alerta</h4>
             <h5 class="card-subtitle"> Formulario de Alerta </h5>
-            <form class="form-horizontal mt-4" action="/api-sat/early-alert/{{getAlert.id_alerta_temprana}}/update" method="POST">
+            <form class="form-horizontal mt-4" action="/api-sat/early-alert/{{getAlert.id_alerta_temprana}}/update" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <h5>Tipo de Fuente <span class="text-danger">*</span></h5>
                     <div class="controls">
@@ -62,12 +62,11 @@
                         <input type="text" class="form-control" id="fecha_publicacion_prensa" name="fecha_publicacion_prensa" value="{{getAlert.nueva_fecha_prensa}}">
                     </div>
                     <div class="form-group">
-                        <h5>Fotografía</h5>
                         <div class="custom-file mb-3">
-                            <input type="file" class="custom-file-input" id="fotografia_prensa" lang="es"
-                                name="fotografia_prensa">
-                            <label class="custom-file-label form-control" for="customFileLang">Seleccionar
-                                Archivo</label>
+                            <h5>Fotografía</h5>
+                            <input id="select_fotografia_prensa" name="fotografia_prensa" value="{{getAlert.fotografia_prensa}}" hidden>
+                            <input type="file" id="input-file-now-custom-1" name="file" id="fotografia_prensa" class="dropify"
+                                data-default-file="{{getAlert.fotografia_prensa}}"/>
                         </div>
                     </div>
                 </div>
@@ -95,6 +94,17 @@
                     <div class="form-group">
                         <h5>Fecha y hora de Emisión</h5>
                         <input class="form-control" type="text" id="fecha_emision_radio" name="fecha_emision_radio" value="{{getAlert.nueva_fecha_radio}}">
+                    </div>
+                    <div class="form-group">
+                        <h5>Fecha y hora de Emisión</h5>
+                        <input class="form-control" type="text" value="{{getAlert.nueva_fecha_radio}}">>
+                        {{!-- <input class="form-control" type="datetime-local" id="fecha_emision_radio" name="fecha_emision_radio" id="example-datetime-local-input" value="{{getAlert.nueva_fecha_radio}}"> --}}
+                    </div>
+                    <div class="form-group row">
+                        <label for="example-date-input" class="col-2 col-form-label">Date</label>
+                        <div class="col-10">
+                            <input class="form-control" type="date" value="{{getAlert.nueva_fecha_radio}}" id="example-date-input">
+                        </div>
                     </div>
                 </div>
                 {{!-- fin --}}
@@ -207,10 +217,11 @@
                     <div class="form-group">
                         <h5>Captura de Pantalla</h5>
                         <div class="custom-file mb-3">
-                            <input type="file" class="custom-file-input" id="fotografia_mensajeria" lang="es"
-                                name="fotografia_mensajeria">
-                            <label class="custom-file-label form-control" for="customFileLang">Seleccionar
-                                Archivo</label>
+                            <input type="text" id="select_fotografia_mensajeria" name="fotografia_mensajeria"
+                                value="{{getAlert.fotografia_mensajeria}}" hidden>
+                                {{!-- id="fotografia_mensajeria" --}}
+                            <input type="file" id="input-file-now-custom-1" name="file" class="dropify"
+                                data-default-file="{{getAlert.fotografia_mensajeria}}" />
                         </div>
                     </div>
                 </div>
@@ -255,15 +266,15 @@
                     </div>
                     <div class="form-group">
                         <h5>Fecha de Publicación</h5>
-                        <input type="text" class="form-control" id="fecha_pub_red_social" name="fecha_pub_red_social" value="{{getAlert.nueva_red_social}}">
+                        <input type="text" class="form-control" id="fecha_pub_red_social" name="fecha_pub_red_social" value="{{getAlert.nueva_fecha_red_social}}">
+                        {{!-- <input class="form-control" type="date" value="{{getAlert.nueva_fecha_red_social}}" id="example-date-input"> --}}
                     </div>
                     <div class="form-group">
                         <h5>Captura de Pantalla</h5>
                         <div class="custom-file mb-3">
-                            <input type="file" class="custom-file-input" id="pantalla_red_social" lang="es"
-                                name="pantalla_red_social">
-                            <label class="custom-file-label form-control" for="customFileLang">Seleccionar
-                                Archivo</label>
+                            <input type="text" id="select_pantalla_red_social" name="pantalla_red_social" value="{{getAlert.pantalla_red_social}}" hidden>
+                            {{!-- id="pantalla_red_social" --}}
+                            <input type="file" id="input-file-now-custom-1" name="file" class="dropify" data-default-file="{{getAlert.pantalla_red_social}}" />
                         </div>
                     </div>
                 </div>
@@ -276,7 +287,7 @@
                     </fieldset>
                 </div>
                 <div class="form-group">
-                    <h5>Fecha y hora del hecho/Situaci&oacute;n/Problema <span class="text-danger">*</span></h5>
+                    <h5>Fecha y hora del hecho/Situaci&oacute;n/Problema <span class="text-danger">(*)</span></h5>
                     <input class="form-control" type="text" name="fecha_hechos" value="{{getAlert.nueva_fecha_fechos}}">
                     {{!-- <input class="form-control" type="datetime-local" name="fecha_hechos"
                             value="{{getAlert.nueva_fecha_fechos}}" id="fecha_hechos" required
