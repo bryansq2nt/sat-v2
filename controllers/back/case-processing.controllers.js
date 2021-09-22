@@ -3,6 +3,8 @@ const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
 
+//Tramitacion de Casos
+
 let getCaseProcessingForm = async (req, res) => {
 
   try {
@@ -205,20 +207,20 @@ let getCaseProcessingForm = async (req, res) => {
 };
 
 let createCaseProcessing = async(req, res) => {
-  const { tipo_via_entrada, via_entrada, otra_via_entrada, fecha, fuente, 
-    fec_emision, tit_emision, fec_recepcion, hor_recepcion} = req.body
+  const { tipo_via_entrada, via_entrada, otra_via_entrada, fecha, fec_hor_hecho_apro, id_depto_hech, id_mun_hech, lugar, hecho, 
+    fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion, id_prg_cal_turno, nom_victima, nom_denunciante, id_pais_hecho} = req.body
   try {
 
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
     
-    var numero_caso = 101;
+    var numero_caso = 103;
     // Datos no identificados de que tablas obtenerlos
     // cod_depto_ing
     // id_ins_ing
     // id_ins_mod
 
     var localDate =  new Date();
-    var fecha_asignado = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
     var fecha_hora = dateFormat(localDate, 'yyyy-mm-dd');
     var est_reg = 'R';
     var cod_usu = 1;
@@ -230,12 +232,12 @@ let createCaseProcessing = async(req, res) => {
     await db.query(`INSERT INTO tcdh_caso_temp(
       id_caso_temp, hay_mas_vic_den, reg_ing_turno, en_turno, 
       fec_en_turno, tipo_via_entrada, via_entrada, otra_via_entrada, id_usu_asignado, fec_asignado, fecha, fec_hora,  
-      est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, 
+      fec_hor_hecho_apro, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, 
       fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)`, 
-          [numero_caso, 'N', 'N', 'N', fecha_asignado, tipo_via_entrada, via_entrada, otra_via_entrada, cod_usu, fecha_asignado, 
-          fecha_asignado, fecha_asignado, est_reg, fecha_asignado, cod_usu, user_name, fecha_asignado, cod_usu, 
-          user_name, fecha_asignado, fuente, fecha_asignado, tit_emision, fecha_asignado, fecha_asignado], (err, results)=>{
+          [numero_caso, 'N', 'N', 'N', registration_date, tipo_via_entrada, via_entrada, otra_via_entrada, cod_usu, fecha, 
+          registration_date, fec_hor_hecho_apro, est_reg, registration_date, cod_usu, user_name, registration_date, cod_usu, 
+          user_name, registration_date, fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion], (err, results)=>{
           if(err){
             console.log(err.message);
             return res.status(500).json(errorResponse.toJson());
@@ -253,7 +255,81 @@ let createCaseProcessing = async(req, res) => {
   }
 };
 
-let getInvolvedForm = async (req, res) => {
+let getCaseProcesingById = async (req, res) => {
+  const { id_caso_temp } = req.params;
+  try {
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
+    await db.query(`SELECT * FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso_temp], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var caseProcessing = results.rows[0];
+        return res.status(201).json({
+          caseProcessing
+        });
+      }
+    });
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'getCaseProcesingById', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
+let updateCaseProcesing = async (req, res) => {
+  
+  const {id_caso_temp} = req.params;
+
+  const {tipo_via_entrada, via_entrada, otra_via_entrada, fecha, fec_hor_hecho_apro, id_depto_hech, id_mun_hech, 
+    lugar, hecho, fuente, fec_emision, tit_emision, fec_recepcion, id_prg_cal_turno, nom_victima, nom_denunciante, 
+    id_pais_hecho, hor_recepcion} = req.body;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al actualizar el tramite del caso.", instance: "case-processing/updateCaseProcesing" });
+
+    var localDate =  new Date();
+    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    var fecha_hecho = dateFormat(localDate, 'yyyy-mm-dd');
+    // var hor_recepcion = dateFormat(localDate, 'HH:MM:ss');
+
+    var cod_usu = 1;
+    //var cod_usu = req.user.user_id;
+    //var user_name = req.user.name;
+    var user_name = 'Usuario Actualizo';
+    var id_ins_mod = 1
+
+    await db.query(`UPDATE tcdh_caso_temp
+    SET tipo_via_entrada=$1, via_entrada=$2, otra_via_entrada=$3, fecha=$4, fec_hor_hecho_aprox=$5, fec_hecho=$6, hor_hecho=$7, 
+    id_depto_hecho=$8, id_mun_hecho=$9, lugar=$10, hecho=$11, cod_usu_mod=$12, usu_mod_reg=$13, fec_mod_reg=$14, id_ins_mod=$15, 
+    fuente=$16, fec_emision=$17, tit_emision=$18, fec_recepcion=$19, hor_recepcion=$20, id_prg_cal_turno=$21, nom_victima=$22, 
+    nom_denunciante=$23, id_pais_hecho=$24
+    WHERE id_caso_temp = $25`, [tipo_via_entrada, via_entrada, otra_via_entrada, fecha, fec_hor_hecho_apro, null, registration_date, 
+      id_depto_hech, id_mun_hech, lugar, hecho, cod_usu, user_name, registration_date, id_ins_mod, fuente, registration_date, tit_emision, 
+      null, null, id_prg_cal_turno, nom_victima, nom_denunciante, id_pais_hecho, id_caso_temp], (err, results)=>{
+      if(err){
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+        var caseProcessing = results.rows[0];
+        return res.status(201).json({
+          message: 'Caso Actualizado'
+        });
+      }
+    })
+
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'updateCaseProcesing', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+};
+
+//Persona Involucrado
+
+let getPersonInvolvedForm = async (req, res) => {
 
   try {
 
@@ -654,9 +730,168 @@ let getInvolvedForm = async (req, res) => {
 
 };
 
+let createPersonInvolvedForm = async(req, res) =>{
+  //const {} = req.params;
+  const {per_den_es_victima, per_principal, nombre, apellido,
+    id_cat_cal_actua, sexo, ide_genero, lee, escribe, id_cat_doc_persona,
+    otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
+    id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio,
+    id_departamento, id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad} = req.body;
+  
+  //Pendientes
+  //med_rec_notificacion, num_telefono, fax, correo_electronico, dir_notificar, per_aprox_afectada
+  
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/createPersonInvolvedForm" });
+    
+    var localDate =  new Date();
+    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    var est_reg = 'R';
+    var cod_user = 1;
+
+    //var cod_usu = req.user.user_id;
+    //var user_name = req.user.name;
+
+    //obs_est_reg, id_ins_ing, id_ins_mod, otra_ide_genero
+    var user_ing_reg = 'Usuario Prueba';
+
+    let nom_completo = nombre +' '+ apellido;
+
+    await db.query(`INSERT INTO tcdh_persona_temp(
+      per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, 
+      sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, 
+      id_niv_academico, id_pais_nacimiento, id_pais_ins_rep, fec_nacimiento, edad_aprox, 
+      id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, discapacidad, 
+      id_cat_tip_discapacidad, 
+      est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, 
+      cod_usu_mod, usu_mod_reg, fec_mod_reg)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 
+      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)`, [
+      per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, 
+      sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, 
+      id_niv_academico, id_pais_nacimiento, id_pais_ins_rep, fec_nacimiento, edad_aprox, 
+      id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, discapacidad, 
+      id_cat_tip_discapacidad, est_reg, registration_date, cod_user, user_ing_reg, registration_date, 
+      cod_user, user_ing_reg, registration_date], (err, results) => {
+  
+        if(err){
+          console.log(err.message);
+          return res.status(500).json(errorResponse.toJson());
+        }else{
+          var personInvolved = results.rows[0];
+          return res.status(201).json({
+            message: 'Se creo la persona involucrada'
+          });
+        }
+  
+      })
+      
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'createPersonInvolvedForm', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
+let getPersonInvolvedById = async(req, res) =>{
+  const { id_persona_temp } = req.params;
+
+  try {
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/getPersonInvolvedById" });
+    
+    await db.query(`SELECT * FROM tcdh_persona_temp 
+      WHERE id_persona_temp = $1`, [id_persona_temp], (err, results)=>{
+      if(err){
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+        let personInvolved = results.rows[0];
+        return res.status(201).json({
+          personInvolved
+        });
+      }
+    });
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'getPersonInvolvedById', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
+let updatePersonInvolvedForm = async (req, res) => {
+  const { id_persona_temp } = req.params;
+  const { per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, sexo, ide_genero, 
+    lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
+    id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, 
+    domicilio, discapacidad, id_cat_tip_discapacidad, med_rec_notificacion } = req.body;
+
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar a la persona involucrada.", instance: "case-processing/updatePersonInvolvedForm" });
+    
+    var localDate =  new Date();
+    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    var est_reg = 'R';
+    var cod_user = 1;
+    //var user_name = req.user.name;
+    var user_name = 'Nombre Apellido'
+
+    await db.query(`UPDATE tcdh_persona_temp
+    SET per_den_es_victima=$1, per_principal=$2, nombre=$3, apellido=$4, id_cat_cal_actua=$5, nom_completo=$6, sexo=$7, ide_genero=$8, 
+    lee=$9, escribe=$10, id_cat_doc_persona=$11, otro_doc_identidad=$12, num_documento=$13, id_niv_academico=$14, id_pais_nacimiento=$15, 
+    id_pais_ins_rep=$16, fec_nacimiento=$17, edad_aprox=$18, id_cat_pro_oficio=$19, zona_domicilio=$20, id_departamento=$21, id_municipio=$22, 
+    domicilio=$23, discapacidad=$24, id_cat_tip_discapacidad=$25, med_rec_notificacion=$26, cod_usu_mod=$27, usu_mod_reg=$28, fec_mod_reg=$29 
+    WHERE id_persona_temp = $30`, [per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, user_name, sexo, ide_genero, 
+      lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento, 
+      id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, 
+      domicilio, discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, cod_user, user_name, registration_date, id_persona_temp], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+        var personInvolved = results.rows[0];
+        return res.status(201).json({
+          message: 'Persona Actualizada'
+        });
+      }
+    });
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'updatePersonInvolvedForm', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+}
+
+let deletePersonInvolved = async(req, res) =>{
+  const { id_persona_temp } = req.params;
+  try {
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al eliminar la persona involucrada.", instance: "case-processing/deletePersonInvolved" });
+    await db.query(`UPDATE tcdh_persona_temp SET est_reg = 'E' WHERE id_persona_temp = $1`, [id_persona_temp], (err, results)=>{
+      if(err){
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+        var personInvolved = results.rows[0];
+        return res.status(201).json({
+          message: 'Persona Eliminada'
+        });
+      }
+    });
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'deletePersonInvolved', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+};
 
   module.exports = {
     getCaseProcessingForm,
     createCaseProcessing,
-    getInvolvedForm
+    getCaseProcesingById,
+    updateCaseProcesing,
+    getPersonInvolvedForm,
+    createPersonInvolvedForm,
+    getPersonInvolvedById,
+    updatePersonInvolvedForm,
+    deletePersonInvolved
   }
