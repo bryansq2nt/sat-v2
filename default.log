@@ -1041,3 +1041,10 @@ funcion: createCaseProcessing
 error: TypeError: Cannot read property 'name' of undefined
 --------------------------------------------------------------------------------------------
 
+2021.09.23, 04:13:13.0518 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: viewUpdateAlert
+error: error: la sintaxis de entrada no es válida para tipo timestamp: «YYYY-MM-DD HH:MM:SS»
+--------------------------------------------------------------------------------------------
+

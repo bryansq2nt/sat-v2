@@ -59,7 +59,14 @@
                     </div>
                     <div class="form-group">
                         <h5>Fecha de Publicación</h5>
-                        <input type="text" class="form-control" id="fecha_publicacion_prensa" name="fecha_publicacion_prensa" value="{{getAlert.nueva_fecha_prensa}}">
+                        <div class='input-group mb-3'>
+                            <input type='text' class="form-control singledate" id="fecha_publicacion_prensa" name="fecha_publicacion_prensa" value="{{getAlert.nueva_fecha_prensa}}" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <span class="ti-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="custom-file mb-3">
@@ -92,13 +99,23 @@
                         <input type="text" class="form-control" id="nombre_programa_radio" name="nombre_programa_radio" value="{{getAlert.nombre_programa_radio}}">
                     </div>
                     <div class="form-group">
-                        <h5>Fecha y hora de Emisión</h5>
-                        <input class="form-control" type="text" id="fecha_emision_radio" name="fecha_emision_radio" value="{{getAlert.nueva_fecha_radio}}">
-                    </div>
-                    <div class="form-group">
-                        <h5>Fecha y hora de Emisión</h5>
-                        <input class="form-control" type="text" value="{{getAlert.nueva_fecha_radio}}">>
-                        {{!-- <input class="form-control" type="datetime-local" id="fecha_emision_radio" name="fecha_emision_radio" id="example-datetime-local-input" value="{{getAlert.nueva_fecha_radio}}"> --}}
+                        <h5>Fecha Hora de Emisión</h5>
+                        {{!-- <div class='input-group mb-3'>
+                            <input type='text' class="form-control singledate" id="fecha_emision_radio" name="fecha_emision_radio" value="{{getAlert.nueva_fecha_radio}}"/>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <span class="ti-calendar"></span>
+                                </span>
+                            </div>
+                        </div> --}}
+                        <div class='input-group mb-3'>
+                            <input type='text' class="form-control form-alert" id="fecha_emision_radio" name="fecha_emision_radio" value="{{getAlert.nueva_fecha_radio}}"/>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <span class="ti-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group row">
                         <label for="example-date-input" class="col-2 col-form-label">Date</label>
@@ -110,7 +127,8 @@
                 {{!-- fin --}}
 
                 {{!-- Form Colectivos --}}
-                <div class="content-colectivo" id="colectivo" style="display: {{#showFormColectivos getAlert.nombre_colectivo}}{{/showFormColectivos}};">
+                <div class="content-colectivo" id="colectivo"
+                    style="display: {{#showFormColectivos getAlert.nombre_colectivo}}{{/showFormColectivos}};">
                     <div class="form-group">
                         <fieldset disabled>
                             <input type="text" id="disabledTextInput" class="form-control" value="Colectivos">
@@ -118,16 +136,19 @@
                     </div>
                     <div class="form-group">
                         <h5>Nombre Colectivo</h5>
-                        <input type="text" class="form-control" id="nombre_colectivo" name="nombre_colectivo" value="{{getAlert.nombre_colectivo}}">
+                        <input type="text" class="form-control" id="nombre_colectivo" name="nombre_colectivo"
+                            value="{{getAlert.nombre_colectivo}}">
                     </div>
                     <div class="form-group">
                         <h5>Nombre Contacto</h5>
-                        <input type="text" class="form-control" id="nombre_contacto_colectivo" name="nombre_contacto_colectivo" value="{{getAlert.nombre_contacto_colectivo}}">
+                        <input type="text" class="form-control" id="nombre_contacto_colectivo" name="nombre_contacto_colectivo"
+                            value="{{getAlert.nombre_contacto_colectivo}}">
                     </div>
                     <div class="form-group">
                         <h5>Teléfono Contacto</h5>
-                        <input type="text" class="form-control" id="telefono_colectivo" name="telefono_colectivo" value="{{getAlert.telefono_colectivo}}">
-                    </div>
+                        <input type="text" class="form-control" id="telefono_colectivo" name="telefono_colectivo"
+                            value="{{getAlert.telefono_colectivo}}">
+                    </div>        
                 </div>
                 {{!-- fin --}}
 
@@ -266,8 +287,14 @@
                     </div>
                     <div class="form-group">
                         <h5>Fecha de Publicación</h5>
-                        <input type="text" class="form-control" id="fecha_pub_red_social" name="fecha_pub_red_social" value="{{getAlert.nueva_fecha_red_social}}">
-                        {{!-- <input class="form-control" type="date" value="{{getAlert.nueva_fecha_red_social}}" id="example-date-input"> --}}
+                        <div class='input-group mb-3'>
+                            <input type='text' class="form-control singledate" id="fecha_pub_red_social" name="fecha_pub_red_social" value="{{getAlert.nueva_fecha_red_social}}"/>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <span class="ti-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <h5>Captura de Pantalla</h5>
@@ -287,11 +314,17 @@
                     </fieldset>
                 </div>
                 <div class="form-group">
-                    <h5>Fecha y hora del hecho/Situaci&oacute;n/Problema <span class="text-danger">(*)</span></h5>
-                    <input class="form-control" type="text" name="fecha_hechos" value="{{getAlert.nueva_fecha_fechos}}">
-                    {{!-- <input class="form-control" type="datetime-local" name="fecha_hechos"
-                            value="{{getAlert.nueva_fecha_fechos}}" id="fecha_hechos" required
-                            data-validation-required-message="Este campo es obligatorio"> --}}
+                    <h5>Fecha y hora del hecho/Situaci&oacute;n/Problema<span class="text-danger">(*)</span></h5>
+                    {{!-- <input class="form-control" type="text" name="fecha_hechos" value="{{getAlert.nueva_fecha_fechos}}"> --}}
+                    <div class='input-group mb-3'>
+                        <input type='text' class="form-control form-alert" name="fecha_hechos"
+                            value="{{getAlert.nueva_fecha_fechos}}" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <span class="ti-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <div class="custom-control custom-switch">
@@ -305,11 +338,22 @@
                         <label class="custom-control-label" for="fecha_futura_hechos">Fecha Futura</label>
                     </div>
                 </div>
-                <div class="form-group" id="content-options-reports" style="display: {{#showOptionFechaReporte getAlert.fecha_futura_hechos}}{{/showOptionFechaReporte}};">
+                <div class="form-group" id="content-options-reports"
+                    style="display: {{#showOptionFechaReporte getAlert.fecha_futura_hechos}}{{/showOptionFechaReporte}};">
                     <h5>Fecha de reporte del hecho/Situaci&oacute;n/Problema</h5>
-                    <input class="form-control" type="text" name="fecha_reporte" value="{{getAlert.nueva_fecha_reporte}}">
+                    {{!-- <input class="form-control" type="text" name="fecha_reporte" value="{{getAlert.nueva_fecha_reporte}}"> --}}
                     {{!-- <input type="date" class="form-control" placeholder="dd/mm/yyyy" name="fecha_reporte"> --}}
+                    <div class='input-group mb-3'>
+                        <input type='text' class="form-control singledate" name="fecha_reporte"
+                            value="{{getAlert.nueva_fecha_reporte}}"/>
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <span class="ti-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <fieldset disabled>
                         <input type="text" id="disabledTextInput" class="form-control"
@@ -517,18 +561,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <h5>Adolecentes Hombres <span class="text-danger">*</span></h5>
+                    <h5>Adolecentes Hombres</h5>
                     <div class="controls">
-                        <input type="text" name="adolecentes_hombres" class="form-control" required
-                            data-validation-containsnumber-regex="(\d)+"
+                        <input type="text" name="adolecentes_hombres" class="form-control"
                             data-validation-containsnumber-message="No se permiten caracteres, solo números" value="{{getAlert.adolecentes_hombres}}"> 
                     </div>
                 </div>
                 <div class="form-group">
-                    <h5>Adolecentes Mujeres <span class="text-danger">*</span></h5>
+                    <h5>Adolecentes Mujeres</h5>
                     <div class="controls">
-                        <input type="text" name="adolecentes_mujeres" class="form-control" required
-                            data-validation-containsnumber-regex="(\d)+"
+                        <input type="text" name="adolecentes_mujeres" class="form-control"
                             data-validation-containsnumber-message="No se permiten caracteres, solo números" value="{{getAlert.adolecentes_mujeres}}">
                     </div>
                 </div>
@@ -562,10 +604,9 @@
                     </fieldset>
                 </div>
                 <div class="form-group">
-                    <h5>Cantidad Aproximada <span class="text-danger">*</span></h5>
+                    <h5>Cantidad Aproximada</h5>
                     <div class="controls">
-                        <input type="text" name="cantidad_aproximada" class="form-control" required
-                            data-validation-containsnumber-regex="(\d)+"
+                        <input type="text" name="cantidad_aproximada" class="form-control" 
                             data-validation-containsnumber-message="No se permiten caracteres, solo números" value="{{getAlert.cantidad_aproximada}}">
                     </div>
                 </div>

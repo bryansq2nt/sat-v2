@@ -12,6 +12,18 @@ let earlyAlertsList = async (req, res) => {
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas Tempranas.", instance: "early-alert/earlyAlertsList" });
 
     var cod_usu_ing = req.user.user_id;
+    let profile_user = req.user.id_perfil;
+    let rol_user = req.user.role;
+
+    // if(rol_user == 1){
+
+    // }else if(rol_user == 2){
+
+    // }else if(rol_user == 3){
+
+    // }else if(rol_user == 4){
+
+    // }
 
     await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
