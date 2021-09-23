@@ -74,7 +74,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: "OV",
+          dependent_answer: 2,
           question_type: "open",
           question: "Otra vía Entrada"
         }
@@ -148,10 +148,10 @@ let getCaseProcessingForm = async (req, res) => {
         },
         {
           question_id: "id_pais_hecho",
-          question_type: "closed",
-          required: 1,
+          enabled: 0,
+          question_type: "open",
           question: "Pais",
-          answers: country
+          answer: "El Salvador"
         },
         {
           question_id: "id_depto_hecho",
@@ -192,6 +192,7 @@ let getCaseProcessingForm = async (req, res) => {
       form_id: 0,
       sections: sections
     }
+
 
     return res.status(200).json({
       form: formcasaProcessing

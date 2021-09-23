@@ -1041,3 +1041,10 @@ funcion: createCaseProcessing
 error: TypeError: Cannot read property 'name' of undefined
 --------------------------------------------------------------------------------------------
 
+2021.09.21, 16:34:30.0754 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: ReferenceError: form is not defined
+--------------------------------------------------------------------------------------------
+
