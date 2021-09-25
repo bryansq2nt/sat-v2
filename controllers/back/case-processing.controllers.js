@@ -233,7 +233,7 @@ let createCaseProcessing = async(req, res) => {
     await db.query(`INSERT INTO tcdh_caso_temp(
       id_caso_temp, hay_mas_vic_den, reg_ing_turno, en_turno, 
       fec_en_turno, tipo_via_entrada, via_entrada, otra_via_entrada, id_usu_asignado, fec_asignado, fecha, fec_hora,  
-      fec_hor_hecho_apro, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, 
+      fec_hor_hecho_aprox, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, 
       fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)`, 
           [numero_caso, 'N', 'N', 'N', registration_date, tipo_via_entrada, via_entrada, otra_via_entrada, cod_usu, fecha, 
