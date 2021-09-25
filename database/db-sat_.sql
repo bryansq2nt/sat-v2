@@ -590,8 +590,9 @@ CREATE TABLE sat_alerta_temprana (
     notificar NUMERIC,
     texto_mensaje TEXT,
     analizada BOOLEAN,
-    enviada_analizar BOOLEAN DEFAULT false;
-    alerta_relacionada BOOLEAN DEFAULT false
+    enviada_analizar BOOLEAN DEFAULT false,
+    alerta_relacionada BOOLEAN DEFAULT false,
+    alerta_padre BOOLEAN DEFAULT false,
     fecha_ing_reg TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_mod_reg TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     cod_usu_ing NUMERIC NOT NULL,
@@ -660,8 +661,8 @@ CREATE TABLE sat_atencion_crisis(
 CREATE SEQUENCE seq_sat_alertas_relacionadas_id_alerta_relacionada;
 CREATE TABLE sat_alertas_relacionadas(
     id_alerta_relacionada NUMERIC NOT NULL DEFAULT nextval('seq_sat_alertas_relacionadas_id_alerta_relacionada'),
-    id_alerta_temprana integer NOT NULL,
-    id_alerta_relacionada integer NOT NULL,
+    id_padre integer NOT NULL,
+    id_hijo integer NOT NULL,
     fecha_ing_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_mod_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cod_usu_ing NUMERIC NOT NULL,
@@ -669,3 +670,29 @@ CREATE TABLE sat_alertas_relacionadas(
     estado NUMERIC(2) NOT NULL DEFAULT 1,
     CONSTRAINT sat_acciones_hecho_pkey PRIMARY KEY (id_acciones_hecho)
 );
+
+CREATE TABLE sat_alerta_temprana_relacionados
+(
+    id_alerta_relacionada NUMERIC NOT NULL DEFAULT nextval('seq_sat_alerta_temprana_relacionados_id_alerta_relacionada'),
+    id_padre numeric NOT NULL,
+    id_hijo numeric NOT NULL,
+    fecha_ing_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_mod_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cod_usu_ing NUMERIC NOT NULL,
+    cod_usu_mod NUMERIC NOT NULL,
+    estado NUMERIC(2) NOT NULL DEFAULT 1,
+    CONSTRAINT sat_alerta_temprana_relacionados_pkey PRIMARY KEY (id_padre, id_hijo)
+);
+
+CREATE TABLE sat_atencion_crisis_relacionados
+(
+    id_atencion_crisis_relacionada NUMERIC NOT NULL DEFAULT nextval('seq_sat_atencion_crisis_relacionados_id_atencion_crisis_relacionada'),
+    id_padre numeric NOT NULL,
+    id_hijo numeric NOT NULL,
+    fecha_ing_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_mod_reg TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cod_usu_ing NUMERIC NOT NULL,
+    cod_usu_mod NUMERIC NOT NULL,
+    estado NUMERIC(2) NOT NULL DEFAULT 1,
+    CONSTRAINT sat_atencion_crisis_relacionados_pkey PRIMARY KEY (id_padre, id_hijo)
+)

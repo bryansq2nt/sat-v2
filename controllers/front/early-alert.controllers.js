@@ -851,7 +851,7 @@ let viewUpdateAlert = async (req, res) => {
 
   try {
 
-  let getAlert = await db.query(`SELECT st.*, to_char(st.fecha_hechos::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_fechos, to_char(st.fecha_publicacion_prensa::date , 'YYYY-MM-DD') as nueva_fecha_prensa, to_char(st.fecha_reporte::date , 'YYYY-MM-DD') as nueva_fecha_reporte, to_char(st.fecha_pub_red_social::date , 'YYYY-MM-DD') as nueva_fecha_red_social, to_char(st.fecha_emision_radio::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_radio, tf.nombre_tipo_fuente, f.nombre_fuente, p.descripcion, ad.descripcion AS departamento, m.descripcion as municipio,
+  let getAlert = await db.query(`SELECT st.*, to_char(st.fecha_hechos::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_fechos, to_char(st.fecha_publicacion_prensa::date , 'yyyy-mm-dd') as nueva_fecha_prensa, to_char(st.fecha_reporte::date , 'YYYY-MM-DD') as nueva_fecha_reporte, to_char(st.fecha_pub_red_social::date , 'YYYY-MM-DD') as nueva_fecha_red_social, to_char(st.fecha_emision_radio::timestamp , 'YYYY-MM-DD HH:MM:SS') as nueva_fecha_radio, tf.nombre_tipo_fuente, f.nombre_fuente, p.descripcion, ad.descripcion AS departamento, m.descripcion as municipio,
   z.nombre_zona, s.nombre_escenario, d.descripcion AS derecho, tm.nombre_tema, sb.nombre_subtema,
   sc.nombre_sit_conflictiva, c.nombre_criterio, h.nombre_hecho, ha.nombre_hecho as hecho_anterior, stc.nombre_conflicto
   FROM sat_alerta_temprana AS st
