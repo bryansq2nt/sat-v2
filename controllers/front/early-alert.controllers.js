@@ -41,10 +41,11 @@ let earlyAlertsList = async (req, res) => {
       //Perfil Supervisor
     }else if(rol_user == 3){
 
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, enviada_analizar 
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
+      alerta_padre  
       FROM sat_alerta_temprana 
-      WHERE cod_usu_ing = $1 AND enviada_analizar = false
-      ORDER BY id_alerta_temprana DESC`, [cod_usu_ing]);
+      WHERE alerta_relacionada = false
+      ORDER BY id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
 
       //Perfil Analista 

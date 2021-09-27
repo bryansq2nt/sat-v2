@@ -12,18 +12,64 @@ let earlyAlertsList = async (req, res) => {
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas Tempranas.", instance: "early-alert/earlyAlertsList" });
 
     var cod_usu_ing = req.user.user_id;
-    let profile_user = req.user.id_perfil;
-    let rol_user = req.user.role;
+    let rol_user = req.user.roles[0].role_id;
+    //let earlyAlerts;
 
-    // if(rol_user == 1){
+    //Perfil Consulta
+    if(rol_user == 1){
+      
+      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_alerta_temprana 
+      LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
+      WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
+      GROUP BY sat_alerta_temprana.id_alerta_temprana
+      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
+      earlyAlertR = earlyAlertR.rows;
 
-    // }else if(rol_user == 2){
+    //Perfil Tecnico
+    }else if(rol_user == 2){
 
-    // }else if(rol_user == 3){
+      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_alerta_temprana 
+      LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
+      WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
+      AND cod_usu_ing = $1 
+      GROUP BY sat_alerta_temprana.id_alerta_temprana
+      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset]);
+      earlyAlertR = earlyAlertR.rows;
 
-    // }else if(rol_user == 4){
 
-    // }
+    //Perfil Supervisor
+    }else if(rol_user == 3){
+      
+      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_alerta_temprana 
+      LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
+      WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
+      GROUP BY sat_alerta_temprana.id_alerta_temprana
+      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
+      earlyAlertR = earlyAlertR.rows;
+    
+    //Perfil Analista
+    }else if(rol_user == 4){
+
+      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_alerta_temprana 
+      LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
+      WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
+      AND enviada_analizar = true
+      GROUP BY sat_alerta_temprana.id_alerta_temprana
+      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
+      earlyAlertR = earlyAlertR.rows;
+    }
 
     await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
@@ -32,8 +78,7 @@ let earlyAlertsList = async (req, res) => {
       LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
       WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
       AND cod_usu_ing = $1 
-      GROUP BY sat_alerta_temprana.id_alerta_temprana
-      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2`, [cod_usu_ing,offset], (err, results) => {
+      GROUP BY sat_alerta_temprana.id_alerta_temprana`, [cod_usu_ing,offset], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());

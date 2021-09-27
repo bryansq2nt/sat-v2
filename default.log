@@ -1048,6 +1048,7 @@ funcion: viewUpdateAlert
 error: error: la sintaxis de entrada no es válida para tipo timestamp: «YYYY-MM-DD HH:MM:SS»
 --------------------------------------------------------------------------------------------
 
+<<<<<<< HEAD
 2021.09.26, 09:18:20.0803 UTC -> 
 archivo: case-processing.controller
 ruta: src/controllers/back
@@ -1060,5 +1061,26 @@ archivo: case-processing.controller
 ruta: src/controllers/back
 funcion: getCaseProcessingFormById
 error: ReferenceError: form is not defined
+=======
+2021.09.27, 20:29:16.0653 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcesingById
+error: error: la sintaxis de entrada no es válida para tipo numeric: «involved»
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 20:35:22.0837 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcesingById
+error: error: la sintaxis de entrada no es válida para tipo numeric: «person-involved»
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 20:35:38.0489 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: error: la sintaxis de entrada no es válida para tipo numeric: «form»
+>>>>>>> 06df6358d6c23ded99c82968b5249b7dce29c421
 --------------------------------------------------------------------------------------------
 

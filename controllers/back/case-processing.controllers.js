@@ -44,7 +44,7 @@ let getCaseProcessingForm = async (req, res) => {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
 
     var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
-    country = country.rows[0];
+    country = country.rows;
 
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
@@ -72,9 +72,9 @@ let getCaseProcessingForm = async (req, res) => {
           question: "Tipo Vía Entrada",
           required: 1,
           answers: [
-            { answer_id:'V', answer: 'V' },
-            { answer_id:'E', answer: 'E' },
-            { answer_id:'O', answer: 'O' }
+            { answer_id:'V', answer: 'Verbal' },
+            { answer_id:'E', answer: 'Escrita' },
+            { answer_id:'O', answer: 'De Oficio' }
           ]
         },
         {
@@ -83,23 +83,23 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           question: "Via Entrada",
           answers: [
-            { answer_id:'P', answer: 'P' },
-            { answer_id:'T', answer: 'T' },
-            { answer_id:'OV', answer: 'OV' },
+            { answer_id:'p', answer: 'Persona' },
+            { answer_id:'T', answer: 'Telefonica' },
+            { answer_id:'OV', answer: 'Otra' },
 
-            { answer_id:'F', answer: 'F' },
-            { answer_id:'E', answer: 'E' },
-            { answer_id:'C', answer: 'C' },
-            { answer_id:'OE', answer: 'OE' },
+            { answer_id:'F', answer: 'Fax' },
+            { answer_id:'E', answer: 'E-mail' },
+            { answer_id:'C', answer: 'Carta' },
+            { answer_id:'OE', answer: 'Otra' },
 
-            { answer_id:'PE', answer: 'PE' },
-            { answer_id:'R', answer: 'R' },
-            { answer_id:'TV', answer: 'TV' },
-            { answer_id:'I', answer: 'I' },
-            { answer_id:'IN', answer: 'IN' },
-            { answer_id:'A', answer: 'A' },
-            { answer_id:'N', answer: 'N' },
-            { answer_id:'OF', answer: 'OF' },
+            { answer_id:'PE', answer: 'Prensa Escrita' },
+            { answer_id:'R', answer: 'Radio' },
+            { answer_id:'TV', answer: 'Television' },
+            { answer_id:'I', answer: 'Internet' },
+            { answer_id:'IN', answer: 'Informe' },
+            { answer_id:'A', answer: 'Aviso' },
+            { answer_id:'N', answer: 'Noticia' },
+            { answer_id:'OF', answer: 'Otra' },
             
           ]
         },
@@ -108,54 +108,64 @@ let getCaseProcessingForm = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: 2,
+          dependent_answer: 'OV',
           question_type: "open",
           question: "Otra vía Entrada"
-        }
-      ]
-    };
-
-    //Seccion Al Seleccionar De Oficio/Otra
-    var emissionSource = {
-      section_id: 2,
-      dependent: 1,
-      dependent_section_id: 1,
-      dependent_question_id: "tipo_persona",
-      dependent_answer: "OF",
-      section_title: "Fuente de Emision",
-      questions: [
+        },
         {
           question_id: "fuente",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "open",
           question: "Fuente Emisión"
         },
         {
           question_id: "fec_emision",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "date",
           question: "Fecha Emisión"
         },
         {
           question_id: "tit_emision",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "open",
           question: "Título Emisión"
         },
         {
           question_id: "fec_recepcion",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "date_after",
           question: "Fecha Recepción"
         },
         {
           question_id: "otra_via_entrada",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "area",
           question: "Otra vía Entrada"
         }
       ]
-    }
+    };
+
+   
 
     //Lugar y Hecho
     var institutionInformation = {
@@ -163,33 +173,31 @@ let getCaseProcessingForm = async (req, res) => {
       section_title: "Lugar y Hecho",
       questions: [
         {
-          question_id: "fecha_hecho",
-          question_type: "date_time",
+          question_id: "fec_hecho",
+          question_type: "date",
           required: 1,
           question: "Fecha y Hora Hecho"
         },
         {
           question_id: "fec_hor_hecho_aprox",
-          question_type: "date_time",
+          question_type: "date",
           required: 1,
           question: "Fecha y Hora Hecho ES",
           answers: [
-            {answer_id: 0, answer: 'A'},
-            {answer_id: 1, answer: 'E'},
-            {answer_id: 2, answer: 'H'},
-            {answer_id: 3, answer: 'F'}
+            { answer_id: 'A', answer: 'Fecha y Hora Exacta' },
+            { answer_id: 'E', answer: 'Fecha y Hora Aproximada' },
+            { answer_id: 'H', answer: 'Fecha Exacta y Hora Aproximada' },
+            { answer_id: 'F', answer: 'Fecha Aproximada y Hora Exacta' }
           ]
         },
         {
           question_id: "id_pais_hecho",
-          enabled: 0,
-          question_type: "open",
+          question_type: "closed",
           question: "Pais",
-          answer: "El Salvador"
+          answers: country
         },
         {
           question_id: "id_depto_hecho",
-          required: 1,
           question_type: "closed_with_child",
           has_child: 1,
           principal_child: "id_mun_hecho",
@@ -199,7 +207,6 @@ let getCaseProcessingForm = async (req, res) => {
         {
           question_id: "id_mun_hecho",
           question_type: "closed",
-          required: 1,
           question: "Municipio",
           answers: municipality
         },
@@ -220,7 +227,7 @@ let getCaseProcessingForm = async (req, res) => {
     }
 
 
-    sections.push(meansEntry, emissionSource, institutionInformation);
+    sections.push(meansEntry, institutionInformation);
 
     var formcasaProcessing = {
       form_id: 0,
@@ -290,12 +297,17 @@ let createCaseProcessing = async(req, res) => {
 
 let getCaseProcesingById = async (req, res) => {
   const { id_caso_temp } = req.params;
+
   try {
 
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
 
+    var caseProcessing = await db.query(`SELECT * FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso_temp]);
+    caseProcessing = caseProcessing.rows[0];
+
     var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
-    country = country.rows[0];
+    country = country.rows;
+
 
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
@@ -315,17 +327,19 @@ let getCaseProcesingById = async (req, res) => {
           question_id: "fecha",
           question_type: "date",
           required: 1,
-          question: "Fecha de ingreso"
+          question: "Fecha de ingreso",
+          answer:caseProcessing.fecha
         },
         {
           question_id: "tipo_via_entrada",
           question_type: "closed",
           question: "Tipo Vía Entrada",
           required: 1,
+          answer: caseProcessing.tipo_via_entrada,
           answers: [
-            { answer_id:'V', answer: 'V' },
-            { answer_id:'E', answer: 'E' },
-            { answer_id:'O', answer: 'O' }
+            { answer_id: 'V', answer: 'verbal' },
+            { answer_id: 'E', answer: 'escrita' },
+            { answer_id: 'O', answer: 'otra' }
           ]
         },
         {
@@ -333,24 +347,25 @@ let getCaseProcesingById = async (req, res) => {
           question_type: "closed",
           required: 1,
           question: "Via Entrada",
+          answer:caseProcessing.via_entrada,
           answers: [
-            { answer_id:'P', answer: 'P' },
-            { answer_id:'T', answer: 'T' },
-            { answer_id:'OV', answer: 'OV' },
+            { answer_id:'p', answer: 'persona' },
+            { answer_id:'T', answer: 'telefonica' },
+            { answer_id:'OV', answer: 'Otra' },
 
-            { answer_id:'F', answer: 'F' },
-            { answer_id:'E', answer: 'E' },
-            { answer_id:'C', answer: 'C' },
-            { answer_id:'OE', answer: 'OE' },
+            { answer_id:'F', answer: 'fax' },
+            { answer_id:'E', answer: 'e-mail' },
+            { answer_id:'C', answer: 'carta' },
+            { answer_id:'OE', answer: 'otra' },
 
-            { answer_id:'PE', answer: 'PE' },
-            { answer_id:'R', answer: 'R' },
-            { answer_id:'TV', answer: 'TV' },
-            { answer_id:'I', answer: 'I' },
-            { answer_id:'IN', answer: 'IN' },
-            { answer_id:'A', answer: 'A' },
-            { answer_id:'N', answer: 'N' },
-            { answer_id:'OF', answer: 'OF' },
+            { answer_id:'PE', answer: 'prensa escrita' },
+            { answer_id:'R', answer: 'radio' },
+            { answer_id:'TV', answer: 'television' },
+            { answer_id:'I', answer: 'internet' },
+            { answer_id:'IN', answer: 'informe' },
+            { answer_id:'A', answer: 'aviso' },
+            { answer_id:'N', answer: 'noticia' },
+            { answer_id:'OF', answer: 'otra' },
             
           ]
         },
@@ -359,54 +374,70 @@ let getCaseProcesingById = async (req, res) => {
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: 2,
+          dependent_answer: "OV",
           question_type: "open",
-          question: "Otra vía Entrada"
-        }
-      ]
-    };
-
-    //Seccion Al Seleccionar De Oficio/Otra
-    var emissionSource = {
-      section_id: 2,
-      dependent: 1,
-      dependent_section_id: 1,
-      dependent_question_id: "tipo_persona",
-      dependent_answer: "OF",
-      section_title: "Fuente de Emision",
-      questions: [
+          question: "Otra vía Entrada",
+          answer: caseProcessing.otra_via_entrada
+        },
         {
           question_id: "fuente",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "open",
-          question: "Fuente Emisión"
+          question: "Fuente Emisión",
+          answer: caseProcessing.fuente
         },
         {
           question_id: "fec_emision",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "date",
-          question: "Fecha Emisión"
+          question: "Fecha Emisión",
+          answer: caseProcessing.fec_emision
+
         },
         {
           question_id: "tit_emision",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "open",
-          question: "Título Emisión"
+          question: "Título Emisión",
+          answer: caseProcessing.tit_emision
         },
         {
           question_id: "fec_recepcion",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "date_after",
-          question: "Fecha Recepción"
+          question: "Fecha Recepción",
+          answer: caseProcessing.fec_recepcion
         },
         {
           question_id: "otra_via_entrada",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: "OF",
           question_type: "area",
-          question: "Otra vía Entrada"
+          question: "Otra vía Entrada",
+          answer: caseProcessing.otra_via_entrada
         }
       ]
-    }
+    };
+
 
     //Lugar y Hecho
     var institutionInformation = {
@@ -414,44 +445,48 @@ let getCaseProcesingById = async (req, res) => {
       section_title: "Lugar y Hecho",
       questions: [
         {
-          question_id: "fecha",
-          question_type: "date",
+          question_id: "fec_hecho",
+          question_type: "date_time",
           required: 1,
-          question: "Fecha y Hora Hecho"
+          question: "Fecha y Hora Hecho",
+          answer: caseProcessing.fec_hecho 
         },
         {
-          question_id: "fecha",
-          question_type: "fec_hor_hecho_aprox",
+          question_id: "fec_hor_hecho_aprox",
+          question_type: "closed",
           required: 1,
           question: "Fecha y Hora Hecho ES",
+          answer: caseProcessing.fec_hor_hecho_aprox,
           answers: [
-            {answer_id: 0, answer: 'A'},
-            {answer_id: 1, answer: 'E'},
-            {answer_id: 2, answer: 'H'},
-            {answer_id: 3, answer: 'F'}
+            { answer_id: 'A', answer: 'Fecha y Hora Exacta' },
+            { answer_id: 'E', answer: 'Fecha y Hora Aproximada' },
+            { answer_id: 'H', answer: 'Fecha Exacta y Hora Aproximada' },
+            { answer_id: 'F', answer: 'Fecha Aproximada y Hora Exacta' }
           ]
         },
         {
           question_id: "id_pais_hecho",
-          enabled: 0,
-          question_type: "open",
+          question_type: "closed",
+          required: 1,
           question: "Pais",
-          answer: "El Salvador"
+          //answer: Number.parseInt(caseProcessing.id_pais_hecho),
+          answer: 62,
+          answers: country
         },
         {
           question_id: "id_depto_hecho",
-          required: 1,
           question_type: "closed_with_child",
           has_child: 1,
           principal_child: "id_mun_hecho",
           question: "Departamento",
+          answer: Number.parseInt(caseProcessing.id_depto_hecho),
           answers: state
         },
         {
           question_id: "id_mun_hecho",
           question_type: "closed",
-          required: 1,
           question: "Municipio",
+          answer: Number.parseInt(caseProcessing.id_mun_hecho),
           answers: municipality
         },
         {
@@ -459,29 +494,32 @@ let getCaseProcesingById = async (req, res) => {
           question_type: "area",
           required: 1,
           question: "Lugar del Hecho",
+          answer: caseProcessing.lugar
         },
         {
           question_id: "hecho",
           question_type: "area",
           required: 1,
           question: "Descripcíon del Hecho",
+          answer: caseProcessing.hecho
         }
 
       ]
     }
 
 
-    sections.push(meansEntry, emissionSource, institutionInformation);
+    sections.push(meansEntry, institutionInformation);
 
     var formcasaProcessing = {
-      form_id: 0,
+      form_id: caseProcessing.id_caso_temp,
       sections: sections
     }
 
-
+    
     return res.status(200).json({
       form: formcasaProcessing
     })
+
 
   } catch (error) {
     log('src/controllers/back', 'case-processing', 'getCaseProcessingFormById', error, true, req, res);
@@ -541,6 +579,37 @@ let updateCaseProcesing = async (req, res) => {
 
 //Persona Involucrado
 
+let getInvolvedFormList = async (req,res) => {
+  const { id_caso_temp } = req.params;
+  const { offset } = req.query;
+
+  var cod_usu = req.user.user_id;
+
+  try {
+    
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener la lista de involucrados del caso.", instance: "case-processing/getInvolvedFormList" });
+    await db.query(`SELECT id_persona_temp::integer AS form_id, CONCAT(nombre,' ',apellido) AS answer
+    FROM tcdh_persona_temp 
+    WHERE id_caso_temp = $1 AND cod_usu_ing = $2
+    ORDER BY id_caso_temp DESC LIMIT 25 OFFSET $3
+    `, [id_caso_temp,cod_usu,offset], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var involved = results.rows;       
+        return res.status(200).json({
+          involved
+        });
+      }
+    });
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'getInvolvedFormList', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+}
+
 let getPersonInvolvedForm = async (req, res) => {
 
   try {
@@ -572,7 +641,7 @@ let getPersonInvolvedForm = async (req, res) => {
     // qualityOperates = qualityOperates.rows;
 
     var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
-    country = country.rows[0];
+    country = country.rows;
 
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
@@ -600,9 +669,9 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Tipo de Persona",
           answers: [
-            { answer_id:0, answer: 'D' },
-            { answer_id:1, answer: 'V' },
-            { answer_id:2, answer: 'A' }
+            { answer_id:'D', answer: 'Denunciante' },
+            { answer_id:'V', answer: 'Victima' },
+            { answer_id:'A', answer: 'Denunciante/Victima' }
           ]
         },
         {
@@ -615,8 +684,8 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Persona Denunciante",
           answers: [
-            { answer_id:0, answer: 'N' },
-            { answer_id:1, answer: 'J' },
+            { answer_id:'N', answer: 'Natural' },
+            { answer_id:'J', answer: 'Jurídico' },
           ]
         },
         {
@@ -629,10 +698,11 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Persona Victima",
           answers: [
-            { answer_id:0, answer: 'I' },
-            { answer_id:1, answer: 'C' },
+            { answer_id:'I', answer: 'Individual' },
+            { answer_id:'C', answer: 'Colectivo' },
           ]
         },
+        //no seguardan en bases de datos
         {
           question_id: "confidencial",
           required: 1,
@@ -640,8 +710,8 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Confidencial",
           answers: [
-            { answer_id:0, answer: 'S' },
-            { answer_id:1, answer: 'N' }
+            { answer_id:'S', answer: 'Si' },
+            { answer_id:'N', answer: 'No' }
           ]
         },
         {
@@ -649,8 +719,8 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Autoriza Proporcionar Sus Datos Personales",
           answers: [
-            { answer_id:0, answer: 'S' },
-            { answer_id:'N', answer: 'N' }
+            { answer_id:'S', answer: 'Si' },
+            { answer_id:'N', answer: 'No' }
           ]
         }
       ]
@@ -731,7 +801,7 @@ let getPersonInvolvedForm = async (req, res) => {
           enabled: 0,
           question_type: "open",
           question: "Pais Nacimiento",
-          answer: "El Salvador"
+          answers: country
         },
         {
           question_id: "sexo",
@@ -781,9 +851,9 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Identidad de Genéro",
           answers: [
-            { answer_id:0, answer: 'F'},
-            { answer_id:1, answer: 'M'},
-            { answer_id:2, answer: 'S'}
+            { answer_id:'F', answer: 'Femenino'},
+            { answer_id:'M', answer: 'Masculino'},
+            { answer_id:'S', answer: 'Sin Respuesta'}
           ]
         },
         {
@@ -821,7 +891,6 @@ let getPersonInvolvedForm = async (req, res) => {
       questions: [
         {
           question_id: "id_departamento",
-          required: 1,
           question_type: "closed_with_child",
           has_child: 1,
           principal_child: "id_municipio",
@@ -831,7 +900,6 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "id_municipio",
           question_type: "closed",
-          required: 1,
           question: "Municipio",
           answers: municipality
         },
@@ -841,9 +909,9 @@ let getPersonInvolvedForm = async (req, res) => {
           required: 1,
           question: "Tipo de Zona",
           answers: [
-            { answer_id:0, answer: 'R'},
-            { answer_id:1, answer: 'U'},
-            { answer_id:2, answer: 'N'}
+            { answer_id:'R', answer: 'Rural'},
+            { answer_id:'U', answer: 'Urbano'},
+            { answer_id:'N', answer: 'No Definida'}
           ]
         },
         // {
@@ -864,11 +932,11 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed_multiple",
           question: "Medio de Notificación",
           answers: [
-            { answer_id:0, answer: 'T'},
-            { answer_id:1, answer: 'D' },
-            { answer_id:2, answer: 'F' },
-            { answer_id:3, answer: 'C' },
-            { answer_id:4, answer: 'P' }
+            { answer_id:'T', answer: 'Teléfono'},
+            { answer_id:'D', answer: 'Dirección que señala para notificar' },
+            { answer_id:'F', answer: 'Fax' },
+            { answer_id:'C', answer: 'Correo Electrónico' },
+            { answer_id:'P', answer: 'Pendiente' }
           ]
         }
 
@@ -943,7 +1011,7 @@ let getPersonInvolvedForm = async (req, res) => {
 };
 
 let createPersonInvolvedForm = async(req, res) =>{
-  //const {} = req.params;
+  const {} = req.params;
   const {per_den_es_victima, per_principal, nombre, apellido,
     id_cat_cal_actua, sexo, ide_genero, lee, escribe, id_cat_doc_persona,
     otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
@@ -1013,18 +1081,421 @@ let getPersonInvolvedById = async(req, res) =>{
   try {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/getPersonInvolvedById" });
     
-    await db.query(`SELECT * FROM tcdh_persona_temp 
-      WHERE id_persona_temp = $1`, [id_persona_temp], (err, results)=>{
-      if(err){
-        console.log(err.message);
-        return res.status(500).json(errorResponse.toJson());
-      }else{
-        let personInvolved = results.rows[0];
-        return res.status(201).json({
-          personInvolved
-        });
-      }
-    });
+    var personInvolved = await db.query(`SELECT * FROM tcdh_persona_temp WHERE id_persona_temp = $1`, [id_persona_temp]);
+    personInvolved = personInvolved.rows[0];
+
+    var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
+    personalDocuments = personalDocuments.rows;
+
+    var occupation = await db.query(`SELECT id_cat_pro_oficio::integer AS answer_id, descripcion AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A'`);
+    occupation = occupation.rows;
+
+    var vulnerableGroup = await db.query(`SELECT id_grp_vulnerable::integer AS answer_id, descripcion AS answer FROM admi_grp_vulnerable WHERE est_reg = 'A' ORDER BY id_grp_vulnerable ASC`);
+    vulnerableGroup = vulnerableGroup.rows;
+
+    var sexualOrientation = await db.query(`SELECT id_ori_sexual::integer AS answer_id, descripcion AS answer FROM admi_ori_sexual WHERE est_reg = 'A' ORDER BY id_ori_sexual ASC`);
+    sexualOrientation = sexualOrientation.rows;
+
+    var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
+    notificationMeans = notificationMeans.rows;
+
+    // var typeDisability = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
+    // typeDisability = typeDisability.rows;
+
+    // var academicLevel = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
+    // academicLevel = academicLevel.rows;
+
+    // var qualityOperates = await db.query(`SELECT id_cat_cal_actua::integer AS answer_id, descripcion AS answer FROM admi_cat_cal_actua WHERE est_reg = 'A'`);
+    // qualityOperates = qualityOperates.rows;
+
+    var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
+    country = country.rows[0];
+
+    var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
+    state = state.rows;
+
+    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare FROM admi_municipio WHERE est_reg = 'A'`);
+    municipality = municipality.rows;
+
+    var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
+    typeZone = typeZone.rows;
+
+    let academicLevel = [];
+    let typeDisability = [];
+    let qualityOperates = [];
+
+    var sections = [];
+
+    // Seccion --- Denunciante
+    var whistleblower = {
+      section_id: 1,
+      section_title: "Identificación de Tipo de Persona",
+      questions: [
+        {
+          question_id: "tipo_rel_caso",
+          required: 1,
+          question_type: "closed",
+          question: "Tipo de Persona",
+          answer: personInvolved.tipo_rel_caso,
+          answers: [
+            { answer_id:'D', answer: 'Denunciante' },
+            { answer_id:'V', answer: 'Victima' },
+            { answer_id:'A', answer: 'Denunciante/Victima' }
+          ]
+        },
+        {
+          question_id: "persona_denunciante ",
+          required: 1,
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "tipo_rel_caso",
+          dependent_answer: "D",
+          question_type: "closed",
+          question: "Persona Denunciante",
+          answer: personInvolved.persona_denunciante,
+          answers: [
+            { answer_id:'N', answer: 'Natural' },
+            { answer_id:'J', answer: 'Jurídico' },
+          ]
+        },
+        {
+          question_id: "persona_victima",
+          required: 1,
+          dependent: 2,
+          dependent_section_id: 1,
+          dependent_question_id: "tipo_rel_caso",
+          dependent_answer: "V",
+          question_type: "closed",
+          question: "Persona Victima",
+          answer: personInvolved.persona_victima,
+          answers: [
+            { answer_id:'I', answer: 'Individual' },
+            { answer_id:'C', answer: 'Colectivo' },
+          ]
+        },
+        //no seguardan en bases de datos
+        {
+          question_id: "confidencial",
+          required: 1,
+          required: 1,
+          question_type: "closed",
+          question: "Confidencial",
+          answers: [
+            { answer_id:'S', answer: 'Si' },
+            { answer_id:'N', answer: 'No' }
+          ]
+        },
+        {
+          question_id: "aut_dat_den_vic",
+          question_type: "closed",
+          question: "Autoriza Proporcionar Sus Datos Personales",
+          answers: [
+            { answer_id:'S', answer: 'Si' },
+            { answer_id:'N', answer: 'No' }
+          ]
+        }
+      ]
+    };
+
+    //Seccion --- Denunciante/Victima
+    // var whistleblowerAndvictim = {
+    //   section_id: 2,
+    //   dependent: 1,
+    //   dependent_section_id: 1,
+    //   dependent_question_id: "tipo_persona",
+    //   dependent_answer: "A",
+    //   section_title: "Denunciante/Victima",
+    //   questions: [
+    //     {
+    //       question_id: "persona_denunciante",
+    //       question_type: "closed",
+    //       question: "Persona Denunciante",
+    //       answers: [
+    //         { answer_id: 0, answer: 'N' },
+    //         { answer_id: 1, answer: 'J' },
+    //       ]
+    //     },
+    //     {
+    //       question_id: "persona_victima",
+    //       question_type: "closed",
+    //       question: "Persona Victima",
+    //       answers: [
+    //         { answer_id: 0, answer: 'I' },
+    //         { answer_id: 1, answer: 'C' },
+    //       ]
+    //     },
+    //   ]
+    // };
+
+
+    //Seccion --- Informacion general de la persona
+    var generalData = {
+      section_id: 2,
+      dependent: 1,
+      dependent_section_id: 1,
+      dependent_question_id: "persona_denunciante",
+      dependent_answer: "N",
+      section_title: "Información General de la persona",
+      questions: [
+        {
+          question_id: "nombre",
+          required: 1,
+          question_type: "open",
+          question: "Nombre",
+          answer: personInvolved.nombre
+        },
+        {
+          question_id: "apellido",
+          required: 1,
+          question_type: "open",
+          question: "Apellido",
+          answer: personInvolved.apellido
+        },
+        {
+          question_id: "id_cat_doc_persona",
+          required: 1,
+          question_type: "closed",
+          question: "Doc. Presentado",
+          answer: personInvolved.id_cat_doc_persona,
+          answers: personalDocuments
+        },
+        {
+          question_id: "num_documento",
+          required: 1,
+          question_type: "open",
+          question: "Núm. Documento",
+          answer: personInvolved.num_documento
+        },
+        {
+          question_id: "fec_nacimiento",
+          question_type: "date",
+          question: "Fecha Nacimiento",
+          answer: personInvolved.fec_nacimiento
+        },
+        {
+          question_id: "id_pais",
+          enabled: 0,
+          question_type: "open",
+          question: "Pais Nacimiento",
+          answer: personInvolved.id_pais,
+          answers: country
+        },
+        {
+          question_id: "sexo",
+          required: 1,
+          question_type: "radiobutton",
+          question: "Sexo",
+          answer: personInvolved.sexo
+        },
+        {
+          question_id: "lee",
+          required: 1,
+          question_type: "radiobutton",
+          question: "Saber Leer",
+          answer: personInvolved.lee
+        },
+        {
+          question_id: "escribe",
+          required: 1,
+          question_type: "radiobutton",
+          question: "Saber Escribir",
+          answer: personInvolved.escribe
+        },
+        {
+          question_id: "discapacidad",
+          question_type: "radiobutton",
+          question: "Discapacidad",
+          answer: personInvolved.discapacidad
+        },
+        {
+          question_id: "id_ori_sexual",
+          required: 1,
+          question_type: "closed_multiple",
+          question: "Orientación Sexual",
+          answer: personInvolved.id_ori_sexual,
+          answers: sexualOrientation
+        },
+        {
+          question_id: "edad_aprox",
+          required: 1,
+          question_type: "open",
+          question: "Edad Aproximada",
+          answer: personInvolved.edad_aprox
+        },
+        {
+          question_id: "id_cat_pro_oficio",
+          required: 1,
+          question_type: "closed",
+          question: "Ocupación",
+          answer: personInvolved.id_cat_pro_oficio,
+          answers: occupation
+        },
+        {
+          question_id: "ide_genero",
+          question_type: "closed",
+          question: "Identidad de Genéro",
+          answer: personInvolved.ide_genero,
+          answers: [
+            { answer_id:'F', answer: 'Femenino'},
+            { answer_id:'M', answer: 'Masculino'},
+            { answer_id:'S', answer: 'Sin Respuesta'}
+          ]
+        },
+        {
+          question_id: "id_niv_academico",
+          required: 1,
+          dependent: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "escribe",
+          dependent_answer: true,
+          question_type: "closed",
+          question: "Niv. Académico",
+          answer: personInvolved.id_niv_academico,
+          answers: academicLevel
+        },
+        {
+          question_id: "id_cat_tip_discapacidad",
+          required: 1,
+          dependent: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "escribe",
+          dependent_answer: true,
+          question_type: "closed",
+          question: "Tipo de Discapacidad",
+          answer: personInvolved.id_cat_tip_discapacidad,
+          answers: typeDisability
+        }
+
+      ]
+
+    };
+
+    //Seccion --- Informacion de Ubicacion de la Persona
+    var locationPerson = {
+      section_id: 3,
+      bold_title: 1,
+      section_title: "Información de Ubicación de la Persona",
+      questions: [
+        {
+          question_id: "id_departamento",
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_municipio",
+          question: "Departamento",
+          answer: personInvolved.id_departamento,
+          answers: state
+        },
+        {
+          question_id: "id_municipio",
+          question_type: "closed",
+          question: "Municipio",
+          answer: personInvolved.id_municipio,
+          answers: municipality
+        },
+        {
+          question_id: "zona_domicilio",
+          question_type: "closed",
+          required: 1,
+          question: "Tipo de Zona",
+          answer: personInvolved.zona_domicilio,
+          answers: [
+            { answer_id:'R', answer: 'Rural'},
+            { answer_id:'U', answer: 'Urbano'},
+            { answer_id:'N', answer: 'No Definida'}
+          ]
+        },
+        // {
+        //   question_id: "id_documento_solicitante",
+        //   question_type: "closed",
+        //   question: "Documento de identificación",
+        //   required: 1,
+        //   answers: personalDocuments
+        // },
+        {
+          question_id: "domicilio",
+          question_type: "area",
+          required: 1,
+          question: "Dirección",
+          answer: personInvolved.domicilio
+        },
+        {
+          question_id: "med_rec_notificacion",
+          question_type: "closed_multiple",
+          question: "Medio de Notificación",
+          answer: personInvolved.med_rec_notificacion,
+          answers: [
+            { answer_id:'T', answer: 'Teléfono'},
+            { answer_id:'D', answer: 'Dirección que señala para notificar' },
+            { answer_id:'F', answer: 'Fax' },
+            { answer_id:'C', answer: 'Correo Electrónico' },
+            { answer_id:'P', answer: 'Pendiente' }
+          ]
+        }
+
+      ]
+
+    };
+
+    //Seccion --- Grupos en Condición de Vulnerabilidad
+    var SectionvulnerableGroups = {
+      section_id: 4,
+      section_title: "Grupos en Condición de Vulnerabilidad",
+      questions: [
+        {
+          question_id: "id_grp_vulnerable",
+          required: 1,
+          question_type: "closed_multiple",
+          question: "Grupos en condición de vulnerabilidad",
+          answers: vulnerableGroup
+        }
+      ]
+    };
+
+    //Información de Institución
+    var institutionInformation = {
+      section_id: 5,
+      dependent: 1,
+      dependent_section_id: 1,
+      dependent_question_id: "persona_denunciante",
+      dependent_answer: "J",
+      section_title: "Información de Institución",
+      questions: [
+        {
+          question_id: "institucion",
+          question_type: "area",
+          required: 1,
+          question: "Institucion",
+        },
+        {
+          question_id: "nacionalidad_insitucion",
+          question_type: "closed",
+          question: "Nacionalidad de Institución",
+          answers: []
+        },
+        {
+          question_id: "id_cat_cal_actua",
+          required: 1,
+          question_type: "closed",
+          question: "Calidad en que Actúa",
+          answer: personInvolved.id_cat_cal_actua,
+          answers: qualityOperates
+        }
+
+      ]
+    }
+
+ 
+    sections.push(whistleblower, generalData, locationPerson, SectionvulnerableGroups, institutionInformation);
+
+    var involved = {
+      form_id: personInvolved.id_persona_temp,
+      sections: sections
+    }
+
+    return res.status(200).json({
+      form: involved
+    })
+
 
   } catch (error) {
     log('src/controllers/back', 'case-processing', 'getPersonInvolvedById', error, true, req, res);
@@ -1107,5 +1578,6 @@ let deletePersonInvolved = async(req, res) =>{
     createPersonInvolvedForm,
     getPersonInvolvedById,
     updatePersonInvolvedForm,
-    deletePersonInvolved
+    deletePersonInvolved,
+    getInvolvedFormList
   }
