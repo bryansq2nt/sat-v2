@@ -5,8 +5,291 @@ const dateFormat = require('dateformat');
 
 //Tramitacion de Casos
 
+let getcaseProcesingFormList = async (req,res) => {
+  const { offset } = req.query;
+
+  var cod_usu = req.user.user_id;
+
+  try {
+    
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
+    await db.query(`SELECT id_caso_temp::numeric AS form_id 
+    FROM tcdh_caso_temp 
+    WHERE cod_usu_ing = $1
+    ORDER BY id_caso_temp DESC LIMIT 25 OFFSET $2
+    `, [cod_usu,offset], (err, results) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json(errorResponse.toJson());
+      } else {
+        var cases = results.rows;
+
+       
+        return res.status(200).json({
+          cases
+        });
+      }
+    });
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'getCaseProcesingById', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+}
+
 let getCaseProcessingForm = async (req, res) => {
 
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
+
+    var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
+    country = country.rows[0];
+
+    var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
+    state = state.rows;
+
+    var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare FROM admi_municipio WHERE est_reg = 'A'`);
+    municipality = municipality.rows;
+
+    var sections = [];
+
+    // Seccion --- Via de entrada
+    var meansEntry = {
+      section_id: 1,
+      bold_title: 1,
+      section_title: "Via de Entrada",
+      questions: [
+        {
+          question_id: "fecha_ingreso",
+          question_type: "date",
+          required: 1,
+          question: "Fecha de ingreso"
+        },
+        {
+          question_id: "tipo_via_entrada",
+          question_type: "closed",
+          question: "Tipo Vía Entrada",
+          required: 1,
+          answers: [
+            { answer_id:'V', answer: 'V' },
+            { answer_id:'E', answer: 'E' },
+            { answer_id:'O', answer: 'O' }
+          ]
+        },
+        {
+          question_id: "via_entrada",
+          question_type: "closed",
+          required: 1,
+          question: "Via Entrada",
+          answers: [
+            { answer_id:'P', answer: 'P' },
+            { answer_id:'T', answer: 'T' },
+            { answer_id:'OV', answer: 'OV' },
+
+            { answer_id:'F', answer: 'F' },
+            { answer_id:'E', answer: 'E' },
+            { answer_id:'C', answer: 'C' },
+            { answer_id:'OE', answer: 'OE' },
+
+            { answer_id:'PE', answer: 'PE' },
+            { answer_id:'R', answer: 'R' },
+            { answer_id:'TV', answer: 'TV' },
+            { answer_id:'I', answer: 'I' },
+            { answer_id:'IN', answer: 'IN' },
+            { answer_id:'A', answer: 'A' },
+            { answer_id:'N', answer: 'N' },
+            { answer_id:'OF', answer: 'OF' },
+            
+          ]
+        },
+        {
+          question_id: "otra_via_entrada",
+          dependent: 1,
+          dependent_section_id: 1,
+          dependent_question_id: "via_entrada",
+          dependent_answer: 2,
+          question_type: "open",
+          question: "Otra vía Entrada"
+        }
+      ]
+    };
+
+    //Seccion Al Seleccionar De Oficio/Otra
+    var emissionSource = {
+      section_id: 2,
+      dependent: 1,
+      dependent_section_id: 1,
+      dependent_question_id: "tipo_persona",
+      dependent_answer: "OF",
+      section_title: "Fuente de Emision",
+      questions: [
+        {
+          question_id: "fuente",
+          required: 1,
+          question_type: "open",
+          question: "Fuente Emisión"
+        },
+        {
+          question_id: "fec_emision",
+          required: 1,
+          question_type: "date",
+          question: "Fecha Emisión"
+        },
+        {
+          question_id: "tit_emision",
+          required: 1,
+          question_type: "open",
+          question: "Título Emisión"
+        },
+        {
+          question_id: "fec_recepcion",
+          required: 1,
+          question_type: "date_after",
+          question: "Fecha Recepción"
+        },
+        {
+          question_id: "otra_via_entrada",
+          required: 1,
+          question_type: "area",
+          question: "Otra vía Entrada"
+        }
+      ]
+    }
+
+    //Lugar y Hecho
+    var institutionInformation = {
+      section_id: 3,
+      section_title: "Lugar y Hecho",
+      questions: [
+        {
+          question_id: "fecha_hecho",
+          question_type: "date_time",
+          required: 1,
+          question: "Fecha y Hora Hecho"
+        },
+        {
+          question_id: "fec_hor_hecho_aprox",
+          question_type: "date_time",
+          required: 1,
+          question: "Fecha y Hora Hecho ES",
+          answers: [
+            {answer_id: 0, answer: 'A'},
+            {answer_id: 1, answer: 'E'},
+            {answer_id: 2, answer: 'H'},
+            {answer_id: 3, answer: 'F'}
+          ]
+        },
+        {
+          question_id: "id_pais_hecho",
+          enabled: 0,
+          question_type: "open",
+          question: "Pais",
+          answer: "El Salvador"
+        },
+        {
+          question_id: "id_depto_hecho",
+          required: 1,
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "id_mun_hecho",
+          question: "Departamento",
+          answers: state
+        },
+        {
+          question_id: "id_mun_hecho",
+          question_type: "closed",
+          required: 1,
+          question: "Municipio",
+          answers: municipality
+        },
+        {
+          question_id: "lugar",
+          question_type: "area",
+          required: 1,
+          question: "Lugar del Hecho",
+        },
+        {
+          question_id: "hecho",
+          question_type: "area",
+          required: 1,
+          question: "Descripcíon del Hecho",
+        }
+
+      ]
+    }
+
+
+    sections.push(meansEntry, emissionSource, institutionInformation);
+
+    var formcasaProcessing = {
+      form_id: 0,
+      sections: sections
+    }
+
+
+    return res.status(200).json({
+      form: formcasaProcessing
+    })
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'getCaseProcessingForm', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
+let createCaseProcessing = async(req, res) => {
+  const { tipo_via_entrada, via_entrada, otra_via_entrada, fecha, fec_hor_hecho_aprox, id_depto_hech, id_mun_hech, lugar, hecho, 
+    fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion, id_prg_cal_turno, nom_victima, nom_denunciante, id_pais_hecho} = req.body
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
+    
+    var numero_caso = 113;
+    // Datos no identificados de que tablas obtenerlos
+    // cod_depto_ing
+    // id_ins_ing
+    // id_ins_mod
+
+    var localDate =  new Date();
+    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    var fecha_hora = dateFormat(localDate, 'yyyy-mm-dd');
+    var est_reg = 'R';
+    var cod_usu = req.user.user_id;
+
+    //var cod_usu = req.user.user_id;
+    //var user_name = req.user.name;
+    var user_name = 'Usuario Prueba';
+
+    await db.query(`INSERT INTO tcdh_caso_temp(
+      hay_mas_vic_den, reg_ing_turno, en_turno, 
+      fec_en_turno, tipo_via_entrada, via_entrada, otra_via_entrada, id_usu_asignado, fec_asignado, fecha, fec_hora,  
+      fec_hor_hecho_aprox, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, 
+      fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25) RETURNING *`, 
+          ['N', 'N', 'N', registration_date, tipo_via_entrada, via_entrada, otra_via_entrada, cod_usu, registration_date, fecha, 
+          registration_date, fec_hor_hecho_aprox, est_reg, registration_date, cod_usu, user_name, registration_date, cod_usu, 
+          user_name, registration_date, fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion], (err, results)=>{
+          if(err){
+            console.log(err.message);
+            return res.status(500).json(errorResponse.toJson());
+          }else{
+            var caseProcessing = results.rows[0];
+            return res.status(201).json({
+              caseProcessing
+            });
+          }
+    });
+
+  } catch (error) {
+    log('src/controllers/back', 'case-processing', 'createCaseProcessing', error, true, req, res);
+    return res.status(500).json(errorResponse.toJson());
+  }
+};
+
+let getCaseProcesingById = async (req, res) => {
+  const { id_caso_temp } = req.params;
   try {
 
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
@@ -40,9 +323,9 @@ let getCaseProcessingForm = async (req, res) => {
           question: "Tipo Vía Entrada",
           required: 1,
           answers: [
-            { answer_id:0, answer: 'V' },
-            { answer_id:1, answer: 'E' },
-            { answer_id:2, answer: 'O' }
+            { answer_id:'V', answer: 'V' },
+            { answer_id:'E', answer: 'E' },
+            { answer_id:'O', answer: 'O' }
           ]
         },
         {
@@ -51,23 +334,23 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           question: "Via Entrada",
           answers: [
-            { answer_id:0, answer: 'P' },
-            { answer_id:1, answer: 'T' },
-            { answer_id:2, answer: 'OV' },
+            { answer_id:'P', answer: 'P' },
+            { answer_id:'T', answer: 'T' },
+            { answer_id:'OV', answer: 'OV' },
 
-            { answer_id:3, answer: 'F' },
-            { answer_id:4, answer: 'E' },
-            { answer_id:5, answer: 'C' },
-            { answer_id:6, answer: 'OE' },
+            { answer_id:'F', answer: 'F' },
+            { answer_id:'E', answer: 'E' },
+            { answer_id:'C', answer: 'C' },
+            { answer_id:'OE', answer: 'OE' },
 
-            { answer_id:7, answer: 'PE' },
-            { answer_id:8, answer: 'R' },
-            { answer_id:9, answer: 'TV' },
-            { answer_id:10, answer: 'I' },
-            { answer_id:11, answer: 'IN' },
-            { answer_id:12, answer: 'A' },
-            { answer_id:13, answer: 'N' },
-            { answer_id:14, answer: 'OF' },
+            { answer_id:'PE', answer: 'PE' },
+            { answer_id:'R', answer: 'R' },
+            { answer_id:'TV', answer: 'TV' },
+            { answer_id:'I', answer: 'I' },
+            { answer_id:'IN', answer: 'IN' },
+            { answer_id:'A', answer: 'A' },
+            { answer_id:'N', answer: 'N' },
+            { answer_id:'OF', answer: 'OF' },
             
           ]
         },
@@ -201,79 +484,7 @@ let getCaseProcessingForm = async (req, res) => {
     })
 
   } catch (error) {
-    log('src/controllers/back', 'case-processing', 'getCaseProcessingForm', error, true, req, res);
-    return res.status(500).json(errorResponse.toJson());
-  }
-
-};
-
-let createCaseProcessing = async(req, res) => {
-  const { tipo_via_entrada, via_entrada, otra_via_entrada, fecha, fec_hor_hecho_aprox, id_depto_hech, id_mun_hech, lugar, hecho, 
-    fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion, id_prg_cal_turno, nom_victima, nom_denunciante, id_pais_hecho} = req.body
-  try {
-
-    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
-    
-    var numero_caso = 113;
-    // Datos no identificados de que tablas obtenerlos
-    // cod_depto_ing
-    // id_ins_ing
-    // id_ins_mod
-
-    var localDate =  new Date();
-    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
-    var fecha_hora = dateFormat(localDate, 'yyyy-mm-dd');
-    var est_reg = 'R';
-    var cod_usu = 1;
-
-    //var cod_usu = req.user.user_id;
-    //var user_name = req.user.name;
-    var user_name = 'Usuario Prueba';
-
-    await db.query(`INSERT INTO tcdh_caso_temp(
-      hay_mas_vic_den, reg_ing_turno, en_turno, 
-      fec_en_turno, tipo_via_entrada, via_entrada, otra_via_entrada, id_usu_asignado, fec_asignado, fecha, fec_hora,  
-      fec_hor_hecho_aprox, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, 
-      fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)`, 
-          ['N', 'N', 'N', registration_date, tipo_via_entrada, via_entrada, otra_via_entrada, cod_usu, registration_date, fecha, 
-          registration_date, fec_hor_hecho_aprox, est_reg, registration_date, cod_usu, user_name, registration_date, cod_usu, 
-          user_name, registration_date, fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion], (err, results)=>{
-          if(err){
-            console.log(err.message);
-            return res.status(500).json(errorResponse.toJson());
-          }else{
-            var caseProcessing = results.rows[0];
-            return res.status(201).json({
-              caseProcessing
-            });
-          }
-    });
-
-  } catch (error) {
-    log('src/controllers/back', 'case-processing', 'createCaseProcessing', error, true, req, res);
-    return res.status(500).json(errorResponse.toJson());
-  }
-};
-
-let getCaseProcesingById = async (req, res) => {
-  const { id_caso_temp } = req.params;
-  try {
-    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
-    await db.query(`SELECT * FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso_temp], (err, results) => {
-      if (err) {
-        console.log(err.message);
-        return res.status(500).json(errorResponse.toJson());
-      } else {
-        var caseProcessing = results.rows[0];
-        return res.status(201).json({
-          caseProcessing
-        });
-      }
-    });
-
-  } catch (error) {
-    log('src/controllers/back', 'case-processing', 'getCaseProcesingById', error, true, req, res);
+    log('src/controllers/back', 'case-processing', 'getCaseProcessingFormById', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -315,7 +526,7 @@ let updateCaseProcesing = async (req, res) => {
         return res.status(500).json(errorResponse.toJson());
       }else{
         var caseProcessing = results.rows[0];
-        return res.status(201).json({
+        return res.status(200).json({
           message: 'Caso Actualizado'
         });
       }
@@ -439,7 +650,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question: "Autoriza Proporcionar Sus Datos Personales",
           answers: [
             { answer_id:0, answer: 'S' },
-            { answer_id:1, answer: 'N' }
+            { answer_id:'N', answer: 'N' }
           ]
         }
       ]
@@ -632,7 +843,7 @@ let getPersonInvolvedForm = async (req, res) => {
           answers: [
             { answer_id:0, answer: 'R'},
             { answer_id:1, answer: 'U'},
-            { answer_id:1, answer: 'N'}
+            { answer_id:2, answer: 'N'}
           ]
         },
         // {
@@ -768,7 +979,7 @@ let createPersonInvolvedForm = async(req, res) =>{
       est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, 
       cod_usu_mod, usu_mod_reg, fec_mod_reg)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 
-      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)`, [
+      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33) RETURNING *`, [
       per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, 
       sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, 
       id_niv_academico, id_pais_nacimiento, id_pais_ins_rep, fec_nacimiento, edad_aprox, 
@@ -781,6 +992,7 @@ let createPersonInvolvedForm = async(req, res) =>{
           return res.status(500).json(errorResponse.toJson());
         }else{
           var personInvolved = results.rows[0];
+          console.log(results.rows);
           return res.status(201).json({
             message: 'Se creo la persona involucrada'
           });
@@ -886,6 +1098,7 @@ let deletePersonInvolved = async(req, res) =>{
 };
 
   module.exports = {
+    getcaseProcesingFormList,
     getCaseProcessingForm,
     createCaseProcessing,
     getCaseProcesingById,

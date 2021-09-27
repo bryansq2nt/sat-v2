@@ -1048,3 +1048,17 @@ funcion: viewUpdateAlert
 error: error: la sintaxis de entrada no es válida para tipo timestamp: «YYYY-MM-DD HH:MM:SS»
 --------------------------------------------------------------------------------------------
 
+2021.09.26, 09:18:20.0803 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.09.26, 09:37:30.0308 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingFormById
+error: ReferenceError: form is not defined
+--------------------------------------------------------------------------------------------
+
