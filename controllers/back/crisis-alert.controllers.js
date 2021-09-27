@@ -12,6 +12,64 @@ let crisisAlertsList = async (req, res) => {
     var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la lista de Alertas de Crisis.", instance: "crisis-alert/crisisAlertsList" });
 
     var cod_usu_ing = req.user.user_id;
+    let rol_user = req.user.roles[0].role_id;
+    //let crisisAlerts;
+
+    //Perfil Consulta
+    if(rol_user == 1){
+
+      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_atencion_crisis 
+      LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
+      WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
+      GROUP BY sat_atencion_crisis.id_atencion_crisis
+      ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [offset]);
+      crisisAlertsR = crisisAlertsR.rows;
+
+    //Perfil Tecnico
+    }else if(rol_user == 2){
+      
+      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_atencion_crisis 
+      LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
+      WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
+      AND cod_usu_ing = $1 
+      GROUP BY sat_atencion_crisis.id_atencion_crisis
+      ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset]);
+      crisisAlertsR = crisisAlertsR.rows;
+
+    //Perfil Supervisor
+    }else if(rol_user == 3){
+
+      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_atencion_crisis 
+      LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
+      WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
+      GROUP BY sat_atencion_crisis.id_atencion_crisis
+      ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [offset]);
+      crisisAlertsR = crisisAlertsR.rows;
+    
+    //Perfil Analista
+    }else if(rol_user == 4){
+
+      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+      FROM sat_atencion_crisis 
+      LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
+      WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
+      AND enviada_analizar = true
+      GROUP BY sat_atencion_crisis.id_atencion_crisis
+      ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [cod_usu_ing, offset]);
+      crisisAlertsR = crisisAlertsR.rows;
+
+    }
 
     await db.query(`SELECT id_atencion_crisis::integer AS form_id,
     CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
