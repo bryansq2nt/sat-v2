@@ -16,6 +16,7 @@ let crisisAlertsList = async (req, res) => {
     let rol_user = req.user.roles[0].role_id;
     //let crisisAlerts;
 
+    console.log(rol_user);
     //Perfil Consulta
     if(rol_user == 1){
 

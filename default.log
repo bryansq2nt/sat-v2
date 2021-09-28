@@ -1084,3 +1084,52 @@ error: error: la sintaxis de entrada no es válida para tipo numeric: «form»
 >>>>>>> 06df6358d6c23ded99c82968b5249b7dce29c421
 --------------------------------------------------------------------------------------------
 
+2021.09.27, 23:12:17.0594 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: error: invalid input syntax for type numeric: "null"
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 23:12:57.0906 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: error: invalid input syntax for type numeric: "null"
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 23:13:58.0750 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: TypeError: Cannot read property 'tipo_rel_caso' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 23:14:46.0869 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: TypeError: Cannot read property 'tipo_rel_caso' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 23:16:19.0019 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: TypeError: Cannot read property 'tipo_rel_caso' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 23:17:30.0947 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: TypeError: Cannot read property 'persona_denunciante' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.09.27, 23:23:59.0017 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: TypeError: Cannot read property 'id_persona_temp' of undefined
+--------------------------------------------------------------------------------------------
+

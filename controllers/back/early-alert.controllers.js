@@ -13,6 +13,8 @@ let earlyAlertsList = async (req, res) => {
 
     var cod_usu_ing = req.user.user_id;
     let rol_user = req.user.roles[0].role_id;
+
+    console.log(rol_user);
     //let earlyAlerts;
 
     //Perfil Consulta
@@ -78,7 +80,7 @@ let earlyAlertsList = async (req, res) => {
       LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
       WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
       AND cod_usu_ing = $1 
-      GROUP BY sat_alerta_temprana.id_alerta_temprana`, [cod_usu_ing,offset], (err, results) => {
+      GROUP BY sat_alerta_temprana.id_alerta_temprana`, [cod_usu_ing], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());

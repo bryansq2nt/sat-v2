@@ -16,8 +16,8 @@ router.put('/api/case-processing/:id_caso_temp',usersTokenVerification, updateCa
 //Person Involved
 router.get('/api/case-processing/:id_caso_temp/involved/list', usersTokenVerification, getInvolvedFormList);
 
-router.get('/api/case-processing/involved/form',usersTokenVerification, getPersonInvolvedForm);
-router.post('/api/case-processing/involved/form',usersTokenVerification, createPersonInvolvedForm);
+router.get('/api/case-processing/:id_persona_temp/involved/form',usersTokenVerification, getPersonInvolvedById);
+router.post('/api/case-processing/:id_caso_temp/involved/form',usersTokenVerification, createPersonInvolvedForm);
 
 router.get('/api/case-processing/person-involved/:id_persona_temp',usersTokenVerification, getPersonInvolvedById);
 router.put('/api/case-processing/person-involved/:id_persona_temp',usersTokenVerification, updatePersonInvolvedForm);

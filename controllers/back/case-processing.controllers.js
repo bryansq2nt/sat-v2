@@ -581,18 +581,17 @@ let updateCaseProcesing = async (req, res) => {
 
 let getInvolvedFormList = async (req,res) => {
   const { id_caso_temp } = req.params;
-  const { offset } = req.query;
 
   var cod_usu = req.user.user_id;
 
   try {
     
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener la lista de involucrados del caso.", instance: "case-processing/getInvolvedFormList" });
-    await db.query(`SELECT id_persona_temp::integer AS form_id, CONCAT(nombre,' ',apellido) AS answer
+    await db.query(`SELECT id_persona_temp::integer AS form_id, CONCAT(nombre,' ',apellido) AS name, tipo_rel_caso
     FROM tcdh_persona_temp 
-    WHERE id_caso_temp = $1 AND cod_usu_ing = $2
-    ORDER BY id_caso_temp DESC LIMIT 25 OFFSET $3
-    `, [id_caso_temp,cod_usu,offset], (err, results) => {
+    WHERE id_caso_temp = $1
+    ORDER BY id_caso_temp DESC 
+    `, [id_caso_temp], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -706,7 +705,6 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "confidencial",
           required: 1,
-          required: 1,
           question_type: "closed",
           question: "Confidencial",
           answers: [
@@ -763,7 +761,7 @@ let getPersonInvolvedForm = async (req, res) => {
       dependent: 1,
       dependent_section_id: 1,
       dependent_question_id: "persona_denunciante",
-      dependent_answer: "N",
+      dependent_answer: 'N',
       section_title: "Información General de la persona",
       questions: [
         {
@@ -1011,12 +1009,12 @@ let getPersonInvolvedForm = async (req, res) => {
 };
 
 let createPersonInvolvedForm = async(req, res) =>{
-  const {} = req.params;
+  const { id_caso_temp } = req.params;
   const {per_den_es_victima, per_principal, nombre, apellido,
     id_cat_cal_actua, sexo, ide_genero, lee, escribe, id_cat_doc_persona,
     otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
     id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio,
-    id_departamento, id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad} = req.body;
+    id_departamento, id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad, tipo_rel_caso} = req.body;
   
   //Pendientes
   //med_rec_notificacion, num_telefono, fax, correo_electronico, dir_notificar, per_aprox_afectada
@@ -1045,22 +1043,21 @@ let createPersonInvolvedForm = async(req, res) =>{
       id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, discapacidad, 
       id_cat_tip_discapacidad, 
       est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, 
-      cod_usu_mod, usu_mod_reg, fec_mod_reg)
+      cod_usu_mod, usu_mod_reg, fec_mod_reg, id_caso_temp, tipo_rel_caso)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 
-      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33) RETURNING *`, [
+      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35) RETURNING *`, [
       per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, 
       sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, 
       id_niv_academico, id_pais_nacimiento, id_pais_ins_rep, fec_nacimiento, edad_aprox, 
       id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, discapacidad, 
       id_cat_tip_discapacidad, est_reg, registration_date, cod_user, user_ing_reg, registration_date, 
-      cod_user, user_ing_reg, registration_date], (err, results) => {
+      cod_user, user_ing_reg, registration_date, id_caso_temp, tipo_rel_caso], (err, results) => {
   
         if(err){
           console.log(err.message);
           return res.status(500).json(errorResponse.toJson());
         }else{
           var personInvolved = results.rows[0];
-          console.log(results.rows);
           return res.status(201).json({
             message: 'Se creo la persona involucrada'
           });
@@ -1076,7 +1073,12 @@ let createPersonInvolvedForm = async(req, res) =>{
 };
 
 let getPersonInvolvedById = async(req, res) =>{
-  const { id_persona_temp } = req.params;
+  //const { id_persona_temp } = req.params;
+
+  var id_persona_temp = 0;
+  if(req.params.id_persona_temp != "null"){
+    id_persona_temp = req.params.id_persona_temp;
+  }
 
   try {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/getPersonInvolvedById" });
@@ -1136,7 +1138,7 @@ let getPersonInvolvedById = async(req, res) =>{
           required: 1,
           question_type: "closed",
           question: "Tipo de Persona",
-          answer: personInvolved.tipo_rel_caso,
+          answer: personInvolved != null ? personInvolved.tipo_rel_caso: null  ,
           answers: [
             { answer_id:'D', answer: 'Denunciante' },
             { answer_id:'V', answer: 'Victima' },
@@ -1152,7 +1154,7 @@ let getPersonInvolvedById = async(req, res) =>{
           dependent_answer: "D",
           question_type: "closed",
           question: "Persona Denunciante",
-          answer: personInvolved.persona_denunciante,
+          answer: personInvolved != null ? personInvolved.persona_denunciante: null ,
           answers: [
             { answer_id:'N', answer: 'Natural' },
             { answer_id:'J', answer: 'Jurídico' },
@@ -1167,7 +1169,7 @@ let getPersonInvolvedById = async(req, res) =>{
           dependent_answer: "V",
           question_type: "closed",
           question: "Persona Victima",
-          answer: personInvolved.persona_victima,
+          answer: personInvolved != null ? personInvolved.persona_victima: null,
           answers: [
             { answer_id:'I', answer: 'Individual' },
             { answer_id:'C', answer: 'Colectivo' },
@@ -1176,7 +1178,6 @@ let getPersonInvolvedById = async(req, res) =>{
         //no seguardan en bases de datos
         {
           question_id: "confidencial",
-          required: 1,
           required: 1,
           question_type: "closed",
           question: "Confidencial",
@@ -1242,21 +1243,21 @@ let getPersonInvolvedById = async(req, res) =>{
           required: 1,
           question_type: "open",
           question: "Nombre",
-          answer: personInvolved.nombre
+          answer: personInvolved != null ? personInvolved.nombre: null 
         },
         {
           question_id: "apellido",
           required: 1,
           question_type: "open",
           question: "Apellido",
-          answer: personInvolved.apellido
+          answer: personInvolved != null ? personInvolved.apellido: null 
         },
         {
           question_id: "id_cat_doc_persona",
           required: 1,
           question_type: "closed",
           question: "Doc. Presentado",
-          answer: personInvolved.id_cat_doc_persona,
+          answer: personInvolved != null ? personInvolved.id_cat_doc_persona: null,
           answers: personalDocuments
         },
         {
@@ -1264,55 +1265,55 @@ let getPersonInvolvedById = async(req, res) =>{
           required: 1,
           question_type: "open",
           question: "Núm. Documento",
-          answer: personInvolved.num_documento
+          answer: personInvolved != null ? personInvolved.num_documento: null 
         },
         {
           question_id: "fec_nacimiento",
           question_type: "date",
           question: "Fecha Nacimiento",
-          answer: personInvolved.fec_nacimiento
+          answer: personInvolved != null ? personInvolved.fec_nacimiento: null 
         },
         {
           question_id: "id_pais",
           enabled: 0,
           question_type: "open",
           question: "Pais Nacimiento",
-          answer: personInvolved.id_pais,
+          answer: personInvolved != null ? personInvolved.id_pais: null ,
           answers: country
         },
         {
           question_id: "sexo",
           required: 1,
-          question_type: "radiobutton",
+          question_type: "switch",
           question: "Sexo",
-          answer: personInvolved.sexo
+          answer: personInvolved != null ? personInvolved.sexo: null 
         },
         {
           question_id: "lee",
           required: 1,
-          question_type: "radiobutton",
+          question_type: "switch",
           question: "Saber Leer",
-          answer: personInvolved.lee
+          answer: personInvolved != null ? personInvolved.lee : null 
         },
         {
           question_id: "escribe",
           required: 1,
           question_type: "radiobutton",
           question: "Saber Escribir",
-          answer: personInvolved.escribe
+          answer: personInvolved != null ?personInvolved.escribe : null  
         },
         {
           question_id: "discapacidad",
           question_type: "radiobutton",
           question: "Discapacidad",
-          answer: personInvolved.discapacidad
+          answer: personInvolved != null ? personInvolved.discapacidad : null  
         },
         {
           question_id: "id_ori_sexual",
           required: 1,
           question_type: "closed_multiple",
           question: "Orientación Sexual",
-          answer: personInvolved.id_ori_sexual,
+          answer: personInvolved != null ?  personInvolved.id_ori_sexual: null ,
           answers: sexualOrientation
         },
         {
@@ -1320,21 +1321,21 @@ let getPersonInvolvedById = async(req, res) =>{
           required: 1,
           question_type: "open",
           question: "Edad Aproximada",
-          answer: personInvolved.edad_aprox
+          answer: personInvolved != null ? personInvolved.edad_aprox: null  
         },
         {
           question_id: "id_cat_pro_oficio",
           required: 1,
           question_type: "closed",
           question: "Ocupación",
-          answer: personInvolved.id_cat_pro_oficio,
+          answer: personInvolved != null ? personInvolved.id_cat_pro_oficio: null  ,
           answers: occupation
         },
         {
           question_id: "ide_genero",
           question_type: "closed",
           question: "Identidad de Genéro",
-          answer: personInvolved.ide_genero,
+          answer: personInvolved != null ?  personInvolved.ide_genero: null ,
           answers: [
             { answer_id:'F', answer: 'Femenino'},
             { answer_id:'M', answer: 'Masculino'},
@@ -1350,7 +1351,7 @@ let getPersonInvolvedById = async(req, res) =>{
           dependent_answer: true,
           question_type: "closed",
           question: "Niv. Académico",
-          answer: personInvolved.id_niv_academico,
+          answer: personInvolved != null ? personInvolved.id_niv_academico : null,
           answers: academicLevel
         },
         {
@@ -1362,7 +1363,7 @@ let getPersonInvolvedById = async(req, res) =>{
           dependent_answer: true,
           question_type: "closed",
           question: "Tipo de Discapacidad",
-          answer: personInvolved.id_cat_tip_discapacidad,
+          answer: personInvolved != null ? personInvolved.id_cat_tip_discapacidad : null  ,
           answers: typeDisability
         }
 
@@ -1382,14 +1383,14 @@ let getPersonInvolvedById = async(req, res) =>{
           has_child: 1,
           principal_child: "id_municipio",
           question: "Departamento",
-          answer: personInvolved.id_departamento,
+          answer: personInvolved != null ? Number.parseInt(personInvolved.id_departamento): null  ,
           answers: state
         },
         {
           question_id: "id_municipio",
           question_type: "closed",
           question: "Municipio",
-          answer: personInvolved.id_municipio,
+          answer: personInvolved != null ? Number.parseInt(personInvolved.id_municipio) : null  ,
           answers: municipality
         },
         {
@@ -1397,7 +1398,7 @@ let getPersonInvolvedById = async(req, res) =>{
           question_type: "closed",
           required: 1,
           question: "Tipo de Zona",
-          answer: personInvolved.zona_domicilio,
+          answer: personInvolved != null ? personInvolved.zona_domicilio: null  ,
           answers: [
             { answer_id:'R', answer: 'Rural'},
             { answer_id:'U', answer: 'Urbano'},
@@ -1416,13 +1417,13 @@ let getPersonInvolvedById = async(req, res) =>{
           question_type: "area",
           required: 1,
           question: "Dirección",
-          answer: personInvolved.domicilio
+          answer: personInvolved != null ? personInvolved.domicilio: null  
         },
         {
           question_id: "med_rec_notificacion",
           question_type: "closed_multiple",
           question: "Medio de Notificación",
-          answer: personInvolved.med_rec_notificacion,
+          answer:personInvolved != null ? personInvolved.med_rec_notificacion: null  ,
           answers: [
             { answer_id:'T', answer: 'Teléfono'},
             { answer_id:'D', answer: 'Dirección que señala para notificar' },
@@ -1477,7 +1478,7 @@ let getPersonInvolvedById = async(req, res) =>{
           required: 1,
           question_type: "closed",
           question: "Calidad en que Actúa",
-          answer: personInvolved.id_cat_cal_actua,
+          answer: personInvolved != null ?  personInvolved.id_cat_cal_actua: null ,
           answers: qualityOperates
         }
 
@@ -1488,10 +1489,11 @@ let getPersonInvolvedById = async(req, res) =>{
     sections.push(whistleblower, generalData, locationPerson, SectionvulnerableGroups, institutionInformation);
 
     var involved = {
-      form_id: personInvolved.id_persona_temp,
+      form_id: personInvolved != null ? personInvolved.id_persona_temp: 0  ,
       sections: sections
     }
 
+    
     return res.status(200).json({
       form: involved
     })
