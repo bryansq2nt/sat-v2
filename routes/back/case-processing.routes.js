@@ -2,12 +2,12 @@ const { Router } = require('express');
 const router = Router();
 
 const { usersTokenVerification } = require('@middlewares/token.middleware');  
-const { getcaseProcesingFormList,getCaseProcessingForm, createCaseProcessing, getCaseProcesingById, updateCaseProcesing, getPersonInvolvedForm, getInvolvedFormList, createPersonInvolvedForm, getPersonInvolvedById, updatePersonInvolvedForm, deletePersonInvolved } = require('../../controllers/back/case-processing.controllers');  
+const { getcaseProcesingFormList,getCaseProcessingForm, createCaseProcessing, getCaseProcesingById, updateCaseProcesing, getPersonInvolvedForm, getPersonInvolvedFormOffline, getInvolvedFormList, createPersonInvolvedForm, getPersonInvolvedById, updatePersonInvolvedForm, deletePersonInvolved, sentCaseToSigi } = require('../../controllers/back/case-processing.controllers');  
 
 //Processing Case
 router.get('/api/case-processing/list',usersTokenVerification, getcaseProcesingFormList);
 
-router.get('/api/case-processing',usersTokenVerification, getCaseProcessingForm);
+router.get('/api/case-processing', usersTokenVerification, getCaseProcessingForm);
 router.post('/api/case-processing',usersTokenVerification, createCaseProcessing);
 
 router.get('/api/case-processing/:id_caso_temp',usersTokenVerification, getCaseProcesingById);
@@ -15,6 +15,12 @@ router.put('/api/case-processing/:id_caso_temp',usersTokenVerification, updateCa
 
 //Person Involved
 router.get('/api/case-processing/:id_caso_temp/involved/list', usersTokenVerification, getInvolvedFormList);
+  
+//Form involucrados
+router.get('/api/case-processing/:id_caso_temp/involved/form',usersTokenVerification, getPersonInvolvedForm);
+
+//Form involucrados Offline
+router.get('/api/case-processing/involved/form-offline',usersTokenVerification, getPersonInvolvedFormOffline);
 
 router.get('/api/case-processing/:id_persona_temp/involved/form',usersTokenVerification, getPersonInvolvedById);
 router.post('/api/case-processing/:id_caso_temp/involved/form',usersTokenVerification, createPersonInvolvedForm);
@@ -23,5 +29,8 @@ router.get('/api/case-processing/person-involved/:id_persona_temp',usersTokenVer
 router.put('/api/case-processing/person-involved/:id_persona_temp',usersTokenVerification, updatePersonInvolvedForm);
 
 router.put('/api/case-processing/person-involved/:id_persona_temp/delete',usersTokenVerification, deletePersonInvolved);
+
+// Send Case to SIGI 
+router.put('/api/case-processing/:id_caso_temp/send-to-sigi', usersTokenVerification, sentCaseToSigi); 
 
 module.exports = router;

@@ -60,7 +60,7 @@
                             {{#each earlyAlerts}}
                             <tr>
                                 {{#Relatedcase alerta_padre}}
-                                <td><i class="ti-loop"></i> {{id_alerta_temprana}}</td>
+                                <td><strong>{{id_alerta_temprana}} <i class="ti-plus"></i></strong></td>
                                 {{else}}
                                 <td>{{id_alerta_temprana}}</td>
                                 {{/Relatedcase}}
@@ -111,7 +111,7 @@
                             {{#each earlyAlerts}}
                             <tr>
                                 {{#Relatedcase alerta_padre}}
-                                <td><i class="ti-loop"></i> {{id_alerta_temprana}}</td>
+                                <td><strong>{{id_alerta_temprana}} <i class="ti-plus"></i></strong></td>
                                 {{else}}
                                 <td>{{id_alerta_temprana}}</td>
                                 {{/Relatedcase}}
@@ -181,7 +181,12 @@
                         <tbody>
                             {{#each earlyAlerts}}
                             <tr>
+                                {{#Relatedcase alerta_padre}}
+                                <td><strong>{{id_alerta_temprana}} <i class="ti-plus"></i></strong></td>
+                                {{else}}
                                 <td>{{id_alerta_temprana}}</td>
+                                {{/Relatedcase}}
+                                {{!-- <td>{{id_alerta_temprana}}</td> --}}
                                 <td>
                                     <a href="/api-sat/early-alert/{{id_alerta_temprana}}/view-alert"
                                         class="btn btn-secondary" aria-pressed="false">
@@ -223,7 +228,7 @@
                             {{#each earlyAlerts}}
                             <tr>   
                                 {{#Relatedcase alerta_padre}}
-                                <td><i class="ti-loop"></i> {{id_alerta_temprana}}</td>
+                                <td><strong>{{id_alerta_temprana}} <i class="ti-plus"></i></strong></td>
                                 {{else}}
                                 <td>{{id_alerta_temprana}}</td>
                                 {{/Relatedcase}}

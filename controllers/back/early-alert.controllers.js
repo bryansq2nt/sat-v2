@@ -711,14 +711,14 @@ let getById = async (req, res) => {
         },
         {
           question_id: "adolecentes_mujeres",
-          required: 1,
+          //required: 1,
           question_type: "numeric",
           question: "Adolecentes Mujeres",
           answer: early_alert.adolecentes_mujeres
         },
         {
           question_id: "adolecentes_hombres",
-          required: 1,
+          //required: 1,
           question_type: "numeric",
           question: "Adolecentes Hombres",
           answer: early_alert.adolecentes_hombres
@@ -858,7 +858,7 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_situacion_conflicto",
-          required: 1,
+          //required: 1,
           question_type: "closed",
           question: "Situación actual del conflicto",
           answers: conflictSituation,
@@ -1629,7 +1629,7 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "cantidad_aproximada",
           question_type: "numeric",
-          required: 1,
+          //required: 1,
           question: "Cantidad aproximada"
         }
       ]

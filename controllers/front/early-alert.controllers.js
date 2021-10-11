@@ -171,7 +171,7 @@ let createAlert = async (req, res) => {
   // console.log('paginas_prensa---:', paginas_prensa); 
   // console.log('autor_prensa---:', autor_prensa);
   // console.log('fecha_publicacion_prensa---:', fecha_publicacion_prensa);
-  console.log('fotografia_prensa---++++++++++:', fotografia_prensa);
+  //console.log('fotografia_prensa---++++++++++:', fotografia_prensa);
   // console.log('nombre_medio_radio---:', nombre_medio_radio);
   // console.log('canal_radio---:', canal_radio);
   // console.log('nombre_programa_radio---:', nombre_programa_radio);
@@ -180,7 +180,7 @@ let createAlert = async (req, res) => {
   // console.log('nombre_red_social---:', nombre_red_social);
   // console.log('url_red_social---:', url_red_social);
   // console.log('fecha_pub_red_social---:', fecha_pub_red_social);
-  console.log('pantalla_red_social---+++++++++:', pantalla_red_social);
+  //console.log('pantalla_red_social---+++++++++:', pantalla_red_social);
   // console.log('nombre_colectivo---:', nombre_colectivo);
   // console.log('nombre_contacto_colectivo---:', nombre_contacto_colectivo);
   // console.log('telefono_colectivo---:', telefono_colectivo);
@@ -199,7 +199,7 @@ let createAlert = async (req, res) => {
   // console.log('nombre_contacto_mensajeria---:', nombre_contacto_mensajeria);
   // console.log('contacto_mensajeria---:', contacto_mensajeria);
   // console.log('datos_mensajeria---:', datos_mensajeria);
-  console.log('fotografia_mensajeria---:', fotografia_mensajeria);
+  //console.log('fotografia_mensajeria---:', fotografia_mensajeria);
   // console.log('otras_detalle---:', otras_detalle);
   // console.log('otras_adicionales---:', otras_adicionales);
   // console.log('fecha_hechos---:', fecha_hechos);

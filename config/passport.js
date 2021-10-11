@@ -36,16 +36,17 @@ module.exports = function (passport) {
                     } else {
 
                         if (!results.rows.length) {
-                            return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
+                            return done(null, false, req.flash('warning', 'Usuario o contraseña incorrectos'));
                         } else {
 
                             var userPassword = md5(password);
 
                             if (userPassword != results.rows[0].clave) {
-                                return done(null, false, req.flash('login', 'Usuario o contraseña incorrectos'));
+                                return done(null, false, req.flash('warning', 'Usuario o contraseña incorrectos'));
                             } else {
 
                                 let user = results.rows[0];
+
                                 user.administracion = 0;
                                 user.cat = 0;
                                 user.dashboard = 0;
