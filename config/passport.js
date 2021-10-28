@@ -21,15 +21,15 @@ module.exports = function (passport) {
             passwordField: 'password',
             passReqToCallback: true
         },
-            async (req, email, password, done) => {
+            async (req, user, password, done) => {
 
                 db.query(`SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.usuario, u.fec_nacimiento, 
-                    u.correo, u.clave, u.estado_reg, u.id_perfil, up.descripcion AS perfil, ac.permiso_acceso_web,
+                    u.correo, u.usuario, u.clave, u.estado_reg, u.id_perfil, up.descripcion AS perfil, ac.permiso_acceso_web,
                     ac.id_rol_permisos
                     FROM usuario AS u
                     INNER JOIN perfil AS up ON up.id_perfil = u.id_perfil
                     INNER JOIN sat_accesos_usuario AS ac ON u.id_usuario = ac.id_usuario
-                    WHERE u.correo = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_web = 1`, [email], async (err, results) => {
+                    WHERE u.usuario = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_web = 1`, [user], async (err, results) => {
                     if (err) {
                         console.log(err.stack);
                         return done(null, false, req.flash('error', err.stack));

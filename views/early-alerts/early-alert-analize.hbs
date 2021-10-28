@@ -159,9 +159,9 @@
                     <tbody>
                         {{#each relatedAlert}}
                         <tr>
-                            <td>{{id_alerta_relacionada}}</td>
+                            <td>{{id_hijo}}</td>
                             <td>
-                                <a href="/api-sat/early-alert/{{id_alerta_relacionada}}/view-alert"
+                                <a href="/api-sat/early-alert/{{id_hijo}}/view-alert"
                                     class="btn btn-secondary" aria-pressed="false">
                                     <i class="ti-eye text" aria-hidden="true"></i>
                                     <i class="ti-pencil-alt text-active" aria-hidden="true"></i>
@@ -187,15 +187,11 @@
                                             aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="/api-sat/early-alert/{{id_alerta_temprana}}/related-alert/{{id_alerta_relacionada}}/remove-related-alert"
+                                        <form action="/api-sat/early-alert/{{id_padre}}/related-alert/{{id_hijo}}/remove-related-alert"
                                             method="POST">
                                             <div class="form-group text-center">
-                                                <input type="hidden" name="id_alerta_relacionada"
-                                                    value="{{id_alerta_temprana}}">
-                                            </div>
-                                            <div class="form-group text-center">
                                                 <label for="message-text" class="control-label"><strong>¿Esta seguro de
-                                                        "Remover la Alerta #caso: "{{id_alerta_relacionada}}"?</strong></label>
+                                                        "Remover la Alerta #caso: "{{id_hijo}}"?</strong></label>
                                                 <textarea class="form-control" id="message-text1"
                                                     disabled>Al confirmar la relación de está alerta, ya no estará vinculada a este caso.</textarea>
                                             </div>

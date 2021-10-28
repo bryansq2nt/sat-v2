@@ -12,7 +12,7 @@ let getcaseProcesingFormList = async (req,res) => {
 
   try {
     
-    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/createCaseProcessing" });
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al guardar el tramite del caso.", instance: "case-processing/getcaseProcesingFormList" });
     await db.query(`SELECT id_caso_temp::numeric AS form_id 
     FROM tcdh_caso_temp 
     WHERE cod_usu_ing = $1 AND marca is null
@@ -32,7 +32,7 @@ let getcaseProcesingFormList = async (req,res) => {
     });
 
   } catch (error) {
-    log('src/controllers/back', 'case-processing', 'getCaseProcesingById', error, true, req, res);
+    log('src/controllers/back', 'case-processing', 'getcaseProcesingFormList', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 }
@@ -68,9 +68,11 @@ let getCaseProcessingForm = async (req, res) => {
         },
         {
           question_id: "tipo_via_entrada",
-          question_type: "closed",
-          question: "Tipo Vía Entrada",
           required: 1,
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "via_entrada",
+          question: "Tipo Vía Entrada",
           answers: [
             { answer_id:'V', answer: 'Verbal' },
             { answer_id:'E', answer: 'Escrita' },
@@ -80,36 +82,36 @@ let getCaseProcessingForm = async (req, res) => {
         {
           question_id: "via_entrada",
           question_type: "closed",
-          required: 1,
           question: "Via Entrada",
           answers: [
-            { answer_id:'p', answer: 'Persona' },
-            { answer_id:'T', answer: 'Telefonica' },
-            { answer_id:'OV', answer: 'Otra' },
+            { answer_id:'p', answer: 'Persona' , to_compare:"V"},
+            { answer_id:'T', answer: 'Telefonica', to_compare:"V" },
+            { answer_id:'O', answer: 'Otra', to_compare:"V" },
 
-            { answer_id:'F', answer: 'Fax' },
-            { answer_id:'E', answer: 'E-mail' },
-            { answer_id:'C', answer: 'Carta' },
-            { answer_id:'OE', answer: 'Otra' },
+            { answer_id:'F', answer: 'Fax', to_compare:"E" },
+            { answer_id:'E', answer: 'E-mail', to_compare:"E" },
+            { answer_id:'C', answer: 'Carta', to_compare:"E" },
+            { answer_id:'O', answer: 'Otra', to_compare:"E" },
 
-            { answer_id:'PE', answer: 'Prensa Escrita' },
-            { answer_id:'R', answer: 'Radio' },
-            { answer_id:'TV', answer: 'Television' },
-            { answer_id:'I', answer: 'Internet' },
-            { answer_id:'IN', answer: 'Informe' },
-            { answer_id:'A', answer: 'Aviso' },
-            { answer_id:'N', answer: 'Noticia' },
-            { answer_id:'OF', answer: 'Otra' },
+            { answer_id:'S', answer: 'Prensa Escrita', to_compare:"O" },
+            { answer_id:'R', answer: 'Radio', to_compare:"O" },
+            { answer_id:'V', answer: 'Television', to_compare:"O" },
+            { answer_id:'I', answer: 'Internet', to_compare:"O" },
+            { answer_id:'M', answer: 'Informe', to_compare:"O" },
+            { answer_id:'A', answer: 'Aviso', to_compare:"O" },
+            { answer_id:'N', answer: 'Noticia', to_compare:"O" },
+            { answer_id:'O', answer: 'Otra', to_compare:"O" },
             
           ]
         },
+        //Se cambio el orden que estaba, estaba antes de fuente. 
         {
           question_id: "otra_via_entrada",
           dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "via_entrada",
-          dependent_answer: 'OV',
-          question_type: "open",
+          dependent_answer: 'O',
+          question_type: "area",
           question: "Otra vía Entrada"
         },
         {
@@ -117,8 +119,8 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "open",
           question: "Fuente Emisión"
         },
@@ -127,8 +129,8 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "date",
           question: "Fecha Emisión"
         },
@@ -137,8 +139,8 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "open",
           question: "Título Emisión"
         },
@@ -147,8 +149,8 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "date_after",
           question: "Fecha Recepción"
         },
@@ -157,8 +159,8 @@ let getCaseProcessingForm = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "area",
           question: "Otra vía Entrada"
         }
@@ -249,7 +251,7 @@ let getCaseProcessingForm = async (req, res) => {
 // Create case Actualizado
 let createCaseProcessing = async(req, res) => {
   const { tipo_via_entrada, via_entrada, otra_via_entrada, fec_hora, fec_hor_hecho_aprox, fec_hecho, id_depto_hecho, 
-    id_mun_hecho, lugar, hecho, fuente, fec_emision, tit_emision, fec_recepcion, nom_victima, nom_denunciante, id_pais_hecho} = req.body
+    id_mun_hecho, lugar, hecho, fuente, fec_emision, tit_emision, fec_recepcion, id_pais_hecho} = req.body
 
     // console.log('------------------------------------------');
 
@@ -290,7 +292,6 @@ let createCaseProcessing = async(req, res) => {
     
     var fecha = dateFormat(localDate, 'yyyy-mm-dd');
     //var fec_hecho_nueva = fecha.replace(/-/g, "");
-    var hora = dateFormat(localDate, 'HH:MM:ss');
     
     var est_reg = 'R';
     var cod_usu = req.user.user_id;
@@ -305,6 +306,9 @@ let createCaseProcessing = async(req, res) => {
       nueva_fec_hecho = fec_hecho
     }
 
+    var hora = dateFormat(nueva_fec_hecho, 'HH:MM:ss');
+    var hor_recepcion = dateFormat(registration_date, 'HH:MM:ss');
+
     if(id_pais_hecho == null || id_pais_hecho === "" || id_pais_hecho == undefined){
       nuevo_id_pais_hecho = 0;
     }else{
@@ -318,9 +322,9 @@ let createCaseProcessing = async(req, res) => {
       usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, fuente, fec_emision, tit_emision, fec_recepcion, hor_recepcion, id_pais_hecho)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32) RETURNING *`, 
           ['N', 'N', 'N', registration_date, tipo_via_entrada, via_entrada, otra_via_entrada, cod_usu, registration_date, fecha, 
-          fec_hora, fec_hor_hecho_aprox, nueva_fec_hecho, registration_date, id_depto_hecho, id_mun_hecho, lugar, hecho, 
+          fec_hora, fec_hor_hecho_aprox, nueva_fec_hecho, hora, id_depto_hecho, id_mun_hecho, lugar, hecho, 
           est_reg, registration_date, cod_usu, user_name, registration_date, cod_usu, user_name, registration_date, fuente, fec_emision, 
-          tit_emision, fec_recepcion, hora, nuevo_id_pais_hecho], (err, results)=>{
+          tit_emision, fec_recepcion, hor_recepcion, nuevo_id_pais_hecho], (err, results)=>{
           if(err){
             console.log(err.message);
             return res.status(500).json(errorResponse.toJson());
@@ -341,11 +345,16 @@ let createCaseProcessing = async(req, res) => {
 let getCaseProcesingById = async (req, res) => {
   const { id_caso_temp } = req.params;
 
+  console.log('----------------- getPersonInvolvedForm-----------------');
+  let get_caso_temp = id_caso_temp;
+  let id_caso = Number.parseInt(get_caso_temp);
+  console.log('-----------------------------------------------------');
+
   try {
 
-    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcesingById" });
 
-    var caseProcessing = await db.query(`SELECT * FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso_temp]);
+    var caseProcessing = await db.query(`SELECT * FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso]);
     caseProcessing = caseProcessing.rows[0];
 
     var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
@@ -565,7 +574,7 @@ let getCaseProcesingById = async (req, res) => {
 
 
   } catch (error) {
-    log('src/controllers/back', 'case-processing', 'getCaseProcessingFormById', error, true, req, res);
+    log('src/controllers/back', 'case-processing', 'getCaseProcesingById', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -589,19 +598,43 @@ let updateCaseProcesing = async (req, res) => {
     var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
 
     //var fec_hecho_nueva = fecha.replace(/-/g, "");
-    var hora = dateFormat(localDate, 'HH:MM:ss');
+    //var hora = dateFormat(localDate, 'HH:MM:ss');
 
     var cod_usu = req.user.user_id;
     var user_name = req.user.name;
+
+    var nueva_fec_hecho;
+
+    //fecha asignado y fecha
+    var fec_asignado = dateFormat(fec_hora, 'yyyy-mm-dd');
+    var fecha = dateFormat(fec_hora, 'yyyy-mm-dd');
+
+
+    //fecha hecho
+    if(fec_hecho == null || fec_hecho ==="" || fec_hecho == undefined){
+      nueva_fec_hecho = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+    }else{
+      nueva_fec_hecho = fec_hecho;
+    }
+
+    var hora = dateFormat(nueva_fec_hecho, 'HH:MM:ss');
+    var hor_recepcion = dateFormat(registration_date, 'HH:MM:ss');
+
+    if(id_pais_hecho == null || id_pais_hecho === "" || id_pais_hecho == undefined){
+      nuevo_id_pais_hecho = 0;
+    }else{
+      nuevo_id_pais_hecho = id_pais_hecho;
+    }
 
     
     await db.query(`UPDATE tcdh_caso_temp
     SET tipo_via_entrada=$1, via_entrada=$2, otra_via_entrada=$3, fec_hora=$4, fec_hor_hecho_aprox=$5, fec_hecho=$6, hor_hecho=$7, 
     id_depto_hecho=$8, id_mun_hecho=$9, lugar=$10, hecho=$11, cod_usu_mod=$12, usu_mod_reg=$13, fec_mod_reg=$14, fuente=$15, 
-    fec_emision=$16, tit_emision=$17, fec_recepcion=$18, hor_recepcion=$19, nom_victima=$20, nom_denunciante=$21, id_pais_hecho=$22
-    WHERE id_caso_temp = $23 RETURNING*`, [tipo_via_entrada, via_entrada, otra_via_entrada, fec_hora, fec_hor_hecho_aprox, fec_hecho, hora, 
+    fec_emision=$16, tit_emision=$17, fec_recepcion=$18, hor_recepcion=$19, nom_victima=$20, nom_denunciante=$21, id_pais_hecho=$22,
+    fec_asignado = $23, fecha=$24
+    WHERE id_caso_temp = $25 RETURNING*`, [tipo_via_entrada, via_entrada, otra_via_entrada, fec_hora, fec_hor_hecho_aprox, nueva_fec_hecho, hora, 
       id_depto_hecho, id_mun_hecho, lugar, hecho, cod_usu, user_name, registration_date, fuente, fec_emision, tit_emision, 
-      fec_recepcion, hora, nom_victima, nom_denunciante, id_pais_hecho, id_caso_temp], (err, results)=>{
+      fec_recepcion, hor_recepcion, nom_victima, nom_denunciante, id_pais_hecho, fec_asignado, fecha, id_caso_temp], (err, results)=>{
       if(err){
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -621,19 +654,19 @@ let updateCaseProcesing = async (req, res) => {
 };
 
 //Persona Involucrado
-
 let getInvolvedFormList = async (req,res) => {
   const { id_caso_temp } = req.params;
-
-  var cod_usu = req.user.user_id;
 
   try {
     
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener la lista de involucrados del caso.", instance: "case-processing/getInvolvedFormList" });
-    await db.query(`SELECT id_persona_temp::integer AS form_id, CONCAT(nombre,' ',apellido) AS name, tipo_rel_caso
-    FROM tcdh_persona_temp 
-    WHERE id_caso_temp = $1
-    ORDER BY id_caso_temp DESC 
+    await db.query(`SELECT rc.id_persona_temp::integer AS form_id, 
+    CONCAT(pt.nombre,' ',pt.apellido) AS name, pt.tipo_rel_caso
+    FROM tcdh_per_rel_caso_temp as rc
+    LEFT JOIN tcdh_persona_temp AS pt ON pt.id_persona_temp = rc.id_persona_temp
+    LEFT JOIN tcdh_caso_temp AS c ON c.id_caso_temp = rc.id_caso_temp
+    WHERE rc.id_caso_temp = $1
+    ORDER BY rc.id_caso_temp DESC 
     `, [id_caso_temp], (err, results) => {
       if (err) {
         console.log(err.message);
@@ -655,12 +688,14 @@ let getInvolvedFormList = async (req,res) => {
 let getPersonInvolvedForm = async (req, res) => {
 
   const { id_caso_temp } = req.params;
-
+  let get_caso_temp = id_caso_temp;
+  let id_caso = Number.parseInt(get_caso_temp);
+  
   try {
 
-    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
+    var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getPersonInvolvedForm" });
 
-    var caso_temp = await db.query(`SELECT * FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso_temp]);
+    var caso_temp = await db.query(`SELECT id_caso_temp::integer AS id_caso_temp  FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso]);
     caso_temp = caso_temp.rows[0];
 
     var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
@@ -721,8 +756,9 @@ let getPersonInvolvedForm = async (req, res) => {
             { answer_id:'A', answer: 'Denunciante/Victima' }
           ]
         },
+        //Se cambio el nombre
         {
-          question_id: "persona_denunciante ",
+          question_id: "tipo_persona",
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
@@ -736,9 +772,9 @@ let getPersonInvolvedForm = async (req, res) => {
           ]
         },
         {
-          question_id: "persona_victima",
+          question_id: "tipo_persona",
           required: 1,
-          dependent: 2,
+          dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "V",
@@ -842,32 +878,50 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "id_pais",
           enabled: 0,
-          question_type: "open",
+          question_type: "closed",
           question: "Pais Nacimiento",
           answers: country
         },
         {
           question_id: "sexo",
           required: 1,
-          question_type: "radiobutton",
-          question: "Sexo"
+          question_type: "closed",
+          question: "Sexo",
+          answers: [
+            { answer_id: "H", answer: "Hombre" },
+            { answer_id: "M", answer: "Mujer" }
+          ]
         },
         {
           question_id: "lee",
           required: 1,
-          question_type: "radiobutton",
-          question: "Saber Leer"
+          question_type: "closed",
+          question: "Saber Leer",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]
         },
         {
           question_id: "escribe",
           required: 1,
-          question_type: "radiobutton",
-          question: "Saber Escribir"
+          question_type: "closed",
+          question: "Saber Escribir",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]
         },
         {
           question_id: "discapacidad",
-          question_type: "radiobutton",
-          question: "Discapacidad"
+          question_type: "closed",
+          question: "Discapacidad",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
         },
         {
           question_id: "id_ori_sexual",
@@ -1039,7 +1093,7 @@ let getPersonInvolvedForm = async (req, res) => {
 
     var involved = {
       form_id: 0,
-      id_caso_temp: caso_temp.id_caso_temp,
+      id_caso_temp: caso_temp != null ? caso_temp.id_caso_temp: null,
       sections: sections
     }
 
@@ -1048,7 +1102,7 @@ let getPersonInvolvedForm = async (req, res) => {
     })
 
   } catch (error) {
-    log('src/controllers/back', 'case-processing', 'getCaseProcessingForm', error, true, req, res);
+    log('src/controllers/back', 'case-processing', 'getPersonInvolvedForm', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -1135,7 +1189,7 @@ let getPersonInvolvedFormOffline = async (req, res) => {
         {
           question_id: "persona_victima",
           required: 1,
-          dependent: 2,
+          dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "V",
@@ -1242,32 +1296,49 @@ let getPersonInvolvedFormOffline = async (req, res) => {
         {
           question_id: "id_pais",
           enabled: 0,
-          question_type: "open",
+          question_type: "closed",
           question: "Pais Nacimiento",
           answers: country
         },
         {
           question_id: "sexo",
           required: 1,
-          question_type: "radiobutton",
-          question: "Sexo"
+          question_type: "closed",
+          answers: [
+            { answer_id: "H", answer: "Hombre" },
+            { answer_id: "M", answer: "Mujer" }
+          ]
         },
         {
           question_id: "lee",
           required: 1,
-          question_type: "radiobutton",
-          question: "Saber Leer"
+          question_type: "closed",
+          question: "Saber Leer",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]
         },
         {
           question_id: "escribe",
           required: 1,
-          question_type: "radiobutton",
-          question: "Saber Escribir"
+          question_type: "closed",
+          question: "Saber Escribir",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]
         },
         {
           question_id: "discapacidad",
-          question_type: "radiobutton",
-          question: "Discapacidad"
+          question_type: "closed",
+          question: "Discapacidad",
+            answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
         },
         {
           question_id: "id_ori_sexual",
@@ -1456,39 +1527,40 @@ let getPersonInvolvedFormOffline = async (req, res) => {
 //Create Involved Atualizado
 let createPersonInvolvedForm = async(req, res) =>{
   const {id_caso_temp} = req.params;
-  const {tipo_rel_caso, confidencial, aut_dat_den_vic, nombre, apellido, id_cat_cal_actua, 
+  const {tipo_rel_caso, persona_denunciante, persona_victima, tipo_persona, confidencial, aut_dat_den_vic, nombre, apellido, id_cat_cal_actua, 
     sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
     id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, 
     discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, id_grp_vulnerable, id_ori_sexual} = req.body;
     
     console.log('------------------------------------------------');
-    console.log('tipo_rel_caso', tipo_rel_caso);
-    console.log('tipo_rel_caso', confidencial);
-    console.log('aut_dat_den_vic', aut_dat_den_vic);
-    console.log('nombre', nombre);
-    console.log('apellido', apellido);
-    console.log('id_cat_cal_actua', id_cat_cal_actua);
-    console.log('sexo', sexo);
-    console.log('id_genero', ide_genero);
-    console.log('lee', lee);
-    console.log('escribe', escribe);
-    console.log('id_cat_doc_personas', id_cat_doc_persona);
-    console.log('otro_doc_indentidad', otro_doc_identidad);
-    console.log('num_documento', num_documento);
-    console.log('id_niv_academico', id_niv_academico);
-    console.log('id_pais_nacimiento', id_pais_nacimiento);
-    console.log('id_pais_ins_rep', id_pais_ins_rep);
-    console.log('fec_nacimiento', fec_nacimiento);
-    console.log('edad_prox', edad_aprox);
-    console.log('id_cat_pro_oficio', id_cat_pro_oficio);
-    console.log('zona_domicilio', zona_domicilio);
-    console.log('id_departamento', id_departamento);
-    console.log('id_municipio', id_municipio);
-    console.log('domicilio', domicilio);
-    console.log('discapcidad', discapacidad);
-    console.log('id_cat_tip_discapacidad', id_cat_tip_discapacidad);
-    console.log('med_rec_notificacion', med_rec_notificacion);
-    console.log('id_grp_vulnerable', id_grp_vulnerable);
+    // console.log('tipo_rel_caso', tipo_rel_caso);
+    // console.log('tipo_persona', tipo_persona);
+    // console.log('confidencial', confidencial);
+    // console.log('aut_dat_den_vic', aut_dat_den_vic);
+    // console.log('nombre', nombre);
+    // console.log('apellido', apellido);
+    // console.log('id_cat_cal_actua', id_cat_cal_actua);
+    // console.log('sexo', sexo);
+    // console.log('id_genero', ide_genero);
+    // console.log('lee', lee);
+    // console.log('escribe', escribe);
+    // console.log('id_cat_doc_personas', id_cat_doc_persona);
+    // console.log('otro_doc_indentidad', otro_doc_identidad);
+    // console.log('num_documento', num_documento);
+    // console.log('id_niv_academico', id_niv_academico);
+    // console.log('id_pais_nacimiento', id_pais_nacimiento);
+    // console.log('id_pais_ins_rep', id_pais_ins_rep);
+    // console.log('fec_nacimiento', fec_nacimiento);
+    // console.log('edad_prox', edad_aprox);
+    // console.log('id_cat_pro_oficio', id_cat_pro_oficio);
+    // console.log('zona_domicilio', zona_domicilio);
+    // console.log('id_departamento', id_departamento);
+    // console.log('id_municipio', id_municipio);
+    // console.log('domicilio', domicilio);
+    // console.log('discapcidad', discapacidad);
+    // console.log('id_cat_tip_discapacidad', id_cat_tip_discapacidad);
+    // console.log('med_rec_notificacion', med_rec_notificacion);
+    // console.log('id_grp_vulnerable', id_grp_vulnerable);
     console.log('id_ori_sexual', id_ori_sexual);
     console.log('------------------------------------------------');
 
@@ -1505,9 +1577,9 @@ let createPersonInvolvedForm = async(req, res) =>{
     
     let fec_nacimiento_nueva;
     if(fec_nacimiento == null || fec_nacimiento == "" || fec_nacimiento == undefined){
-      fec_nacimiento_nueva = 19910701;
+      fec_nacimiento_nueva = dateFormat(fec_nacimiento, 'yyyy-mm-dd');
     }else{
-      fec_nacimiento_nueva = fec_nacimiento.replace(/-/g, "");
+      fec_nacimiento_nueva = fec_nacimiento;
     }
     
 
@@ -1556,23 +1628,34 @@ let createPersonInvolvedForm = async(req, res) =>{
             id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
             fec_mod_reg, confidencial, aut_dat_den_vic)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
-            [personInvolved.id_persona_temp, id_caso_temp, 'D', 'N', 'N', 'R', registration_date, cod_user,user_name, registration_date, cod_user, user_name, 
+            [personInvolved.id_persona_temp, id_caso_temp, personInvolved.tipo_rel_caso, tipo_persona, 'N', 'R', registration_date, cod_user,user_name, registration_date, cod_user, user_name, 
             registration_date, confidencial, aut_dat_den_vic]);
           
-          db.query(`INSERT INTO tcdh_grp_vul_temp(
+          if (id_grp_vulnerable != null || id_grp_vulnerable != null) {
+
+            db.query(`INSERT INTO tcdh_grp_vul_temp(
             id_grp_vulnerable, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_per_rel, id_caso_temp, migrado)
-            VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, 
-            [id_grp_vulnerable, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,registration_date, personInvolved.id_persona_temp, 
-            id_caso_temp, 'N']);
-             
-          db.query(`INSERT INTO tcdh_ori_sex_per_temp(
-            id_persona_temp, id_ori_sexual, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_caso_temp)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`, 
-            [personInvolved.id_persona_temp, id_ori_sexual, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, 
-            id_caso_temp]);
+            VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+              [id_grp_vulnerable, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, personInvolved.id_persona_temp,
+                id_caso_temp, 'N']);
+          } else {
+            console.log("Viene Vacio Grupo Vulerables");
+          }
+        
+          if(id_ori_sexual != undefined || id_ori_sexual != null){
+            
+            for (let i = 0; i < id_ori_sexual.length; i++) {
+              db.query(`INSERT INTO tcdh_ori_sex_per_temp(
+                id_persona_temp, id_ori_sexual, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_caso_temp)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`, 
+                [personInvolved.id_persona_temp, id_ori_sexual[i], 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, 
+                id_caso_temp]);             
+            }
+          }else{
+            console.log("Viene Vacio orientacion sexual");
+          }  
                 
-                   
-            return res.status(201).json({
+          return res.status(201).json({
             personInvolved
           });
 
@@ -1679,7 +1762,7 @@ let getPersonInvolvedById_ = async(req, res) =>{
         {
           question_id: "persona_victima",
           required: 1,
-          dependent: 2,
+          dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "V",
@@ -1792,7 +1875,7 @@ let getPersonInvolvedById_ = async(req, res) =>{
         {
           question_id: "id_pais",
           enabled: 0,
-          question_type: "open",
+          question_type: "closed",
           question: "Pais Nacimiento",
           answer: personInvolved != null ? personInvolved.id_pais: null ,
           answers: country
@@ -1800,29 +1883,47 @@ let getPersonInvolvedById_ = async(req, res) =>{
         {
           question_id: "sexo",
           required: 1,
-          question_type: "switch",
+          question_type: "closed",
           question: "Sexo",
-          answer: personInvolved != null ? personInvolved.sexo: null 
+          answer: personInvolved != null ? personInvolved.sexo: null,
+          answers: [
+            { answer_id: "H", answer: "Hombre" },
+            { answer_id: "M", answer: "Mujer" }
+          ] 
         },
         {
           question_id: "lee",
           required: 1,
-          question_type: "switch",
+          question_type: "closed",
           question: "Saber Leer",
-          answer: personInvolved != null ? personInvolved.lee : null 
+          answer: personInvolved != null ? personInvolved.lee : null,
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ] 
         },
         {
           question_id: "escribe",
           required: 1,
-          question_type: "radiobutton",
+          question_type: "closed",
           question: "Saber Escribir",
-          answer: personInvolved != null ?personInvolved.escribe : null  
+          answer: personInvolved != null ?personInvolved.escribe : null,
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]   
         },
         {
           question_id: "discapacidad",
-          question_type: "radiobutton",
+          question_type: "closed",
           question: "Discapacidad",
-          answer: personInvolved != null ? personInvolved.discapacidad : null  
+          answer: personInvolved != null ? personInvolved.discapacidad : null,
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]   
         },
         {
           question_id: "id_ori_sexual",
@@ -2024,16 +2125,18 @@ let getPersonInvolvedById_ = async(req, res) =>{
 
 // FormById Actualizado
 let getPersonInvolvedById = async(req, res) =>{
+
   const { id_persona_temp } = req.params;
 
   try {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/getPersonInvolvedById" });
     
-    var personInvolved = await db.query(`SELECT p.*, pc.confidencial, pc.aut_dat_den_vic 
+    var personInvolved = await db.query(`SELECT p.*, pc.confidencial, pc.aut_dat_den_vic, pc.tipo_persona  
     FROM tcdh_persona_temp AS p
     LEFT JOIN tcdh_per_rel_caso_temp AS pc ON pc.id_persona_temp = p.id_persona_temp 
     WHERE p.id_persona_temp = $1`, [id_persona_temp]);
     personInvolved = personInvolved.rows[0];
+ 
 
     var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
     personalDocuments = personalDocuments.rows;
@@ -2064,14 +2167,14 @@ let getPersonInvolvedById = async(req, res) =>{
     var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
     notificationMeans = notificationMeans.rows;
 
-    var typeDisability = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
-    typeDisability = typeDisability.rows;
+    // var typeDisability = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
+    // typeDisability = typeDisability.rows;
 
-    var academicLevel = await db.query(`SELECT id_niv_academico::integer AS answer_id, descripcion AS answer FROM admi_niv_academico WHERE est_reg = 'A'`);
-    academicLevel = academicLevel.rows;
+    // var academicLevel = await db.query(`SELECT id_niv_academico::integer AS answer_id, descripcion AS answer FROM admi_niv_academico WHERE est_reg = 'A'`);
+    // academicLevel = academicLevel.rows;
 
-    var qualityOperates = await db.query(`SELECT id_cat_cal_actua::integer AS answer_id, descripcion AS answer FROM admi_cat_cal_actua WHERE est_reg = 'A'`);
-    qualityOperates = qualityOperates.rows;
+    // var qualityOperates = await db.query(`SELECT id_cat_cal_actua::integer AS answer_id, descripcion AS answer FROM admi_cat_cal_actua WHERE est_reg = 'A'`);
+    // qualityOperates = qualityOperates.rows;
 
     var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
     country = country.rows[0];
@@ -2085,9 +2188,9 @@ let getPersonInvolvedById = async(req, res) =>{
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
     typeZone = typeZone.rows;
 
-    // let academicLevel = [];
-    // let typeDisability = [];
-    // let qualityOperates = [];
+    let academicLevel = [];
+    let typeDisability = [];
+    let qualityOperates = [];
 
     var sections = [];
 
@@ -2109,7 +2212,7 @@ let getPersonInvolvedById = async(req, res) =>{
           ]
         },
         {
-          question_id: "persona_denunciante ",
+          question_id: "tipo_persona",
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
@@ -2117,22 +2220,22 @@ let getPersonInvolvedById = async(req, res) =>{
           dependent_answer: "D",
           question_type: "closed",
           question: "Persona Denunciante",
-          //answer: personInvolved.persona_denunciante,
+          answer: personInvolved != null ? personInvolved.tipo_persona: null,
           answers: [
             { answer_id:'N', answer: 'Natural' },
             { answer_id:'J', answer: 'Jurídico' },
           ]
         },
         {
-          question_id: "persona_victima",
+          question_id: "tipo_persona",
           required: 1,
-          dependent: 2,
+          dependent: 1,
           dependent_section_id: 1,
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "V",
           question_type: "closed",
           question: "Persona Victima",
-          //answer: personInvolved.persona_victima,
+          answer: personInvolved != null ? personInvolved.tipo_persona: null,
           answers: [
             { answer_id:'I', answer: 'Individual' },
             { answer_id:'C', answer: 'Colectivo' },
@@ -2241,7 +2344,7 @@ let getPersonInvolvedById = async(req, res) =>{
         {
           question_id: "id_pais",
           enabled: 0,
-          question_type: "open",
+          question_type: "closed",
           question: "Pais Nacimiento",
           answer: personInvolved != null ? personInvolved.id_pais: null,
           answers: country
@@ -2249,29 +2352,47 @@ let getPersonInvolvedById = async(req, res) =>{
         {
           question_id: "sexo",
           required: 1,
-          question_type: "radiobutton",
+          question_type: "closed",
           question: "Sexo",
           answer: personInvolved != null ? personInvolved.sexo: null,
+          answers: [
+            { answer_id: "H", answer: "Hombre" },
+            { answer_id: "M", answer: "Mujer" }
+          ]   
         },
         {
           question_id: "lee",
           required: 1,
-          question_type: "radiobutton",
+          question_type: "closed",
           question: "Saber Leer",
-          answer: personInvolved != null ? personInvolved.lee: null
+          answer: personInvolved != null ? personInvolved.lee: null,
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]   
         },
         {
           question_id: "escribe",
           required: 1,
-          question_type: "radiobutton",
+          question_type: "closed",
           question: "Saber Escribir",
-          answer: personInvolved != null ? personInvolved.escribe: null
+          answer: personInvolved != null ? personInvolved.escribe: null,
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" },
+            { answer_id: "R", answer: "Sin Respuesta" }
+          ]   
         },
         {
           question_id: "discapacidad",
-          question_type: "radiobutton",
+          question_type: "closed",
           question: "Discapacidad",
-          answer: personInvolved != null ? personInvolved.discapacidad: null
+          answer: personInvolved != null ? personInvolved.discapacidad: null,
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]   
         },
         {
           question_id: "id_ori_sexual",
@@ -2475,7 +2596,7 @@ let getPersonInvolvedById = async(req, res) =>{
 // Update Involved Actualizado
 let updatePersonInvolvedForm = async (req, res) => {
   const { id_persona_temp } = req.params;
-  const {tipo_rel_caso, per_den_es_victima, per_principal, confidencial, aut_dat_den_vic, nombre, apellido, id_cat_cal_actua, 
+  const {tipo_rel_caso,  tipo_persona,  per_den_es_victima, per_principal, confidencial, aut_dat_den_vic, nombre, apellido, id_cat_cal_actua, 
     sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
     id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, 
     discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, id_grp_vulnerable, id_ori_sexual} = req.body;
@@ -2488,7 +2609,13 @@ let updatePersonInvolvedForm = async (req, res) => {
     var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
     
     let nom_completo = nombre +' '+ apellido;
-    var fec_nacimiento_nueva = fec_nacimiento.replace(/-/g, "");
+        
+    let fec_nacimiento_nueva;
+    if(fec_nacimiento == null || fec_nacimiento == "" || fec_nacimiento == undefined){
+      fec_nacimiento_nueva = dateFormat(fec_nacimiento, 'yyyy-mm-dd');
+    }else{
+      fec_nacimiento_nueva = fec_nacimiento;
+    }
     
     var cod_user = req.user.user_id;
     var user_name = req.user.name;
@@ -2513,7 +2640,7 @@ let updatePersonInvolvedForm = async (req, res) => {
         db.query(`UPDATE tcdh_per_rel_caso_temp
         SET relacion=$1, tipo_persona=$2, cod_usu_mod=$3, usu_mod_reg=$4, fec_mod_reg=$5, confidencial=$6, aut_dat_den_vic=$7
         WHERE id_persona_temp=$8`, 
-        [personInvolved.tipo_rel_caso, personInvolved.tipo_rel_caso, cod_user, user_name, registration_date, confidencial, aut_dat_den_vic, id_persona_temp]);
+        [personInvolved.tipo_rel_caso, tipo_persona, cod_user, user_name, registration_date, confidencial, aut_dat_den_vic, id_persona_temp]);
 
         db.query(`UPDATE tcdh_grp_vul_temp
         SET id_grp_vulnerable=$1, migrado=$2, cod_usu_mod=$3, usu_mod_reg=$4, fec_mod_reg=$5 
@@ -2559,18 +2686,22 @@ let deletePersonInvolved = async(req, res) =>{
 //Enviar a SIGI
 let sentCaseToSigi = async(req, res) =>{
   const { id_caso_temp } = req.params
+  
   console.log('------------------------------------');
   console.log('Params', id_caso_temp);
   console.log('------------------------------------');
 
   try {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar el caso al SIGI.", instance: "case-processing/sentCaseToSigi" });
-    await db.query(`UPDATE tcdh_caso_temp SET marca = $1 WHERE id_caso_temp = $2 RETURNING*`, [id_caso_temp, id_caso_temp], (err, results)=>{
+
+    db.query(`UPDATE variable SET oldidcasotemp = $1 WHERE id_variable = 1 RETURNING*`, [id_caso_temp]);
+     
+    await db.query(`SELECT * FROM bussat()`, (err, results)=>{
       if(err){
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
       }else{  
-        var caseProcessing = results.rows[0];
+          var caseProcessing = results.rows[0];
           return res.status(200).json({
           message: 'Caso enviado al sigi',
           caseProcessing        

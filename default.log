@@ -1210,3 +1210,87 @@ funcion: usersAuthotization
 error: error: no se pudo determinar el tipo del parámetro $7
 --------------------------------------------------------------------------------------------
 
+2021.10.11, 16:37:48.0499 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: earlyAlertsList
+error: error: error de sintaxis en o cerca de «a»
+--------------------------------------------------------------------------------------------
+
+2021.10.11, 20:37:06.0236 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: viewAnalizeAlert
+error: error: no existe la relación «sat_alertas_relacionadas»
+--------------------------------------------------------------------------------------------
+
+2021.10.11, 20:39:17.0527 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: viewUpdateAlert
+error: TypeError: Cannot read property 'length' of null
+--------------------------------------------------------------------------------------------
+
+2021.10.11, 20:44:59.0424 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: viewUpdateAlert
+error: TypeError: Cannot read property 'length' of null
+--------------------------------------------------------------------------------------------
+
+2021.10.12, 15:31:29.0249 UTC -> 
+archivo: early-alert.controller
+ruta: src/controllers/front
+funcion: earlyAlertsList
+error: error: la referencia a la columna «cod_usu_ing» es ambigua
+--------------------------------------------------------------------------------------------
+
+2021.10.12, 21:10:20.0065 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedById
+error: error: no existe la relación «admi_niv_academico»
+--------------------------------------------------------------------------------------------
+
+2021.10.12, 21:20:31.0357 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcessingForm
+error: error: no existe la relación «admi_cat_cal_actua»
+--------------------------------------------------------------------------------------------
+
+2021.10.13, 01:48:46.0954 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_cal_actua»
+--------------------------------------------------------------------------------------------
+
+2021.10.18, 18:43:31.0500 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: sentCaseToSigi
+error: ReferenceError: results is not defined
+--------------------------------------------------------------------------------------------
+
+2021.10.19, 21:20:22.0466 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_cal_actua»
+--------------------------------------------------------------------------------------------
+
+2021.10.21, 02:54:14.0809 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getCaseProcesingById
+error: TypeError: Cannot read property 'fec_hora' of undefined
+--------------------------------------------------------------------------------------------
+
+2021.10.22, 21:04:19.0602 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_cal_actua»
+--------------------------------------------------------------------------------------------
+

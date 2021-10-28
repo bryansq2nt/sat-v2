@@ -16,8 +16,8 @@ router.put('/api/case-processing/:id_caso_temp',usersTokenVerification, updateCa
 //Person Involved
 router.get('/api/case-processing/:id_caso_temp/involved/list', usersTokenVerification, getInvolvedFormList);
   
-//Form involucrados
-router.get('/api/case-processing/:id_caso_temp/involved/form',usersTokenVerification, getPersonInvolvedForm);
+//Form involucrados on line 
+router.get('/api/case-processing/:id_caso_temp/involved/lists-form',usersTokenVerification, getPersonInvolvedForm);
 
 //Form involucrados Offline
 router.get('/api/case-processing/involved/form-offline',usersTokenVerification, getPersonInvolvedFormOffline);
@@ -31,6 +31,6 @@ router.put('/api/case-processing/person-involved/:id_persona_temp',usersTokenVer
 router.put('/api/case-processing/person-involved/:id_persona_temp/delete',usersTokenVerification, deletePersonInvolved);
 
 // Send Case to SIGI 
-router.put('/api/case-processing/:id_caso_temp/send-to-sigi', usersTokenVerification, sentCaseToSigi); 
+router.post('/api/case-processing/:id_caso_temp/send-to-sigi', usersTokenVerification, sentCaseToSigi); 
 
 module.exports = router;

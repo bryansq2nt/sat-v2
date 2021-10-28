@@ -13,48 +13,63 @@ let earlyAlertsList = async (req, res) => {
     let earlyAlerts;
 
     if(profile_user == 1){
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
-      alerta_padre  
-      FROM sat_alerta_temprana 
-      WHERE alerta_relacionada = false
-      ORDER BY id_alerta_temprana DESC`);
+      earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
+      a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
+      FROM sat_alerta_temprana AS a 
+	    LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
+	    INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
+	    INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
+      WHERE a.alerta_relacionada = false
+      ORDER BY a.id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
     
     //Perfil Consulta
     }else if(rol_user == 1){
 
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana 
-      FROM sat_alerta_temprana 
-      ORDER BY id_alerta_temprana DESC`);
+      earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
+      FROM sat_alerta_temprana AS a 
+	    LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
+	    INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
+	    INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
+      ORDER BY a.id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
       
       //Perfil Tecnico
     }else if(rol_user == 2){
 
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
-      alerta_padre 
-      FROM sat_alerta_temprana 
-      WHERE cod_usu_ing = $1 AND alerta_relacionada = false 
-      ORDER BY id_alerta_temprana DESC`, [cod_usu_ing]);
+      earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
+      a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
+      FROM sat_alerta_temprana AS a 
+	    LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
+	    INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
+	    INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
+      WHERE a.cod_usu_ing = $1 AND a.alerta_relacionada = false 
+	    ORDER BY a.id_alerta_temprana DESC`, [cod_usu_ing]);
       earlyAlerts = earlyAlerts.rows;
 
       //Perfil Supervisor
     }else if(rol_user == 3){
 
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
-      alerta_padre  
-      FROM sat_alerta_temprana 
-      WHERE alerta_relacionada = false
-      ORDER BY id_alerta_temprana DESC`);
+      earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
+      a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
+      FROM sat_alerta_temprana AS a 
+	    LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
+	    INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
+	    INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
+      WHERE a.alerta_relacionada = false
+      ORDER BY a.id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
 
       //Perfil Analista 
     }else if(rol_user == 4){
-      earlyAlerts = await db.query(`SELECT id_alerta_temprana, alerta_relacionada, enviada_analizar, 
-       alerta_padre 
-       FROM sat_alerta_temprana 
-       WHERE enviada_analizar = true AND alerta_relacionada = false
-       ORDER BY id_alerta_temprana DESC`);
+      earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
+      a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
+      FROM sat_alerta_temprana AS a 
+	    LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
+	    INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
+	    INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
+	    WHERE a.enviada_analizar = true AND a.alerta_relacionada = false
+	    ORDER BY a.id_alerta_temprana DESC`);
       earlyAlerts = earlyAlerts.rows;
     }
 
@@ -1647,8 +1662,8 @@ let viewAnalizeAlert = async (req, res) =>{
     FROM sat_unidad_administrativa WHERE estado = 1`);
     administrative_unit = administrative_unit.rows; 
 
-    let relatedAlert = await db.query(`SELECT id_alerta_temprana, id_alerta_relacionada FROM sat_alertas_relacionadas
-    WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
+    let relatedAlert = await db.query(`SELECT id_padre, id_hijo FROM sat_alerta_temprana_relacionados
+    WHERE id_padre = $1`, [id_alerta_temprana]);
     relatedAlert = relatedAlert.rows;
 
     return res.render('early-alerts/early-alert-analize', {earlyAlert, fases_conflicto, tipos_alerta, acciones_pddh, administrative_unit, relatedAlert})
@@ -1697,8 +1712,8 @@ let realteAlert = async(req, res) =>{
 
   try {
 
-    await db.query(`INSERT INTO sat_alertas_relacionadas(
-    id_alerta_temprana, id_alerta_relacionada, cod_usu_ing, cod_usu_mod)
+    await db.query(`INSERT INTO sat_alerta_temprana_relacionados(
+    id_padre, id_hijo, cod_usu_ing, cod_usu_mod)
     VALUES ( $1, $2, $3, $4)`, [id_alerta_principal, id_alerta_temprana, cod_user, cod_user], (err, results) => {
       if (err) {
         log('src/controllers/front', 'early-alert', 'realteAlert', err, false, req, res);
@@ -1725,18 +1740,18 @@ let realteAlert = async(req, res) =>{
 //Remove Related Alert 
 let removeRelateedAlert = async(req, res)=>{
   const {id_alerta_temprana, id_alerta_relacionada} = req.params;
-
+  console.log('padre', id_alerta_temprana);
   try {
     await db.query(`UPDATE sat_alerta_temprana SET alerta_relacionada = false 
     WHERE id_alerta_temprana = $1`, [id_alerta_relacionada], async (err, results)=>{
       if(err){
         log('src/controllers/front', 'early-alert', 'removeRelateedAlert', err, false, req, res);
       }else{
-        db.query(`DELETE FROM sat_alertas_relacionadas WHERE id_alerta_temprana = $1 AND id_alerta_relacionada = $2`, [id_alerta_temprana, id_alerta_relacionada]);
+        db.query(`DELETE FROM sat_alerta_temprana_relacionados WHERE id_padre = $1 AND id_hijo = $2`, [id_alerta_temprana, id_alerta_relacionada]);
         
-        let updateAlertPrincipal = await db.query(`SELECT COUNT(id_alerta_temprana) AS alerta_padre 
-        FROM sat_alertas_relacionadas 
-        WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
+        let updateAlertPrincipal = await db.query(`SELECT COUNT(id_padre) AS alerta_padre 
+        FROM sat_alerta_temprana_relacionados 
+        WHERE id_padre = $1`, [id_alerta_temprana]);
         updateAlertPrincipal = updateAlertPrincipal.rows[0].alerta_padre;
 
         if(updateAlertPrincipal == 0){

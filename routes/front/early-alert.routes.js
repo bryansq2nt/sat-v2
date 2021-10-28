@@ -46,6 +46,9 @@ router.post('/api-sat/early-alert/:id_alerta_temprana/related-alert/:id_alerta_r
 //View Alert
 router.get('/api-sat/early-alert/:id_alerta_temprana/view-alert', isLoggedIn, viewAlert);
 
+//View Alerte from view analized
+router.get('/api-sat/early-alert/:id_padre/view-alert', isLoggedIn, viewAlert);
+
 //get municipalities by state
 router.get('/api-sat/municipality/:id_departamento/list', isLoggedIn, searchMunicipalityBySatate);
 

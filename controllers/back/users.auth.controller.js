@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 const login = async (req, res) => {
-    const { email, password, fcm_token} = req.body;
+    const { user, password, fcm_token} = req.body;
 
     var errorResponse = new ErrorModel({ type: "Users-Auth", title:"Falló la función", status:401, detail:"Lo sentimos ocurrió un error al intentar iniciar sesión.", instance:"users.auth/login" });
 
@@ -22,8 +22,8 @@ const login = async (req, res) => {
         INNER JOIN sat_rol_app_permisos AS pp ON pp.id_rol_permisos = ac.id_rol_permisos
         INNER JOIN sat_permisos_modulos_usuario AS mu ON u.id_usuario = mu.id_usuario
         INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo
-        WHERE u.correo = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
-        GROUP BY user_id, name, user_name, position, email, gender, clave`, [email], async(err, results) => {
+        WHERE u.usuario = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
+        GROUP BY user_id, name, user_name, position, email, gender, clave`, [user], async(err, results) => {
             if (err) {
                 console.log(err.message);
                 return res.status(500).json(errorResponse.toJson());

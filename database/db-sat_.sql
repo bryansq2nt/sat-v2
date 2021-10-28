@@ -695,4 +695,12 @@ CREATE TABLE sat_atencion_crisis_relacionados
     cod_usu_mod NUMERIC NOT NULL,
     estado NUMERIC(2) NOT NULL DEFAULT 1,
     CONSTRAINT sat_atencion_crisis_relacionados_pkey PRIMARY KEY (id_padre, id_hijo)
-)
+);
+
+CREATE TABLE variable
+(
+    id_variable numeric NOT NULL,
+    oldidcasotemp numeric,
+    sigiidpersonatemp numeric(10,0),
+    CONSTRAINT variable_pkey PRIMARY KEY (id_variable)
+);
