@@ -4,6 +4,14 @@ const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
 const sendemail = require('@lib/emails');
 
+
+let getFormVersion = (req,res) => {
+
+  let version = parseFloat("1.0");
+
+  return res.status(200).json({version});
+}
+
 let crisisAlertsList = async (req, res) => {
   const { offset } = req.query;
 
@@ -1289,5 +1297,6 @@ module.exports = {
   removeRelatedCase,
   searchForRelatedCase,
   addRelatedCase,
-  SendAlerttoAnalyze
+  SendAlerttoAnalyze,
+  getFormVersion
 }

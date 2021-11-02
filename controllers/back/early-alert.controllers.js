@@ -4,6 +4,12 @@ const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
 const sendemail = require('@lib/emails');
 
+let getFormVersion = (req,res) => {
+
+  let version = parseFloat("1.1");
+
+  return res.status(200).json({version});
+}
 
 let earlyAlertsList = async (req, res) => {
   const { offset } = req.query;
@@ -14,7 +20,6 @@ let earlyAlertsList = async (req, res) => {
     var cod_usu_ing = req.user.user_id;
     let rol_user = req.user.roles[0].role_id;
 
-    console.log(rol_user);
     //let earlyAlerts;
 
     //Perfil Consulta
@@ -80,7 +85,9 @@ let earlyAlertsList = async (req, res) => {
       LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
       WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
       AND cod_usu_ing = $1 
-      GROUP BY sat_alerta_temprana.id_alerta_temprana`, [cod_usu_ing], (err, results) => {
+      GROUP BY sat_alerta_temprana.id_alerta_temprana
+      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2
+      `, [cod_usu_ing,offset], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -96,6 +103,9 @@ let earlyAlertsList = async (req, res) => {
 
 let getById = async (req, res) => {
   const { id_alerta_temprana } = req.params;
+
+  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la Alerta.", instance: "early-alert/getById" });
+
   try {
 
     var early_alert = await db.query(`SELECT * FROM sat_alerta_temprana WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
@@ -2421,5 +2431,6 @@ module.exports = {
   removeRelatedCase,
   searchForRelatedCase,
   addRelatedCase,
-  SendAlerttoAnalyze
+  SendAlerttoAnalyze,
+  getFormVersion
 }
