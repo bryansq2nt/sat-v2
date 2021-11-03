@@ -7,7 +7,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.0");
+  let version = parseFloat("1.1");
 
   return res.status(200).json({version});
 }

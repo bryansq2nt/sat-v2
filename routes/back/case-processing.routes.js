@@ -2,7 +2,11 @@ const { Router } = require('express');
 const router = Router();
 
 const { usersTokenVerification } = require('@middlewares/token.middleware');  
-const { getcaseProcesingFormList,getCaseProcessingForm, createCaseProcessing, getCaseProcesingById, updateCaseProcesing, getPersonInvolvedForm, getPersonInvolvedFormOffline, getInvolvedFormList, createPersonInvolvedForm, getPersonInvolvedById, updatePersonInvolvedForm, deletePersonInvolved, sentCaseToSigi } = require('../../controllers/back/case-processing.controllers');  
+const { getcaseProcesingFormList,getCaseProcessingForm, createCaseProcessing, getCaseProcesingById, updateCaseProcesing, getPersonInvolvedForm, getPersonInvolvedFormOffline, getInvolvedFormList, createPersonInvolvedForm, getPersonInvolvedById, updatePersonInvolvedForm, deletePersonInvolved, sentCaseToSigi,getFormVersion } = require('../../controllers/back/case-processing.controllers');  
+
+
+
+router.get('/api/forms/caseProcessing/version',usersTokenVerification, getFormVersion);
 
 //Processing Case
 router.get('/api/case-processing/list',usersTokenVerification, getcaseProcesingFormList);

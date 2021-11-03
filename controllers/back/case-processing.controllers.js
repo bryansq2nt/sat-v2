@@ -5,6 +5,13 @@ const dateFormat = require('dateformat');
 
 //Tramitacion de Casos
 
+let getFormVersion = (req,res) => {
+
+  let version = parseFloat("1.0");
+
+  return res.status(200).json({version});
+}
+
 let getcaseProcesingFormList = async (req,res) => {
   const { offset } = req.query;
 
@@ -253,27 +260,27 @@ let createCaseProcessing = async(req, res) => {
   const { tipo_via_entrada, via_entrada, otra_via_entrada, fec_hora, fec_hor_hecho_aprox, fec_hecho, id_depto_hecho, 
     id_mun_hecho, lugar, hecho, fuente, fec_emision, tit_emision, fec_recepcion, id_pais_hecho} = req.body
 
-    // console.log('------------------------------------------');
+    console.log('------------------------------------------');
 
-    // console.log('tipo_via_entrada', tipo_via_entrada);
-    // console.log('via_entada', via_entrada);
-    // console.log('otra_via_entrada', otra_via_entrada);
-    // console.log('fec_hora', fec_hora);
-    // console.log('fec_hor_hecho_aprox', fec_hor_hecho_aprox);
-    // console.log('fec_hecho', fec_hecho);
-    // console.log('id_depto_hecho', id_depto_hecho);
-    // console.log('id_mun_hecho', id_mun_hecho);
-    // console.log('lugar', lugar);
-    // console.log('hecho', hecho);
-    // console.log('fuente', fuente);
-    // console.log('fec_emision', fec_emision);
-    // console.log('tit_emision', tit_emision);
-    // console.log('fec_recepcion', fec_recepcion);
-    // console.log('id_mun_hecho', nom_victima);
-    // console.log('nom_denunciante', nom_denunciante);
-    // console.log('id_pais_hecho', id_pais_hecho);
+   console.log('tipo_via_entrada', tipo_via_entrada);
+   console.log('via_entada', via_entrada);
+   console.log('otra_via_entrada', otra_via_entrada);
+   console.log('fec_hora', fec_hora);
+   console.log('fec_hor_hecho_aprox', fec_hor_hecho_aprox);
+   console.log('fec_hecho', fec_hecho);
+   console.log('id_depto_hecho', id_depto_hecho);
+   console.log('id_mun_hecho', id_mun_hecho);
+   console.log('lugar', lugar);
+   console.log('hecho', hecho);
+   console.log('fuente', fuente);
+   console.log('fec_emision', fec_emision);
+   console.log('tit_emision', tit_emision);
+   console.log('fec_recepcion', fec_recepcion);
+  // console.log('id_mun_hecho', nom_victima);
+   //console.log('nom_denunciante', nom_denunciante);
+   console.log('id_pais_hecho', id_pais_hecho);
 
-    // console.log('------------------------------------------');
+     console.log('------------------------------------------');
 
     try {
 
@@ -337,6 +344,8 @@ let createCaseProcessing = async(req, res) => {
     });
 
   } catch (error) {
+    console.log("error");
+    console.log(error);
     log('src/controllers/back', 'case-processing', 'createCaseProcessing', error, true, req, res);
     return res.status(500).json(errorResponse.toJson());
   }
@@ -345,10 +354,10 @@ let createCaseProcessing = async(req, res) => {
 let getCaseProcesingById = async (req, res) => {
   const { id_caso_temp } = req.params;
 
-  console.log('----------------- getPersonInvolvedForm-----------------');
+  //console.log('----------------- getPersonInvolvedForm-----------------');
   let get_caso_temp = id_caso_temp;
   let id_caso = Number.parseInt(get_caso_temp);
-  console.log('-----------------------------------------------------');
+  //console.log('-----------------------------------------------------');
 
   try {
 
@@ -384,40 +393,41 @@ let getCaseProcesingById = async (req, res) => {
         },
         {
           question_id: "tipo_via_entrada",
-          question_type: "closed",
-          question: "Tipo Vía Entrada",
           required: 1,
+          question_type: "closed_with_child",
+          has_child: 1,
+          principal_child: "via_entrada",
+          question: "Tipo Vía Entrada",
           answer: caseProcessing.tipo_via_entrada,
           answers: [
-            { answer_id: 'V', answer: 'verbal' },
-            { answer_id: 'E', answer: 'escrita' },
-            { answer_id: 'O', answer: 'otra' }
+            { answer_id:'V', answer: 'Verbal' },
+            { answer_id:'E', answer: 'Escrita' },
+            { answer_id:'O', answer: 'De Oficio' }
           ]
         },
         {
           question_id: "via_entrada",
           question_type: "closed",
-          required: 1,
           question: "Via Entrada",
           answer:caseProcessing.via_entrada,
           answers: [
-            { answer_id:'p', answer: 'persona' },
-            { answer_id:'T', answer: 'telefonica' },
-            { answer_id:'OV', answer: 'Otra' },
+            { answer_id:'p', answer: 'Persona' , to_compare:"V"},
+            { answer_id:'T', answer: 'Telefonica', to_compare:"V" },
+            { answer_id:'O', answer: 'Otra', to_compare:"V" },
 
-            { answer_id:'F', answer: 'fax' },
-            { answer_id:'E', answer: 'e-mail' },
-            { answer_id:'C', answer: 'carta' },
-            { answer_id:'OE', answer: 'otra' },
+            { answer_id:'F', answer: 'Fax', to_compare:"E" },
+            { answer_id:'E', answer: 'E-mail', to_compare:"E" },
+            { answer_id:'C', answer: 'Carta', to_compare:"E" },
+            { answer_id:'O', answer: 'Otra', to_compare:"E" },
 
-            { answer_id:'PE', answer: 'prensa escrita' },
-            { answer_id:'R', answer: 'radio' },
-            { answer_id:'TV', answer: 'television' },
-            { answer_id:'I', answer: 'internet' },
-            { answer_id:'IN', answer: 'informe' },
-            { answer_id:'A', answer: 'aviso' },
-            { answer_id:'N', answer: 'noticia' },
-            { answer_id:'OF', answer: 'otra' },
+            { answer_id:'S', answer: 'Prensa Escrita', to_compare:"O" },
+            { answer_id:'R', answer: 'Radio', to_compare:"O" },
+            { answer_id:'V', answer: 'Television', to_compare:"O" },
+            { answer_id:'I', answer: 'Internet', to_compare:"O" },
+            { answer_id:'M', answer: 'Informe', to_compare:"O" },
+            { answer_id:'A', answer: 'Aviso', to_compare:"O" },
+            { answer_id:'N', answer: 'Noticia', to_compare:"O" },
+            { answer_id:'O', answer: 'Otra', to_compare:"O" }
             
           ]
         },
@@ -425,7 +435,7 @@ let getCaseProcesingById = async (req, res) => {
           question_id: "otra_via_entrada",
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
+          dependent_question_id: "tipo_via_entrada",
           dependent_answer: "OV",
           question_type: "open",
           question: "Otra vía Entrada",
@@ -436,8 +446,8 @@ let getCaseProcesingById = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "open",
           question: "Fuente Emisión",
           answer: caseProcessing.fuente
@@ -447,8 +457,8 @@ let getCaseProcesingById = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "date",
           question: "Fecha Emisión",
           answer: caseProcessing.fec_emision
@@ -459,8 +469,8 @@ let getCaseProcesingById = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "open",
           question: "Título Emisión",
           answer: caseProcessing.tit_emision
@@ -470,8 +480,8 @@ let getCaseProcesingById = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "date_after",
           question: "Fecha Recepción",
           answer: caseProcessing.fec_recepcion
@@ -481,8 +491,8 @@ let getCaseProcesingById = async (req, res) => {
           required: 1,
           dependent: 1,
           dependent_section_id: 1,
-          dependent_question_id: "via_entrada",
-          dependent_answer: "OF",
+          dependent_question_id: "tipo_via_entrada",
+          dependent_answer: "O",
           question_type: "area",
           question: "Otra vía Entrada",
           answer: caseProcessing.otra_via_entrada
@@ -2728,5 +2738,6 @@ let sentCaseToSigi = async(req, res) =>{
     updatePersonInvolvedForm,
     deletePersonInvolved,
     getInvolvedFormList,
-    sentCaseToSigi
+    sentCaseToSigi,
+    getFormVersion
   }
