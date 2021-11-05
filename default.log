@@ -1294,3 +1294,38 @@ funcion: getPersonInvolvedForm
 error: error: no existe la relación «admi_cat_cal_actua»
 --------------------------------------------------------------------------------------------
 
+2021.11.04, 15:37:34.0437 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.04, 15:38:41.0520 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.04, 15:39:41.0738 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.04, 15:40:45.0184 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedFormOffline
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.04, 15:42:34.0240 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedFormOffline
+error: error: no existe la relación «admi_cat_tip_discapacidad»
+--------------------------------------------------------------------------------------------
+

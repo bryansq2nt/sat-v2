@@ -2,11 +2,12 @@ const { Router } = require('express');
 const router = Router();
 
 const { usersTokenVerification } = require('@middlewares/token.middleware');  
-const { getcaseProcesingFormList,getCaseProcessingForm, createCaseProcessing, getCaseProcesingById, updateCaseProcesing, getPersonInvolvedForm, getPersonInvolvedFormOffline, getInvolvedFormList, createPersonInvolvedForm, getPersonInvolvedById, updatePersonInvolvedForm, deletePersonInvolved, sentCaseToSigi,getFormVersion } = require('../../controllers/back/case-processing.controllers');  
+const { getcaseProcesingFormList,getCaseProcessingForm, createCaseProcessing, getCaseProcesingById, updateCaseProcesing, getPersonInvolvedForm, getInvolvedFormList, createPersonInvolvedForm, getPersonInvolvedById, updatePersonInvolvedForm, deletePersonInvolved, sentCaseToSigi,getFormVersion, getInvolverFormVersion} = require('../../controllers/back/case-processing.controllers');  
 
 
 
 router.get('/api/forms/caseProcessing/version',usersTokenVerification, getFormVersion);
+router.get('/api/forms/involved/version', usersTokenVerification, getInvolverFormVersion)
 
 //Processing Case
 router.get('/api/case-processing/list',usersTokenVerification, getcaseProcesingFormList);
@@ -21,10 +22,7 @@ router.put('/api/case-processing/:id_caso_temp',usersTokenVerification, updateCa
 router.get('/api/case-processing/:id_caso_temp/involved/list', usersTokenVerification, getInvolvedFormList);
   
 //Form involucrados on line 
-router.get('/api/case-processing/:id_caso_temp/involved/lists-form',usersTokenVerification, getPersonInvolvedForm);
-
-//Form involucrados Offline
-router.get('/api/case-processing/involved/form-offline',usersTokenVerification, getPersonInvolvedFormOffline);
+router.get('/api/case-processing/involved/form/empty', usersTokenVerification, getPersonInvolvedForm);
 
 router.get('/api/case-processing/:id_persona_temp/involved/form',usersTokenVerification, getPersonInvolvedById);
 router.post('/api/case-processing/:id_caso_temp/involved/form',usersTokenVerification, createPersonInvolvedForm);
