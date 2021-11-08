@@ -7,7 +7,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.1");
+  let version = parseFloat("1.2");
 
   return res.status(200).json({version});
 }
@@ -22,13 +22,13 @@ let crisisAlertsList = async (req, res) => {
 
     var cod_usu_ing = req.user.user_id;
     let rol_user = req.user.roles[0].role_id;
-    //let crisisAlerts;
-
-    console.log(rol_user);
+    
+    let crisisAlerts;
+    
     //Perfil Consulta
     if(rol_user == 1){
 
-      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      crisisAlerts = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_atencion_crisis 
@@ -36,12 +36,12 @@ let crisisAlertsList = async (req, res) => {
       WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
       GROUP BY sat_atencion_crisis.id_atencion_crisis
       ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [offset]);
-      crisisAlertsR = crisisAlertsR.rows;
+      crisisAlerts = crisisAlerts.rows;
 
     //Perfil Tecnico
     }else if(rol_user == 2){
       
-      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      crisisAlerts = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_atencion_crisis 
@@ -50,12 +50,12 @@ let crisisAlertsList = async (req, res) => {
       AND cod_usu_ing = $1 
       GROUP BY sat_atencion_crisis.id_atencion_crisis
       ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset]);
-      crisisAlertsR = crisisAlertsR.rows;
+      crisisAlerts = crisisAlerts.rows;
 
     //Perfil Supervisor
     }else if(rol_user == 3){
 
-      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      crisisAlerts = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_atencion_crisis 
@@ -63,12 +63,12 @@ let crisisAlertsList = async (req, res) => {
       WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
       GROUP BY sat_atencion_crisis.id_atencion_crisis
       ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [offset]);
-      crisisAlertsR = crisisAlertsR.rows;
+      crisisAlerts = crisisAlerts.rows;
     
     //Perfil Analista
     }else if(rol_user == 4){
 
-      let crisisAlertsR = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+      crisisAlerts = await db.query(`SELECT id_atencion_crisis::integer AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_atencion_crisis 
@@ -76,29 +76,30 @@ let crisisAlertsList = async (req, res) => {
       WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
       AND enviada_analizar = true
       GROUP BY sat_atencion_crisis.id_atencion_crisis
-      ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [cod_usu_ing, offset]);
-      crisisAlertsR = crisisAlertsR.rows;
+      ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [offset]);
+      crisisAlerts = crisisAlerts.rows;
+      console.log(crisisAlerts);
 
     }
 
 
-    await db.query(`SELECT id_atencion_crisis::integer AS form_id,
-    CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
-    COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
-    FROM sat_atencion_crisis 
-    LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
-    WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
-    AND cod_usu_ing = $1 
-    GROUP BY sat_atencion_crisis.id_atencion_crisis
-    ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset], (err, results) => {
-      if (err) {
-        console.log(err.message);
-        return res.status(500).json(errorResponse.toJson());
-      } else {
-        var crisisAlerts = results.rows;
+    // await db.query(`SELECT id_atencion_crisis::integer AS form_id,
+    // CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
+    // COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_atencion_crisis WHERE id_atencion_crisis = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
+    // FROM sat_atencion_crisis 
+    // LEFT JOIN sat_atencion_crisis_relacionados AS sacr ON sacr.id_padre = id_atencion_crisis
+    // WHERE NOT EXISTS ( SELECT FROM sat_atencion_crisis_relacionados WHERE id_hijo = sat_atencion_crisis.id_atencion_crisis )
+    // AND cod_usu_ing = $1 
+    // GROUP BY sat_atencion_crisis.id_atencion_crisis
+    // ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset], (err, results) => {
+    //   if (err) {
+    //     console.log(err.message);
+    //     return res.status(500).json(errorResponse.toJson());
+    //   } else {
+        // var crisisAlerts = results.rows;
         return res.status(200).json({ crisisAlerts });
-      }
-    });
+    //   }
+    // });
   } catch (error) {
     return res.status(500).json(errorResponse.toJson());
   }
@@ -173,10 +174,15 @@ let getCrisisAlertsForm = async (req, res) => {
       questions: [
         {
           question_id: "fecha_ingreso",
-          question_type: "date_before",
+          question_type: "date",
           question: "Fecha Ingreso"
         },
-
+        // {
+        //   question_id: "id_tipo_via_entrada",
+        //   question_type: "closed",
+        //   question: "Tipo Via Entrada",
+        //   answers: entryType,
+        // },
         {
           question_id: "via_entrada",
           question_type: "open",
@@ -382,6 +388,7 @@ let getCrisisAlertsForm = async (req, res) => {
         {
           question_id: "cantidad_aproximada",
           question_type: "numeric",
+          limit:5,
           question: "Cantidad de personas"
         },
         {
@@ -567,13 +574,13 @@ let getById = async (req, res) => {
           question: "Fecha Ingreso",
           answer: crisisAttention.fecha_ingreso,
         },
-        {
-          question_id: "id_tipo_via_entrada",
-          question_type: "closed",
-          question: "Tipo Via Entrada",
-          answers: entryType,
-          answer: Number.parseInt(crisisAttention.id_tipo_via_entrada)
-        },
+        // {
+        //   question_id: "id_tipo_via_entrada",
+        //   question_type: "closed",
+        //   question: "Tipo Via Entrada",
+        //   answers: entryType,
+        //   answer: Number.parseInt(crisisAttention.id_tipo_via_entrada)
+        // },
         {
           question_id: "via_entrada",
           question_type: "open",
@@ -798,6 +805,7 @@ let getById = async (req, res) => {
         {
           question_id: "cantidad_aproximada",
           question_type: "numeric",
+          limit:5,
           question: "Cantidad de personas",
           answer: crisisAttention.cantidad_aproximada
         },

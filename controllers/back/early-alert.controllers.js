@@ -6,7 +6,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.1");
+  let version = parseFloat("1.2");
 
   return res.status(200).json({version});
 }
@@ -20,12 +20,12 @@ let earlyAlertsList = async (req, res) => {
     var cod_usu_ing = req.user.user_id;
     let rol_user = req.user.roles[0].role_id;
 
-    //let earlyAlerts;
+    let earlyAlerts;
 
     //Perfil Consulta
     if(rol_user == 1){
       
-      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_alerta_temprana 
@@ -33,12 +33,12 @@ let earlyAlertsList = async (req, res) => {
       WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
       GROUP BY sat_alerta_temprana.id_alerta_temprana
       ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
-      earlyAlertR = earlyAlertR.rows;
+      earlyAlerts = earlyAlerts.rows;
 
     //Perfil Tecnico
     }else if(rol_user == 2){
 
-      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_alerta_temprana 
@@ -47,13 +47,13 @@ let earlyAlertsList = async (req, res) => {
       AND cod_usu_ing = $1 
       GROUP BY sat_alerta_temprana.id_alerta_temprana
       ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2`, [cod_usu_ing, offset]);
-      earlyAlertR = earlyAlertR.rows;
+      earlyAlerts = earlyAlerts.rows;
 
 
     //Perfil Supervisor
     }else if(rol_user == 3){
       
-      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_alerta_temprana 
@@ -61,12 +61,12 @@ let earlyAlertsList = async (req, res) => {
       WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
       GROUP BY sat_alerta_temprana.id_alerta_temprana
       ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
-      earlyAlertR = earlyAlertR.rows;
+      earlyAlerts = earlyAlerts.rows;
     
     //Perfil Analista
     }else if(rol_user == 4){
 
-      let earlyAlertR = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
+      earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
       FROM sat_alerta_temprana 
@@ -75,27 +75,13 @@ let earlyAlertsList = async (req, res) => {
       AND enviada_analizar = true
       GROUP BY sat_alerta_temprana.id_alerta_temprana
       ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
-      earlyAlertR = earlyAlertR.rows;
+      earlyAlerts = earlyAlerts.rows;
     }
 
-    await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
-      CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
-      COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
-      FROM sat_alerta_temprana 
-      LEFT JOIN sat_alerta_temprana_relacionados AS sacr ON sacr.id_padre = id_alerta_temprana
-      WHERE NOT EXISTS ( SELECT FROM sat_alerta_temprana_relacionados WHERE id_hijo = sat_alerta_temprana.id_alerta_temprana )
-      AND cod_usu_ing = $1 
-      GROUP BY sat_alerta_temprana.id_alerta_temprana
-      ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $2
-      `, [cod_usu_ing,offset], (err, results) => {
-      if (err) {
-        console.log(err.message);
-        return res.status(500).json(errorResponse.toJson());
-      } else {
-        var earlyAlerts = results.rows;
-        return res.status(200).json({ earlyAlerts });
-      }
-    });
+  
+    return res.status(200).json({ earlyAlerts });
+  
+  
   } catch (error) {
     return res.status(500).json(errorResponse.toJson());
   }

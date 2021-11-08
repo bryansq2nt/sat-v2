@@ -14,7 +14,7 @@ let getFormVersion = (req, res) => {
 
 let getInvolverFormVersion = (req, res) => {
 
-  let version = parseFloat("1.0");
+  let version = parseFloat("1.4");
 
   return res.status(200).json({ version });
 }
@@ -864,11 +864,15 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "nombre",
           question_type: "open",
+          required: 1,
+          limit:100,
           question: "Nombre"
         },
         {
           question_id: "apellido",
           question_type: "open",
+          required: 1,
+          limit:100,
           question: "Apellido"
         },
         {
@@ -881,6 +885,7 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "num_documento",
           required: 1,
+          limit:50,
           question_type: "open",
           question: "Núm. Documento"
         },
@@ -946,7 +951,8 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "edad_aprox",
           required: 1,
-          question_type: "open",
+          question_type: "numeric",
+          limit:3,
           question: "Edad Aproximada"
         },
         {
@@ -1037,6 +1043,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "domicilio",
           question_type: "area",
           required: 1,
+          limit:500,
           question: "Dirección",
         },
         {
@@ -1076,7 +1083,7 @@ let getPersonInvolvedForm = async (req, res) => {
       section_id: 5,
       dependent: 1,
       dependent_section_id: 1,
-      dependent_question_id: "persona_denunciante",
+      dependent_question_id: "tipo_persona",
       dependent_answer: "J",
       section_title: "Información de Institución",
       questions: [
@@ -1084,6 +1091,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "institucion",
           question_type: "area",
           required: 1,
+          limit:200,
           question: "Institucion",
         },
         {
@@ -1199,10 +1207,6 @@ let createPersonInvolvedForm = async (req, res) => {
     }
 
 
-    console.log('-------------- CREATE Profesion ---------------');
-    console.log(professionPerson.id_cat_pro_oficio, ' ', professionPerson.descripcion);
-    console.log('-----------------------------');
-
     var localDate = new Date();
     var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
     var est_reg = 'R';
@@ -1221,7 +1225,14 @@ let createPersonInvolvedForm = async (req, res) => {
     //Pendientes
     //obs_est_reg, id_ins_ing, id_ins_mod, otra_ide_genero
 
-    let nom_completo = nombre + ' ' + apellido;
+    let nom_completo;
+
+    if(tipo_rel_caso == 'A'){
+      nom_completo = institucion;
+    }else{
+      nom_completo = nombre + ' ' + apellido;
+    }
+    
 
     let per_den_es_victima;
     let per_principal;
@@ -1256,12 +1267,32 @@ let createPersonInvolvedForm = async (req, res) => {
         } else {
           var personInvolved = results.rows[0];
 
-          db.query(`INSERT INTO tcdh_per_rel_caso_temp(
+          if(personInvolved.tipo_rel_caso == 'A'){
+            console.log('Tipo de personas Denunciante/Victima -- ', personInvolved.tipo_rel_caso);
+            db.query(`INSERT INTO tcdh_per_rel_caso_temp(
             id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
             fec_mod_reg, confidencial, aut_dat_den_vic)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
-            [personInvolved.id_persona_temp, id_caso_temp, personInvolved.tipo_rel_caso, tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+            [personInvolved.id_persona_temp, id_caso_temp, 'D', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+            registration_date, confidencial, aut_dat_den_vic]);
+            
+            db.query(`INSERT INTO tcdh_per_rel_caso_temp(
+              id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
+              fec_mod_reg, confidencial, aut_dat_den_vic)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+              [personInvolved.id_persona_temp, id_caso_temp, 'V', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
               registration_date, confidencial, aut_dat_den_vic]);
+
+          }else{
+            console.log('Tipo de personas Denunciante o Victima -- ', personInvolved.tipo_rel_caso);
+            db.query(`INSERT INTO tcdh_per_rel_caso_temp(
+              id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
+              fec_mod_reg, confidencial, aut_dat_den_vic)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+              [personInvolved.id_persona_temp, id_caso_temp, personInvolved.tipo_rel_caso, tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+              registration_date, confidencial, aut_dat_den_vic]);
+          }
+           
 
           if (id_grp_vulnerable != null || id_grp_vulnerable != null) {
 
