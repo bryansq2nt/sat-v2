@@ -78,8 +78,6 @@ let crisisAlertsList = async (req, res) => {
       GROUP BY sat_atencion_crisis.id_atencion_crisis
       ORDER BY id_atencion_crisis DESC LIMIT 25 OFFSET $1`, [offset]);
       crisisAlerts = crisisAlerts.rows;
-      console.log(crisisAlerts);
-
     }
 
 

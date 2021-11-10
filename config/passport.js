@@ -51,12 +51,8 @@ module.exports = function (passport) {
                                 user.cat = 0;
                                 user.dashboard = 0;
                                 user.alert = 0;
+                                user.role = user.id_rol_permisos;
 
-                                if(user.id_perfil != 1){
-                                    user.role = user.id_rol_permisos;
-                                }else{
-                                    user.role = 0;
-                                }
                                 
                                 if (results.rows.length > 0) {
 

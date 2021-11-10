@@ -4,13 +4,17 @@ const dateFormat = require('dateformat');
 
 let bannerList = async(req, res) =>{
     try {
+
+        let bannerExist = await db.query('SELECT COUNT(id_banner) AS banner FROM sat_banner');
+        bannerExist = bannerExist.rows[0].banner;
+
         await db.query(`SELECT id_banner, titulo_banner, descripcion, url, estado
         FROM sat_banner`,(err,results)=>{
             if(err){
                 log('src/controllers/front', 'banner', 'BannerList', err, false, req, res);
             }else{
                 var banner = results.rows[0];
-                return res.render('banner/banner_list', {banner});
+                return res.render('banner/banner_list', {banner, bannerExist});
             }
         });   
     } catch (error) {

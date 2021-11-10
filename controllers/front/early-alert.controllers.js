@@ -12,19 +12,20 @@ let earlyAlertsList = async (req, res) => {
     let rol_user = req.user.role;
     let earlyAlerts;
 
-    if(profile_user == 1){
-      earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
-      a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
-      FROM sat_alerta_temprana AS a 
-	    LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
-	    INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
-	    INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
-      WHERE a.alerta_relacionada = false
-      ORDER BY a.id_alerta_temprana DESC`);
-      earlyAlerts = earlyAlerts.rows;
+    // if(profile_user == 1){
+    //   earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
+    //   a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
+    //   FROM sat_alerta_temprana AS a 
+	  //   LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
+	  //   INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
+	  //   INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
+    //   WHERE a.alerta_relacionada = false
+    //   ORDER BY a.id_alerta_temprana DESC`);
+    //   earlyAlerts = earlyAlerts.rows;
     
-    //Perfil Consulta
-    }else if(rol_user == 1){
+    // //Perfil Consulta
+    // }else 
+    if(rol_user == 1){
 
       earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
       FROM sat_alerta_temprana AS a 

@@ -4,11 +4,12 @@ const dateFormat = require('dateformat');
 
 let usersList = async (req, res) => {
     try {
-
+        let userInSession = req.user.id_perfil;
+        console.log()
         await db.query(`SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.usuario, u.fec_nacimiento, u.correo, u.clave, u.estado_reg, u.id_perfil, up.descripcion AS perfil
         FROM usuario AS u
         INNER JOIN perfil AS up ON up.id_perfil = u.id_perfil
-        WHERE u.id_perfil > 1`, (err, results) => {
+        WHERE u.id_perfil != $1`,[userInSession], (err, results) => {
             if (err) {
                 log('src/controllers/front', 'users', 'usersList', err, false, req, res);
             } else {

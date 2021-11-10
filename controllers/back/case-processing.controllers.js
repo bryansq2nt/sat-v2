@@ -267,27 +267,27 @@ let createCaseProcessing = async (req, res) => {
   const { tipo_via_entrada, via_entrada, otra_via_entrada, fec_hora, fec_hor_hecho_aprox, fec_hecho, id_depto_hecho,
     id_mun_hecho, lugar, hecho, fuente, fec_emision, tit_emision, fec_recepcion, id_pais_hecho } = req.body
 
-  console.log('------------------------------------------');
+  // console.log('------------------------------------------');
 
-  console.log('tipo_via_entrada', tipo_via_entrada);
-  console.log('via_entada', via_entrada);
-  console.log('otra_via_entrada', otra_via_entrada);
-  console.log('fec_hora', fec_hora);
-  console.log('fec_hor_hecho_aprox', fec_hor_hecho_aprox);
-  console.log('fec_hecho', fec_hecho);
-  console.log('id_depto_hecho', id_depto_hecho);
-  console.log('id_mun_hecho', id_mun_hecho);
-  console.log('lugar', lugar);
-  console.log('hecho', hecho);
-  console.log('fuente', fuente);
-  console.log('fec_emision', fec_emision);
-  console.log('tit_emision', tit_emision);
-  console.log('fec_recepcion', fec_recepcion);
+  // console.log('tipo_via_entrada', tipo_via_entrada);
+  // console.log('via_entada', via_entrada);
+  // console.log('otra_via_entrada', otra_via_entrada);
+  // console.log('fec_hora', fec_hora);
+  // console.log('fec_hor_hecho_aprox', fec_hor_hecho_aprox);
+  // console.log('fec_hecho', fec_hecho);
+  // console.log('id_depto_hecho', id_depto_hecho);
+  // console.log('id_mun_hecho', id_mun_hecho);
+  // console.log('lugar', lugar);
+  // console.log('hecho', hecho);
+  // console.log('fuente', fuente);
+  // console.log('fec_emision', fec_emision);
+  // console.log('tit_emision', tit_emision);
+  // console.log('fec_recepcion', fec_recepcion);
   // console.log('id_mun_hecho', nom_victima);
-  //console.log('nom_denunciante', nom_denunciante);
-  console.log('id_pais_hecho', id_pais_hecho);
+  // console.log('nom_denunciante', nom_denunciante);
+  // console.log('id_pais_hecho', id_pais_hecho);
 
-  console.log('------------------------------------------');
+  // console.log('------------------------------------------');
 
   try {
 
@@ -361,10 +361,8 @@ let createCaseProcessing = async (req, res) => {
 let getCaseProcesingById = async (req, res) => {
   const { id_caso_temp } = req.params;
 
-  //console.log('----------------- getPersonInvolvedForm-----------------');
   let get_caso_temp = id_caso_temp;
   let id_caso = Number.parseInt(get_caso_temp);
-  //console.log('-----------------------------------------------------');
 
   try {
 
@@ -1139,42 +1137,40 @@ let createPersonInvolvedForm = async (req, res) => {
     id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio,
     discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, id_grp_vulnerable, id_ori_sexual, institucion } = req.body;
 
-  console.log('------------------------------------------------');
-  console.log('tipo_persona', tipo_persona);
-  console.log('confidencial', confidencial);
-  console.log('aut_dat_den_vic', aut_dat_den_vic);
-  console.log('nombre', nombre);
-  console.log('apellido', apellido);
-  console.log('id_cat_cal_actua', id_cat_cal_actua);
-  console.log('sexo', sexo);
-  console.log('id_genero', ide_genero);
-  console.log('lee', lee);
-  console.log('escribe', escribe);
-  console.log('id_cat_doc_personas', id_cat_doc_persona);
-  console.log('otro_doc_indentidad', otro_doc_identidad);
-  console.log('num_documento', num_documento);
-  console.log('id_niv_academico', id_niv_academico);
-  console.log('id_pais_nacimiento', id_pais_nacimiento);
-  console.log('id_pais_ins_rep', id_pais_ins_rep);
-  console.log('fec_nacimiento', fec_nacimiento);
-  console.log('edad_prox', edad_aprox);
-  console.log('id_cat_pro_oficio', id_cat_pro_oficio); // Buscarlo el id de la profesion que se recibe, mediante una consulta
-  console.log('zona_domicilio', zona_domicilio);
-  console.log('id_departamento', id_departamento);
-  console.log('id_municipio', id_municipio);
-  console.log('domicilio', domicilio);
-  console.log('discapcidad', discapacidad);
-  console.log('id_cat_tip_discapacidad', id_cat_tip_discapacidad);
-  console.log('med_rec_notificacion', med_rec_notificacion);
-  console.log('id_grp_vulnerable', id_grp_vulnerable);
-  console.log('id_ori_sexual', id_ori_sexual);
-  console.log('***********');
-  console.log('tipo_rel_caso', tipo_rel_caso);
-  console.log('institucion', institucion);
-  console.log('persona victima', persona_victima)
-  console.log('------------------------------------------------');
-
-
+  // console.log('------------------------------------------------');
+  // console.log('tipo_persona', tipo_persona);
+  // console.log('confidencial', confidencial);
+  // console.log('aut_dat_den_vic', aut_dat_den_vic);
+  // console.log('nombre', nombre);
+  // console.log('apellido', apellido);
+  // console.log('id_cat_cal_actua', id_cat_cal_actua);
+  // console.log('sexo', sexo);
+  // console.log('id_genero', ide_genero);
+  // console.log('lee', lee);
+  // console.log('escribe', escribe);
+  // console.log('id_cat_doc_personas', id_cat_doc_persona);
+  // console.log('otro_doc_indentidad', otro_doc_identidad);
+  // console.log('num_documento', num_documento);
+  // console.log('id_niv_academico', id_niv_academico);
+  // console.log('id_pais_nacimiento', id_pais_nacimiento);
+  // console.log('id_pais_ins_rep', id_pais_ins_rep);
+  // console.log('fec_nacimiento', fec_nacimiento);
+  // console.log('edad_prox', edad_aprox);
+  // console.log('id_cat_pro_oficio', id_cat_pro_oficio); // Buscarlo el id de la profesion que se recibe, mediante una consulta
+  // console.log('zona_domicilio', zona_domicilio);
+  // console.log('id_departamento', id_departamento);
+  // console.log('id_municipio', id_municipio);
+  // console.log('domicilio', domicilio);
+  // console.log('discapcidad', discapacidad);
+  // console.log('id_cat_tip_discapacidad', id_cat_tip_discapacidad);
+  // console.log('med_rec_notificacion', med_rec_notificacion);
+  // console.log('id_grp_vulnerable', id_grp_vulnerable);
+  // console.log('id_ori_sexual', id_ori_sexual);
+  // console.log('***********');
+  // console.log('tipo_rel_caso', tipo_rel_caso);
+  // console.log('institucion', institucion);
+  // console.log('persona victima', persona_victima)
+  // console.log('------------------------------------------------');
 
   //Pendientes
   //num_telefono, fax, correo_electronico, dir_notificar, per_aprox_afectada
@@ -1268,7 +1264,7 @@ let createPersonInvolvedForm = async (req, res) => {
           var personInvolved = results.rows[0];
 
           if(personInvolved.tipo_rel_caso == 'A'){
-            console.log('Tipo de personas Denunciante/Victima -- ', personInvolved.tipo_rel_caso);
+
             db.query(`INSERT INTO tcdh_per_rel_caso_temp(
             id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
             fec_mod_reg, confidencial, aut_dat_den_vic)
@@ -1284,7 +1280,7 @@ let createPersonInvolvedForm = async (req, res) => {
               registration_date, confidencial, aut_dat_den_vic]);
 
           }else{
-            console.log('Tipo de personas Denunciante o Victima -- ', personInvolved.tipo_rel_caso);
+
             db.query(`INSERT INTO tcdh_per_rel_caso_temp(
               id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
               fec_mod_reg, confidencial, aut_dat_den_vic)
@@ -1301,8 +1297,6 @@ let createPersonInvolvedForm = async (req, res) => {
             VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
               [id_grp_vulnerable, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, personInvolved.id_persona_temp,
                 id_caso_temp, 'N']);
-          } else {
-            console.log("Viene Vacio Grupo Vulerables");
           }
 
           // if(id_ori_sexual != undefined || id_ori_sexual != null){
@@ -1314,9 +1308,7 @@ let createPersonInvolvedForm = async (req, res) => {
             [personInvolved.id_persona_temp, id_ori_sexual, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date,
               id_caso_temp]);
           //   }
-          // }else{
-          //   console.log("Viene Vacio orientacion sexual");
-          // }  
+          // } 
 
           return res.status(201).json({
             personInvolved
@@ -2270,10 +2262,6 @@ let updatePersonInvolvedForm = async (req, res) => {
     FROM admi_cat_pro_oficio WHERE descripcion like '%${id_cat_pro_oficio}'`);
     professionPerson = professionPerson.rows[0];
 
-    console.log('-------------- UPDATE Profesion ---------------');
-    console.log(professionPerson.id_cat_pro_oficio, ' ', professionPerson.descripcion);
-    console.log('-----------------------------');
-
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar a la persona involucrada.", instance: "case-processing/updatePersonInvolvedForm" });
 
     var localDate = new Date();
@@ -2357,11 +2345,7 @@ let deletePersonInvolved = async (req, res) => {
 
 //Enviar a SIGI
 let sentCaseToSigi = async (req, res) => {
-  const { id_caso_temp } = req.params
-
-  console.log('------------------------------------');
-  console.log('Params', id_caso_temp);
-  console.log('------------------------------------');
+  const { id_caso_temp } = req.params;
 
   try {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar el caso al SIGI.", instance: "case-processing/sentCaseToSigi" });

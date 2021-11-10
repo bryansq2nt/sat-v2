@@ -9,10 +9,15 @@
             <li class="breadcrumb-item active">Detalle del Banner</li>
         </ol>
     </div>
+    {{#ShowButtonCreateBanner bannerExist}}
+    <div class="col-md-7 align-self-center text-right d-none d-md-block" style="color: white;">
+    </div>
+    {{else}}
     <div class="col-md-7 align-self-center text-right d-none d-md-block" style="color: white;">
         <a href="/api-sat/banner/create-view" type="button" class="btn btn-info"><i class="fa fa-plus-circle"></i>
             Nuevo</a>
     </div>
+    {{/ShowButtonCreateBanner}}
 </div>
 <!-- ============================================================== -->
 <!-- End Bread crumb and right sidebar toggle -->
