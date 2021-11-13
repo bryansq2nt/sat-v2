@@ -77,7 +77,7 @@ module.exports = function (passport) {
                                     }
     
                                 }
-
+                                console.log(user);
                                 return done(null, user, null);
                             }
                         }

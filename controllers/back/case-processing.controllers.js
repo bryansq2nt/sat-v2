@@ -7,14 +7,14 @@ const dateFormat = require('dateformat');
 
 let getFormVersion = (req, res) => {
 
-  let version = parseFloat("1.1");
+  let version = parseFloat("1.9");
 
   return res.status(200).json({ version });
 }
 
 let getInvolverFormVersion = (req, res) => {
 
-  let version = parseFloat("1.4");
+  let version = parseFloat("1.26");
 
   return res.status(200).json({ version });
 }
@@ -57,7 +57,7 @@ let getCaseProcessingForm = async (req, res) => {
 
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getCaseProcessingForm" });
 
-    var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
+    var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais ORDER BY id_pais ASC`);
     country = country.rows;
 
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
@@ -65,6 +65,9 @@ let getCaseProcessingForm = async (req, res) => {
 
     var municipality = await db.query(`SELECT id_municipio::integer AS answer_id, descripcion AS answer, id_departamento AS to_compare FROM admi_municipio WHERE est_reg = 'A'`);
     municipality = municipality.rows;
+
+    var localDate = new Date();
+    var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
 
     var sections = [];
 
@@ -76,8 +79,9 @@ let getCaseProcessingForm = async (req, res) => {
       questions: [
         {
           question_id: "fec_hora",
-          question_type: "date_time",
+          question_type: "date_time_before",
           required: 1,
+          answer: registration_date,
           question: "Fecha de ingreso"
         },
         {
@@ -145,7 +149,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent_section_id: 1,
           dependent_question_id: "tipo_via_entrada",
           dependent_answer: "O",
-          question_type: "date",
+          question_type: "date_before",
           question: "Fecha Emisión"
         },
         {
@@ -165,7 +169,7 @@ let getCaseProcessingForm = async (req, res) => {
           dependent_section_id: 1,
           dependent_question_id: "tipo_via_entrada",
           dependent_answer: "O",
-          question_type: "date_after",
+          question_type: "date_before",
           question: "Fecha Recepción"
         },
         {
@@ -190,7 +194,7 @@ let getCaseProcessingForm = async (req, res) => {
       questions: [
         {
           question_id: "fec_hecho",
-          question_type: "date_time",
+          question_type: "date_time_before",
           required: 1,
           question: "Fecha y Hora Hecho"
         },
@@ -208,12 +212,15 @@ let getCaseProcessingForm = async (req, res) => {
         },
         {
           question_id: "id_pais_hecho",
-          question_type: "closed",
+          required:1,
+          question_type: "closed_searchable",
           question: "Pais",
+          answer: "EL SALVADOR",
           answers: country
         },
         {
           question_id: "id_depto_hecho",
+          required:1,
           question_type: "closed_with_child",
           has_child: 1,
           principal_child: "id_mun_hecho",
@@ -222,6 +229,7 @@ let getCaseProcessingForm = async (req, res) => {
         },
         {
           question_id: "id_mun_hecho",
+          required:1,
           question_type: "closed",
           question: "Municipio",
           answers: municipality
@@ -391,7 +399,7 @@ let getCaseProcesingById = async (req, res) => {
       questions: [
         {
           question_id: "fec_hora",
-          question_type: "date_time",
+          question_type: "date_time_before",
           required: 1,
           question: "Fecha de ingreso",
           answer: caseProcessing.fec_hora
@@ -702,19 +710,15 @@ let getInvolvedFormList = async (req, res) => {
 
 let getPersonInvolvedForm = async (req, res) => {
 
-  // const { id_caso_temp } = req.params;
-  // let get_caso_temp = id_caso_temp;
-  // let id_caso = Number.parseInt(get_caso_temp);
-
   try {
 
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de tramitacion de caso.", instance: "case-processing/getPersonInvolvedForm" });
 
-    // var caso_temp = await db.query(`SELECT id_caso_temp::integer AS id_caso_temp  FROM tcdh_caso_temp WHERE id_caso_temp = $1`, [id_caso]);
-    // caso_temp = caso_temp.rows[0];
-
-    var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer FROM admi_doc_persona WHERE est_reg = 'A'`);
+    var personalDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer, mascara, obl_cap_documento FROM admi_doc_persona WHERE est_reg = 'A'`);
     personalDocuments = personalDocuments.rows;
+
+    var maskDocuments = await db.query(`SELECT id_doc_persona::integer AS answer_id, descripcion AS answer, mascara, obl_cap_documento FROM admi_doc_persona WHERE est_reg = 'A' ORDER BY id_doc_persona ASC`);
+    maskDocuments = maskDocuments.rows;
 
     var occupation = await db.query(`SELECT id_cat_pro_oficio::integer AS answer_id, descripcion AS answer FROM admi_cat_pro_oficio WHERE est_reg = 'A'`);
     occupation = occupation.rows;
@@ -737,11 +741,8 @@ let getPersonInvolvedForm = async (req, res) => {
     var qualityOperates = await db.query(`SELECT id_cat_cal_actua::integer AS answer_id, descripcion AS answer FROM admi_cat_cal_actua WHERE est_reg = 'A'`);
     qualityOperates = qualityOperates.rows;
 
-    var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais`);
+    var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais ORDER BY id_pais ASC`);
     country = country.rows;
-
-    var institutionCountry = await db.query('SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais');
-    institutionCountry = institutionCountry.rows;
 
     var state = await db.query(`SELECT id_departamento::integer AS answer_id, descripcion AS answer FROM admi_departamento WHERE est_reg = 'A'`);
     state = state.rows;
@@ -775,7 +776,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "tipo_persona",
           required: 1,
           dependent: 1,
-          dependent_multiple:1,
+          dependent_multiple: 1,
           dependent_section_id: 1,
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: ['D', 'A'],
@@ -790,7 +791,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "persona_victima",
           required: 1,
           dependent: 1,
-          dependent_multiple:1,
+          dependent_multiple: 1,
           dependent_section_id: 1,
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: ['V', 'A'],
@@ -823,37 +824,6 @@ let getPersonInvolvedForm = async (req, res) => {
       ]
     };
 
-    //Seccion --- Denunciante/Victima
-    // var whistleblowerAndvictim = {
-    //   section_id: 2,
-    //   dependent: 1,
-    //   dependent_section_id: 1,
-    //   dependent_question_id: "tipo_persona",
-    //   dependent_answer: "A",
-    //   section_title: "Denunciante/Victima",
-    //   questions: [
-    //     {
-    //       question_id: "persona_denunciante",
-    //       question_type: "closed",
-    //       question: "Persona Denunciante",
-    //       answers: [
-    //         { answer_id: 0, answer: 'N' },
-    //         { answer_id: 1, answer: 'J' },
-    //       ]
-    //     },
-    //     {
-    //       question_id: "persona_victima",
-    //       question_type: "closed",
-    //       question: "Persona Victima",
-    //       answers: [
-    //         { answer_id: 0, answer: 'I' },
-    //         { answer_id: 1, answer: 'C' },
-    //       ]
-    //     },
-    //   ]
-    // };
-
-
     //Seccion --- Informacion general de la persona
     var generalData = {
       section_id: 2,
@@ -863,14 +833,14 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "nombre",
           question_type: "open",
           required: 1,
-          limit:100,
+          limit: 100,
           question: "Nombre"
         },
         {
           question_id: "apellido",
           question_type: "open",
           required: 1,
-          limit:100,
+          limit: 100,
           question: "Apellido"
         },
         {
@@ -883,19 +853,72 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "num_documento",
           required: 1,
-          limit:50,
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 2,
+          dependent_question_id: "id_cat_doc_persona",
+          dependent_answer: [4,3],
+          limit: 50,
+          question_type: "numeric_mask",
+          mask: maskDocuments[4].mascara,
+          question: "Núm. Documento"
+          
+        },
+        {
+          question_id: "num_documento",
+          required: 1,
+          dependent: 1,
+          dependent_section_id: 2,
+          dependent_question_id: "id_cat_doc_persona",
+          dependent_answer: 1,
+          limit: 50,
+          question_type: "numeric_mask",
+          mask: maskDocuments[1].mascara,
+          question: "Núm. Documento"
+          
+        },
+        {
+          question_id: "num_documento",
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 2,
+          dependent_question_id: "id_cat_doc_persona",
+          dependent_answer: [0,5],
+          limit: 50,
           question_type: "open",
           question: "Núm. Documento"
+          
+        },
+        {
+          question_id: "num_documento",
+          required:1,
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 2,
+          dependent_question_id: "id_cat_doc_persona",
+          dependent_answer: [2,7],
+          limit: 50,
+          question_type: "open",
+          question: "Núm. Documento"
+          
         },
         {
           question_id: "fec_nacimiento",
-          question_type: "date",
+          question_type: "date_before",
           question: "Fecha Nacimiento"
         },
+        // {
+        //   question_id: "edad_aprox",
+        //   required: 1,
+        //   question_type: "numeric",
+        //   limit: 3,
+        //   question: "Edad Aproximada"
+        // },
         {
           question_id: "id_pais_nacimiento",
-          question_type: "closed",
+          question_type: "closed_searchable",
           question: "Pais Nacimiento",
+          answer: "EL SALVADOR",
           answers: country
         },
         {
@@ -907,6 +930,23 @@ let getPersonInvolvedForm = async (req, res) => {
             { answer_id: "H", answer: "Hombre" },
             { answer_id: "M", answer: "Mujer" }
           ]
+        },
+        {
+          question_id: "ide_genero",
+          question_type: "closed",
+          question: "Identidad de Genéro",
+          answers: [
+            { answer_id: 'F', answer: 'Femenino' },
+            { answer_id: 'M', answer: 'Masculino' }
+            // { answer_id: 'R', answer: 'Sin Respuesta' }
+          ]
+        },
+        {
+          question_id: "id_ori_sexual",
+          required: 1,
+          question_type: "closed_multiple",
+          question: "Orientación Sexual",
+          answers: sexualOrientation
         },
         {
           question_id: "lee",
@@ -931,46 +971,6 @@ let getPersonInvolvedForm = async (req, res) => {
           ]
         },
         {
-          question_id: "discapacidad",
-          question_type: "closed",
-          question: "Discapacidad",
-          answers: [
-            { answer_id: "S", answer: "Si" },
-            { answer_id: "N", answer: "No" }
-          ]
-        },
-        {
-          question_id: "id_ori_sexual",
-          required: 1,
-          question_type: "closed",
-          question: "Orientación Sexual",
-          answers: sexualOrientation
-        },
-        {
-          question_id: "edad_aprox",
-          required: 1,
-          question_type: "numeric",
-          limit:3,
-          question: "Edad Aproximada"
-        },
-        {
-          question_id: "id_cat_pro_oficio",
-          required: 1,
-          question_type: "closed_searchable_case_processing",
-          question: "Ocupación",
-          answers: occupation
-        },
-        {
-          question_id: "ide_genero",
-          question_type: "closed",
-          question: "Identidad de Genéro",
-          answers: [
-            { answer_id: 'F', answer: 'Femenino' },
-            { answer_id: 'M', answer: 'Masculino' }
-            // { answer_id: 'R', answer: 'Sin Respuesta' }
-          ]
-        },
-        {
           question_id: "id_niv_academico",
           required: 1,
           dependent: 1,
@@ -982,6 +982,15 @@ let getPersonInvolvedForm = async (req, res) => {
           answers: academicLevel
         },
         {
+          question_id: "discapacidad",
+          question_type: "closed",
+          question: "Discapacidad",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
+        },
+        {
           question_id: "id_cat_tip_discapacidad",
           required: 1,
           dependent: 1,
@@ -991,8 +1000,14 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "closed",
           question: "Tipo de Discapacidad",
           answers: typeDisability
+        },
+        {
+          question_id: "id_cat_pro_oficio",
+          required: 1,
+          question_type: "closed_searchable_case_processing",
+          question: "Ocupación",
+          answers: occupation
         }
-
       ]
 
     };
@@ -1041,7 +1056,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "domicilio",
           question_type: "area",
           required: 1,
-          limit:500,
+          limit: 500,
           question: "Dirección",
         },
         {
@@ -1055,8 +1070,41 @@ let getPersonInvolvedForm = async (req, res) => {
             { answer_id: 3, answer: 'Correo Electrónico' },
             { answer_id: 4, answer: 'Pendiente' }
           ]
-        }
-
+        },
+        {
+          question_id: "num_telefono",
+          dependent: 1,
+          dependent_section_id:3,
+          dependent_question_id:"med_rec_notificacion",
+          dependent_answer: 0,
+          question_type: "open",
+          question: "Telefono",
+        },
+        {
+          question_id: "fax",
+          dependent: 1,
+          dependent_section_id:3,
+          dependent_question_id:"med_rec_notificacion",
+          dependent_answer: 2,
+          question_type: "open",
+          question: "Fax",
+        },
+        {
+          question_id: "correo_eletronico",
+          dependent: 1,
+          dependent_section_id:3,
+          dependent_question_id:"med_rec_notificacion",
+          dependent_answer: 3,
+          question_type: "open",
+          question: "Correo Electrónico",
+        },
+        {
+          question_id: "dir_notificar",
+          question_type: "area",
+          required: 1,
+          limit: 500,
+          question: "Dirección",
+        },
       ]
 
     };
@@ -1069,7 +1117,7 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "id_grp_vulnerable",
           required: 1,
-          question_type: "closed",
+          question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup
         }
@@ -1089,14 +1137,14 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "institucion",
           question_type: "area",
           required: 1,
-          limit:200,
+          limit: 200,
           question: "Institucion",
         },
         {
           question_id: "id_pais_ins_rep",
-          question_type: "closed",
+          question_type: "closed_searchable",
           question: "Nacionalidad de Institución",
-          answers: institutionCountry
+          answers: country
         },
         {
           question_id: "id_cat_cal_actua",
@@ -1182,20 +1230,20 @@ let createPersonInvolvedForm = async (req, res) => {
     let professionPerson = await db.query(`SELECT id_cat_pro_oficio, descripcion
     FROM admi_cat_pro_oficio WHERE descripcion like '%${id_cat_pro_oficio}'`);
     professionPerson = professionPerson.rows[0];
-    
+
     var medNotificationTempArray = [];
 
-    if(med_rec_notificacion != null){
+    if (med_rec_notificacion != null) {
       for (let i = 0; i < med_rec_notificacion.length; i++) {
-        if(med_rec_notificacion[i] == 0){
+        if (med_rec_notificacion[i] == 0) {
           medNotificationTempArray.push('T');
-        }else if(med_rec_notificacion[i] == 1){
+        } else if (med_rec_notificacion[i] == 1) {
           medNotificationTempArray.push('D');
-        }else if(med_rec_notificacion[i] == 2){
+        } else if (med_rec_notificacion[i] == 2) {
           medNotificationTempArray.push('F');
-        }else if(med_rec_notificacion[i] == 3){
+        } else if (med_rec_notificacion[i] == 3) {
           medNotificationTempArray.push('C');
-        }else{
+        } else {
           med_rec_notificacion[i] == 4
           medNotificationTempArray.push('P');
         }
@@ -1223,12 +1271,12 @@ let createPersonInvolvedForm = async (req, res) => {
 
     let nom_completo;
 
-    if(tipo_rel_caso == 'A'){
+    if (tipo_rel_caso == 'A') {
       nom_completo = institucion;
-    }else{
+    } else {
       nom_completo = nombre + ' ' + apellido;
     }
-    
+
 
     let per_den_es_victima;
     let per_principal;
@@ -1263,52 +1311,52 @@ let createPersonInvolvedForm = async (req, res) => {
         } else {
           var personInvolved = results.rows[0];
 
-          if(personInvolved.tipo_rel_caso == 'A'){
+          if (personInvolved.tipo_rel_caso == 'A') {
 
             db.query(`INSERT INTO tcdh_per_rel_caso_temp(
             id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
             fec_mod_reg, confidencial, aut_dat_den_vic)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
-            [personInvolved.id_persona_temp, id_caso_temp, 'D', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
-            registration_date, confidencial, aut_dat_den_vic]);
-            
+              [personInvolved.id_persona_temp, id_caso_temp, 'D', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+                registration_date, confidencial, aut_dat_den_vic]);
+
             db.query(`INSERT INTO tcdh_per_rel_caso_temp(
               id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
               fec_mod_reg, confidencial, aut_dat_den_vic)
               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
               [personInvolved.id_persona_temp, id_caso_temp, 'V', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
-              registration_date, confidencial, aut_dat_den_vic]);
+                registration_date, confidencial, aut_dat_den_vic]);
 
-          }else{
+          } else {
 
             db.query(`INSERT INTO tcdh_per_rel_caso_temp(
               id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
               fec_mod_reg, confidencial, aut_dat_den_vic)
               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
               [personInvolved.id_persona_temp, id_caso_temp, personInvolved.tipo_rel_caso, tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
-              registration_date, confidencial, aut_dat_den_vic]);
+                registration_date, confidencial, aut_dat_den_vic]);
           }
-           
+
 
           if (id_grp_vulnerable != null || id_grp_vulnerable != null) {
-
-            db.query(`INSERT INTO tcdh_grp_vul_temp(
+            for (let i = 0; i < id_grp_vulnerable.length; i++) {
+              db.query(`INSERT INTO tcdh_grp_vul_temp(
             id_grp_vulnerable, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_per_rel, id_caso_temp, migrado)
             VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-              [id_grp_vulnerable, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, personInvolved.id_persona_temp,
-                id_caso_temp, 'N']);
+                [id_grp_vulnerable[i], 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, personInvolved.id_persona_temp,
+                  id_caso_temp, 'N']);
+            }
           }
 
-          // if(id_ori_sexual != undefined || id_ori_sexual != null){
-
-          //   for (let i = 0; i < id_ori_sexual.length; i++) {
-          db.query(`INSERT INTO tcdh_ori_sex_per_temp(
+          if (id_ori_sexual != undefined || id_ori_sexual != null) {
+            for (let i = 0; i < id_ori_sexual.length; i++) {
+              db.query(`INSERT INTO tcdh_ori_sex_per_temp(
                 id_persona_temp, id_ori_sexual, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_caso_temp)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-            [personInvolved.id_persona_temp, id_ori_sexual, 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date,
-              id_caso_temp]);
-          //   }
-          // } 
+                [personInvolved.id_persona_temp, id_ori_sexual[i], 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date,
+                  id_caso_temp]);
+            }
+          }
 
           return res.status(201).json({
             personInvolved
@@ -1785,10 +1833,11 @@ let getPersonInvolvedById = async (req, res) => {
 
   try {
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/getPersonInvolvedById" });
-
-    var personInvolved = await db.query(`SELECT p.*, pc.confidencial, pc.aut_dat_den_vic, pc.tipo_persona  
+    
+    var personInvolved = await db.query(`SELECT po.descripcion AS ocupacion, p.*, pc.confidencial, pc.aut_dat_den_vic, pc.tipo_persona  
     FROM tcdh_persona_temp AS p
-    LEFT JOIN tcdh_per_rel_caso_temp AS pc ON pc.id_persona_temp = p.id_persona_temp 
+    LEFT JOIN tcdh_per_rel_caso_temp AS pc ON pc.id_persona_temp = p.id_persona_temp
+	  LEFT JOIN admi_cat_pro_oficio AS po ON po.id_cat_pro_oficio = p.id_cat_pro_oficio
     WHERE p.id_persona_temp = $1`, [id_persona_temp]);
     personInvolved = personInvolved.rows[0];
 
@@ -1801,22 +1850,22 @@ let getPersonInvolvedById = async (req, res) => {
     var vulnerableGroup = await db.query(`SELECT id_grp_vulnerable::integer AS answer_id, descripcion AS answer FROM admi_grp_vulnerable WHERE est_reg = 'A' ORDER BY id_grp_vulnerable ASC`);
     vulnerableGroup = vulnerableGroup.rows;
 
-    var vulnerableGroupSelected = await db.query(`SELECT gt.id_grp_vulnerable::integer AS id_grp_vulnerable
+    var vulnerableGroupSelected = await db.query(`SELECT array_agg(gt.id_grp_vulnerable::integer) AS id_grp_vulnerable
     FROM tcdh_persona_temp AS p 
     INNER JOIN tcdh_grp_vul_temp AS gt 	   ON gt.id_per_rel = p.id_persona_temp
     INNER JOIN admi_grp_vulnerable AS gv   ON gv.id_grp_vulnerable = gt.id_grp_vulnerable
     WHERE gt.id_per_rel = $1`, [id_persona_temp]);
-    vulnerableGroupSelected = vulnerableGroupSelected.rows[0];
+    vulnerableGroupSelected = vulnerableGroupSelected.rows[0].id_grp_vulnerable;
 
     var sexualOrientation = await db.query(`SELECT id_ori_sexual::integer AS answer_id, descripcion AS answer FROM admi_ori_sexual WHERE est_reg = 'A' ORDER BY id_ori_sexual ASC`);
     sexualOrientation = sexualOrientation.rows;
 
-    var sexualOrientationSelected = await db.query(`SELECT st.id_ori_sexual::integer AS id_ori_sexual
+    var sexualOrientationSelected = await db.query(`SELECT array_agg(st.id_ori_sexual::integer) AS id_ori_sexual
     FROM tcdh_persona_temp AS p 
     INNER JOIN tcdh_ori_sex_per_temp AS st ON st.id_persona_temp = p.id_persona_temp
     INNER JOIN admi_ori_sexual AS os 	   ON os.id_ori_sexual = st.id_ori_sexual
     WHERE st.id_persona_temp = $1`, [id_persona_temp]);
-    sexualOrientationSelected = sexualOrientationSelected.rows[0];
+    sexualOrientationSelected = sexualOrientationSelected.rows[0].id_ori_sexual;
 
     var notificationMeans = await db.query(`SELECT id_otr_med_notificacion::integer AS answer_id, descripcion AS answer FROM admi_otr_med_notificacion WHERE est_reg = 'A'`);
     notificationMeans = notificationMeans.rows;
@@ -1831,7 +1880,7 @@ let getPersonInvolvedById = async (req, res) => {
     qualityOperates = qualityOperates.rows;
 
     var country = await db.query(`SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais WHERE id_pais = 62`);
-    country = country.rows[0];
+    country = country.rows;
 
     var institutionCountry = await db.query('SELECT id_pais::integer AS answer_id, descripcion AS answer FROM admi_pais');
     institutionCountry = institutionCountry.rows;
@@ -1845,9 +1894,29 @@ let getPersonInvolvedById = async (req, res) => {
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
     typeZone = typeZone.rows;
 
-    // let academicLevel = [];
-    // let typeDisability = [];
-    // let qualityOperates = [];
+    console.log('Medio de notificacion');
+
+
+
+    var medNotificationTempArray = [];
+
+    if (personInvolved.med_rec_notificacion != null) {
+
+      for (let i = 0; i < personInvolved.med_rec_notificacion.length; i++) {
+
+        if (personInvolved.med_rec_notificacion[i] == 'T') {
+          medNotificationTempArray.push(0);
+        } else if (personInvolved.med_rec_notificacion[i] == 'D') {
+          medNotificationTempArray.push(1);
+        } else if (personInvolved.med_rec_notificacion[i] == 'F') {
+          medNotificationTempArray.push(2);
+        } else if (personInvolved.med_rec_notificacion[i] == 'C') {
+          medNotificationTempArray.push(3);
+        } else if (personInvolved.med_rec_notificacion[i] == 'P') {
+          medNotificationTempArray.push(4);
+        }
+      }
+    }
 
     var sections = [];
 
@@ -1924,37 +1993,6 @@ let getPersonInvolvedById = async (req, res) => {
       ]
     };
 
-    //Seccion --- Denunciante/Victima
-    // var whistleblowerAndvictim = {
-    //   section_id: 2,
-    //   dependent: 1,
-    //   dependent_section_id: 1,
-    //   dependent_question_id: "tipo_persona",
-    //   dependent_answer: "A",
-    //   section_title: "Denunciante/Victima",
-    //   questions: [
-    //     {
-    //       question_id: "persona_denunciante",
-    //       question_type: "closed",
-    //       question: "Persona Denunciante",
-    //       answers: [
-    //         { answer_id: 0, answer: 'N' },
-    //         { answer_id: 1, answer: 'J' },
-    //       ]
-    //     },
-    //     {
-    //       question_id: "persona_victima",
-    //       question_type: "closed",
-    //       question: "Persona Victima",
-    //       answers: [
-    //         { answer_id: 0, answer: 'I' },
-    //         { answer_id: 1, answer: 'C' },
-    //       ]
-    //     },
-    //   ]
-    // };
-
-
     //Seccion --- Informacion general de la persona
     var generalData = {
       section_id: 2,
@@ -1977,7 +2015,7 @@ let getPersonInvolvedById = async (req, res) => {
           required: 1,
           question_type: "closed",
           question: "Doc. Presentado",
-          answer: personInvolved != null ? personInvolved.id_cat_doc_persona : null,
+          answer: personInvolved != null ? Number.parseInt(personInvolved.id_cat_doc_persona) : null,
           answers: personalDocuments
         },
         {
@@ -2052,7 +2090,7 @@ let getPersonInvolvedById = async (req, res) => {
           required: 1,
           question_type: "closed_multiple",
           question: "Orientación Sexual",
-          answer: sexualOrientationSelected != undefined ? sexualOrientationSelected.id_ori_sexual : null,
+          answer: sexualOrientationSelected != undefined ? sexualOrientationSelected : null,
           answers: sexualOrientation
         },
         {
@@ -2067,7 +2105,7 @@ let getPersonInvolvedById = async (req, res) => {
           required: 1,
           question_type: "closed_searchable_case_processing",
           question: "Ocupación",
-          answer: personInvolved != null ? personInvolved.id_cat_pro_oficio : null,
+          answer: personInvolved != null ? personInvolved.ocupacion : null,
           answers: occupation
         },
         {
@@ -2090,7 +2128,7 @@ let getPersonInvolvedById = async (req, res) => {
           dependent_answer: "S",
           question_type: "closed",
           question: "Niv. Académico",
-          answer: personInvolved != null ? personInvolved.id_niv_academico : null,
+          answer: personInvolved != null ? Number.parseInt(personInvolved.id_niv_academico) : null,
           answers: academicLevel
         },
         {
@@ -2162,7 +2200,7 @@ let getPersonInvolvedById = async (req, res) => {
           question_id: "med_rec_notificacion",
           question_type: "closed_multiple",
           question: "Medio de Notificación",
-          answer: personInvolved != null ? personInvolved.med_rec_notificacion : null,
+          answer: medNotificationTempArray != null ? medNotificationTempArray : null,
           answers: [
             { answer_id: 'T', answer: 'Teléfono' },
             { answer_id: 'D', answer: 'Dirección que señala para notificar' },
@@ -2186,7 +2224,7 @@ let getPersonInvolvedById = async (req, res) => {
           required: 1,
           question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
-          answer: vulnerableGroupSelected != undefined ? vulnerableGroupSelected.id_grp_vulnerable : null,
+          answer: vulnerableGroupSelected != undefined ? vulnerableGroupSelected : null,
           answers: vulnerableGroup
         }
       ]
@@ -2267,7 +2305,24 @@ let updatePersonInvolvedForm = async (req, res) => {
     var localDate = new Date();
     var registration_date = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
 
-    let nom_completo = nombre + ' ' + apellido;
+    var medNotificationTempArray = [];
+
+    if (med_rec_notificacion != null) {
+      for (let i = 0; i < med_rec_notificacion.length; i++) {
+        if (med_rec_notificacion[i] == 0) {
+          medNotificationTempArray.push('T');
+        } else if (med_rec_notificacion[i] == 1) {
+          medNotificationTempArray.push('D');
+        } else if (med_rec_notificacion[i] == 2) {
+          medNotificationTempArray.push('F');
+        } else if (med_rec_notificacion[i] == 3) {
+          medNotificationTempArray.push('C');
+        } else {
+          med_rec_notificacion[i] == 4
+          medNotificationTempArray.push('P');
+        }
+      }
+    }
 
     let fec_nacimiento_nueva;
     if (fec_nacimiento == null || fec_nacimiento == "" || fec_nacimiento == undefined) {
@@ -2275,6 +2330,30 @@ let updatePersonInvolvedForm = async (req, res) => {
     } else {
       fec_nacimiento_nueva = fec_nacimiento;
     }
+    
+    let nom_completo;
+
+    if (tipo_rel_caso == 'A') {
+      nom_completo = institucion;
+    } else {
+      nom_completo = nombre + ' ' + apellido;
+    }
+
+    let per_den_es_victima;
+    let per_principal;
+
+    if (tipo_rel_caso == "A") {
+      per_den_es_victima = 'S';
+    } else {
+      per_den_es_victima = 'N';
+    }
+
+    if (tipo_rel_caso == "V") {
+      per_principal = 'S';
+    } else {
+      per_principal = 'N';
+    }
+
 
     var cod_user = req.user.user_id;
     var user_name = req.user.name;
@@ -2289,7 +2368,7 @@ let updatePersonInvolvedForm = async (req, res) => {
     WHERE id_persona_temp = $34 RETURNING*`, [per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, sexo, ide_genero,
       lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento, id_pais_ins_rep,
       fec_nacimiento_nueva, edad_aprox, professionPerson.id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio, discapacidad,
-      id_cat_tip_discapacidad, med_rec_notificacion, cod_user, user_name, registration_date, tipo_rel_caso, tipo_persona,
+      id_cat_tip_discapacidad, medNotificationTempArray, cod_user, user_name, registration_date, tipo_rel_caso, tipo_persona,
       persona_victima, institucion, id_persona_temp], async (err, results) => {
         if (err) {
           console.log(err.message);
@@ -2297,22 +2376,67 @@ let updatePersonInvolvedForm = async (req, res) => {
         } else {
           var personInvolved = results.rows[0];
 
-          db.query(`UPDATE tcdh_per_rel_caso_temp
-        SET relacion=$1, tipo_persona=$2, cod_usu_mod=$3, usu_mod_reg=$4, fec_mod_reg=$5, confidencial=$6, aut_dat_den_vic=$7
-        WHERE id_persona_temp=$8`,
-            [personInvolved.tipo_rel_caso, tipo_persona, cod_user, user_name, registration_date, confidencial, aut_dat_den_vic, id_persona_temp]);
+          if (personInvolved.tipo_rel_caso == 'A') {
 
-          db.query(`UPDATE tcdh_grp_vul_temp
-        SET id_grp_vulnerable=$1, migrado=$2, cod_usu_mod=$3, usu_mod_reg=$4, fec_mod_reg=$5 
-        WHERE id_per_rel = $6`, [id_grp_vulnerable, 'N', cod_user, user_name, registration_date, id_persona_temp]);
+            db.query('DELETE FROM tcdh_per_rel_caso_temp WHERE id_persona_temp = $1', [personInvolved.id_persona_temp]);
 
-          await db.query(`UPDATE tcdh_ori_sex_per_temp
-        SET id_ori_sexual=$1, cod_usu_mod=$2, usu_mod_reg=$3, fec_mod_reg=$4
-        WHERE id_persona_temp= $5`, [id_ori_sexual, cod_user, user_name, registration_date, id_persona_temp]);
+            db.query(`INSERT INTO tcdh_per_rel_caso_temp(
+              id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
+              fec_mod_reg, confidencial, aut_dat_den_vic)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+              [personInvolved.id_persona_temp, personInvolved.id_caso_temp, 'D', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+                registration_date, confidencial, aut_dat_den_vic]);
 
-          return res.status(201).json({
-            personInvolved
-          });
+            db.query(`INSERT INTO tcdh_per_rel_caso_temp(
+                id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
+                fec_mod_reg, confidencial, aut_dat_den_vic)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+              [personInvolved.id_persona_temp, personInvolved.id_caso_temp, 'V', tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+                registration_date, confidencial, aut_dat_den_vic]);
+
+          } else {
+            
+            db.query('DELETE FROM tcdh_per_rel_caso_temp WHERE id_persona_temp = $1', [personInvolved.id_persona_temp]);
+
+            db.query(`INSERT INTO tcdh_per_rel_caso_temp(
+              id_persona_temp, id_caso_temp, relacion, tipo_persona, migrado, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, 
+              fec_mod_reg, confidencial, aut_dat_den_vic)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+              [personInvolved.id_persona_temp, personInvolved.id_caso_temp, personInvolved.tipo_rel_caso, tipo_persona, 'N', 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name,
+                registration_date, confidencial, aut_dat_den_vic]);
+          }
+          
+            
+          if (id_grp_vulnerable != null || id_grp_vulnerable != null) {
+
+            db.query('DELETE FROM tcdh_grp_vul_temp WHERE id_per_rel = $1', [personInvolved.id_persona_temp]);
+
+            for (let i = 0; i < id_grp_vulnerable.length; i++) {
+              db.query(`INSERT INTO tcdh_grp_vul_temp(
+                  id_grp_vulnerable, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_per_rel, id_caso_temp, migrado)
+                  VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+                [id_grp_vulnerable[i], 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date, personInvolved.id_persona_temp,
+                personInvolved.id_caso_temp, 'N']);
+            }
+          }
+        
+
+          if (id_ori_sexual != undefined || id_ori_sexual != null) {
+
+            db.query('DELETE FROM tcdh_ori_sex_per_temp WHERE id_persona_temp = $1', [personInvolved.id_persona_temp])
+
+            for (let i = 0; i < id_ori_sexual.length; i++) {
+              db.query(`INSERT INTO tcdh_ori_sex_per_temp(
+                id_persona_temp, id_ori_sexual, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_caso_temp)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                [personInvolved.id_persona_temp, id_ori_sexual[i], 'R', registration_date, cod_user, user_name, registration_date, cod_user, user_name, registration_date,
+                personInvolved.id_caso_temp]);
+            }
+          }
+
+            return res.status(201).json({
+              personInvolved
+            });
 
         }
       });
@@ -2331,7 +2455,9 @@ let deletePersonInvolved = async (req, res) => {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
       } else {
-        var personInvolved = results.rows[0];
+
+        db.query(`UPDATE tcdh_per_rel_caso_temp SET est_reg = 'E' WHERE id_persona_temp = $1`);
+
         return res.status(201).json({
           message: 'Persona Eliminada'
         });

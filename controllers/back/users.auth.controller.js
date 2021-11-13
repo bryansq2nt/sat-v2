@@ -51,7 +51,7 @@ const login = async (req, res) => {
                 }else {
                     db.query('INSERT INTO sat_seguridad_token(id_usuario, token) VALUES ($1, $2)', [user.user_id, fcm_token]);
                 }
-
+                console.log(user);
                 let token = jwt.sign({ user }, process.env.SEED, { expiresIn: Number(process.env.CADUCIDAD_TOKEN) });
 
                 return res.status(200).json({
