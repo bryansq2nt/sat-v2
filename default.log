@@ -1329,3 +1329,31 @@ funcion: getPersonInvolvedFormOffline
 error: error: no existe la relación «admi_cat_tip_discapacidad»
 --------------------------------------------------------------------------------------------
 
+2021.11.14, 16:47:51.0218 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createPersonInvolvedForm
+error: ReferenceError: edad_aprox is not defined
+--------------------------------------------------------------------------------------------
+
+2021.11.14, 17:22:12.0612 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: ReferenceError: nuevo_id_pais_hecho is not defined
+--------------------------------------------------------------------------------------------
+
+2021.11.14, 17:23:36.0613 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createPersonInvolvedForm
+error: TypeError: Date.parse is not a constructor
+--------------------------------------------------------------------------------------------
+
+2021.11.14, 17:37:41.0445 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createPersonInvolvedForm
+error: ReferenceError: correo_electronico is not defined
+--------------------------------------------------------------------------------------------
+

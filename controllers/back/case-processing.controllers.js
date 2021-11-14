@@ -7,14 +7,14 @@ const dateFormat = require('dateformat');
 
 let getFormVersion = (req, res) => {
 
-  let version = parseFloat("1.9");
+  let version = parseFloat("2.2");
 
   return res.status(200).json({ version });
 }
 
 let getInvolverFormVersion = (req, res) => {
 
-  let version = parseFloat("1.26");
+  let version = parseFloat("1.4");
 
   return res.status(200).json({ version });
 }
@@ -213,7 +213,7 @@ let getCaseProcessingForm = async (req, res) => {
         {
           question_id: "id_pais_hecho",
           required:1,
-          question_type: "closed_searchable",
+          question_type: "closed_searchable_case_processing",
           question: "Pais",
           answer: "EL SALVADOR",
           answers: country
@@ -331,10 +331,13 @@ let createCaseProcessing = async (req, res) => {
     var hora = dateFormat(nueva_fec_hecho, 'HH:MM:ss');
     var hor_recepcion = dateFormat(registration_date, 'HH:MM:ss');
 
+    let nuevo_id_pais_hecho = 0;
     if (id_pais_hecho == null || id_pais_hecho === "" || id_pais_hecho == undefined) {
       nuevo_id_pais_hecho = 0;
     } else {
-      nuevo_id_pais_hecho = id_pais_hecho;
+      let nuevo_id_pais_hecho = await db.query(`SELECT id_pais, descripcion
+    FROM admi_pais WHERE descripcion like '%${id_pais_hecho}'`);
+    nuevo_id_pais_hecho = nuevo_id_pais_hecho.rows[0].id_pais;
     }
 
     await db.query(`INSERT INTO tcdh_caso_temp(
@@ -851,7 +854,7 @@ let getPersonInvolvedForm = async (req, res) => {
           answers: personalDocuments
         },
         {
-          question_id: "num_documento",
+          question_id: "num_documento_1",
           required: 1,
           dependent: 1,
           dependent_multiple: 1,
@@ -865,7 +868,7 @@ let getPersonInvolvedForm = async (req, res) => {
           
         },
         {
-          question_id: "num_documento",
+          question_id: "num_documento_2",
           required: 1,
           dependent: 1,
           dependent_section_id: 2,
@@ -878,7 +881,7 @@ let getPersonInvolvedForm = async (req, res) => {
           
         },
         {
-          question_id: "num_documento",
+          question_id: "num_documento_3",
           dependent: 1,
           dependent_multiple: 1,
           dependent_section_id: 2,
@@ -890,7 +893,7 @@ let getPersonInvolvedForm = async (req, res) => {
           
         },
         {
-          question_id: "num_documento",
+          question_id: "num_documento_4",
           required:1,
           dependent: 1,
           dependent_multiple: 1,
@@ -916,7 +919,7 @@ let getPersonInvolvedForm = async (req, res) => {
         // },
         {
           question_id: "id_pais_nacimiento",
-          question_type: "closed_searchable",
+          question_type: "closed_searchable_case_processing",
           question: "Pais Nacimiento",
           answer: "EL SALVADOR",
           answers: country
@@ -1074,8 +1077,9 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "num_telefono",
           dependent: 1,
-          dependent_section_id:3,
-          dependent_question_id:"med_rec_notificacion",
+          dependent_multiple: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "med_rec_notificacion",
           dependent_answer: 0,
           question_type: "open",
           question: "Telefono",
@@ -1083,17 +1087,19 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "fax",
           dependent: 1,
-          dependent_section_id:3,
-          dependent_question_id:"med_rec_notificacion",
+          dependent_multiple: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "med_rec_notificacion",
           dependent_answer: 2,
           question_type: "open",
           question: "Fax",
         },
         {
-          question_id: "correo_eletronico",
+          question_id: "correo_electronico",
           dependent: 1,
-          dependent_section_id:3,
-          dependent_question_id:"med_rec_notificacion",
+          dependent_multiple: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "med_rec_notificacion",
           dependent_answer: 3,
           question_type: "open",
           question: "Correo Electrónico",
@@ -1102,6 +1108,11 @@ let getPersonInvolvedForm = async (req, res) => {
           question_id: "dir_notificar",
           question_type: "area",
           required: 1,
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "med_rec_notificacion",
+          dependent_answer: 1,
           limit: 500,
           question: "Dirección",
         },
@@ -1142,7 +1153,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_pais_ins_rep",
-          question_type: "closed_searchable",
+          question_type: "closed_searchable_case_processing",
           question: "Nacionalidad de Institución",
           answers: country
         },
@@ -1181,55 +1192,96 @@ let getPersonInvolvedForm = async (req, res) => {
 let createPersonInvolvedForm = async (req, res) => {
   const { id_caso_temp } = req.params;
   const { tipo_rel_caso, tipo_persona, persona_victima, confidencial, aut_dat_den_vic, nombre, apellido, id_cat_cal_actua,
-    sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento,
-    id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio,
-    discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, id_grp_vulnerable, id_ori_sexual, institucion } = req.body;
+    sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad, num_documento_1, num_documento_2, num_documento_3, num_documento_4, id_niv_academico, id_pais_nacimiento,
+    id_pais_ins_rep, fec_nacimiento, id_cat_pro_oficio, zona_domicilio, id_departamento, id_municipio, domicilio,
+    discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, num_telefono, fax, correo_electronico, dir_notificar, id_grp_vulnerable, id_ori_sexual, institucion } = req.body;
 
-  // console.log('------------------------------------------------');
-  // console.log('tipo_persona', tipo_persona);
-  // console.log('confidencial', confidencial);
-  // console.log('aut_dat_den_vic', aut_dat_den_vic);
-  // console.log('nombre', nombre);
-  // console.log('apellido', apellido);
-  // console.log('id_cat_cal_actua', id_cat_cal_actua);
-  // console.log('sexo', sexo);
-  // console.log('id_genero', ide_genero);
-  // console.log('lee', lee);
-  // console.log('escribe', escribe);
-  // console.log('id_cat_doc_personas', id_cat_doc_persona);
-  // console.log('otro_doc_indentidad', otro_doc_identidad);
-  // console.log('num_documento', num_documento);
-  // console.log('id_niv_academico', id_niv_academico);
-  // console.log('id_pais_nacimiento', id_pais_nacimiento);
-  // console.log('id_pais_ins_rep', id_pais_ins_rep);
-  // console.log('fec_nacimiento', fec_nacimiento);
-  // console.log('edad_prox', edad_aprox);
-  // console.log('id_cat_pro_oficio', id_cat_pro_oficio); // Buscarlo el id de la profesion que se recibe, mediante una consulta
-  // console.log('zona_domicilio', zona_domicilio);
-  // console.log('id_departamento', id_departamento);
-  // console.log('id_municipio', id_municipio);
-  // console.log('domicilio', domicilio);
-  // console.log('discapcidad', discapacidad);
-  // console.log('id_cat_tip_discapacidad', id_cat_tip_discapacidad);
-  // console.log('med_rec_notificacion', med_rec_notificacion);
-  // console.log('id_grp_vulnerable', id_grp_vulnerable);
-  // console.log('id_ori_sexual', id_ori_sexual);
-  // console.log('***********');
-  // console.log('tipo_rel_caso', tipo_rel_caso);
-  // console.log('institucion', institucion);
-  // console.log('persona victima', persona_victima)
-  // console.log('------------------------------------------------');
+   
+
+  try {
+
+    console.log('------------------------------------------------');
+   console.log('tipo_persona', tipo_persona);
+   console.log('confidencial', confidencial);
+   console.log('aut_dat_den_vic', aut_dat_den_vic);
+   console.log('nombre', nombre);
+   console.log('apellido', apellido);
+   console.log('id_cat_cal_actua', id_cat_cal_actua);
+   console.log('sexo', sexo);
+   console.log('id_genero', ide_genero);
+   console.log('lee', lee);
+   console.log('escribe', escribe);
+   console.log('id_cat_doc_persona', id_cat_doc_persona);
+   console.log('otro_doc_indentidad', otro_doc_identidad);
+   let num_documento = null;
+   if(id_cat_doc_persona == 1){
+    num_documento = num_documento_2;
+   } else if(id_cat_doc_persona == 2 || id_cat_doc_persona == 7){
+    num_documento = num_documento_4;
+   }
+   else if(id_cat_doc_persona == 3 || id_cat_doc_persona == 4){
+    num_documento = num_documento_1;
+   } else if(id_cat_doc_persona == 5){
+    num_documento = num_documento_3;
+   } 
+
+
+   console.log('num_documento', num_documento);
+   console.log('id_niv_academico', id_niv_academico);
+   console.log('id_pais_nacimiento', id_pais_nacimiento);
+   console.log('id_pais_ins_rep', id_pais_ins_rep);
+   console.log('fec_nacimiento', fec_nacimiento);
+   let edad_aprox = null;
+   if(fec_nacimiento != null){
+    edad_aprox = Number.parseInt(new Date().getFullYear()) - Number.parseInt(new Date(fec_nacimiento).getFullYear());
+   }
+ 
+   console.log('edad_prox', edad_aprox);
+   console.log('id_cat_pro_oficio', id_cat_pro_oficio); // Buscarlo el id de la profesion que se recibe, mediante una consulta
+   console.log('zona_domicilio', zona_domicilio);
+   console.log('id_departamento', id_departamento);
+   console.log('id_municipio', id_municipio);
+   console.log('domicilio', domicilio);
+   console.log('discapcidad', discapacidad);
+   console.log('id_cat_tip_discapacidad', id_cat_tip_discapacidad);
+   console.log('med_rec_notificacion', med_rec_notificacion);
+   console.log('num_telefono', num_telefono);
+   console.log('fax', fax);
+   console.log('correo_electronico', correo_electronico);
+   console.log('dir_notificar', dir_notificar);
+   console.log('id_grp_vulnerable', id_grp_vulnerable);
+   console.log('id_ori_sexual', id_ori_sexual);
+   console.log('***********');
+   console.log('tipo_rel_caso', tipo_rel_caso);
+   console.log('institucion', institucion);
+   console.log('persona victima', persona_victima)
+   console.log('------------------------------------------------');
+
+   console.log('------------------------------------------------');
+   console.log('num_documento_1', num_documento_1);
+   console.log('num_documento_2', num_documento_2);
+   console.log('num_documento_3', num_documento_3);
+   console.log('num_documento_4', num_documento_4);
+   console.log('------------------------------------------------');
 
   //Pendientes
   //num_telefono, fax, correo_electronico, dir_notificar, per_aprox_afectada
 
-  try {
 
     var errorResponse = new ErrorModel({ type: "Case-Processing", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al obtener el formulario de la persona involucrada.", instance: "case-processing/createPersonInvolvedForm" });
 
     let professionPerson = await db.query(`SELECT id_cat_pro_oficio, descripcion
     FROM admi_cat_pro_oficio WHERE descripcion like '%${id_cat_pro_oficio}'`);
     professionPerson = professionPerson.rows[0];
+
+    let paisNacimiento = await db.query(`SELECT id_pais, descripcion
+    FROM admi_pais WHERE descripcion like '%${id_pais_nacimiento}'`);
+    paisNacimiento = paisNacimiento.rows[0].id_pais;
+
+    let paisInsti = await db.query(`SELECT id_pais, descripcion
+    FROM admi_pais WHERE descripcion like '%${id_pais_ins_rep}'`);
+    paisInsti = paisInsti.rows[0].id_pais;
+
 
     var medNotificationTempArray = [];
 
@@ -1296,13 +1348,13 @@ let createPersonInvolvedForm = async (req, res) => {
     await db.query(`INSERT INTO tcdh_persona_temp(
       tipo_rel_caso, per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, sexo, ide_genero, lee, escribe, id_cat_doc_persona, 
       otro_doc_identidad, num_documento, id_niv_academico, id_pais_nacimiento, id_pais_ins_rep, fec_nacimiento, edad_aprox, id_cat_pro_oficio, zona_domicilio, 
-      id_departamento, id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, 
+      id_departamento, id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad, med_rec_notificacion, num_telefono, fax, correo_electronico, dir_notificar, est_reg, fec_est_reg, cod_usu_ing, usu_ing_reg, 
       fec_ing_reg, cod_usu_mod, usu_mod_reg, fec_mod_reg, id_caso_temp, persona_denunciante, persona_victima, institucion)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 
-      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39) RETURNING *`, [tipo_rel_caso,
+      $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43) RETURNING *`, [tipo_rel_caso,
       per_den_es_victima, per_principal, nombre, apellido, id_cat_cal_actua, nom_completo, sexo, ide_genero, lee, escribe, id_cat_doc_persona, otro_doc_identidad,
-      num_documento, id_niv_academico, id_pais_nacimiento, id_pais_ins_rep, fec_nacimiento_nueva, edad_aprox, professionPerson.id_cat_pro_oficio, zona_domicilio, id_departamento,
-      id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad, medNotificationTempArray, est_reg, registration_date, cod_user, user_name, registration_date,
+      num_documento, id_niv_academico, paisNacimiento, paisInsti, fec_nacimiento_nueva, edad_aprox, professionPerson.id_cat_pro_oficio, zona_domicilio, id_departamento,
+      id_municipio, domicilio, discapacidad, id_cat_tip_discapacidad, medNotificationTempArray, num_telefono, fax, correo_electronico, dir_notificar, est_reg, registration_date, cod_user, user_name, registration_date,
       cod_user, user_name, registration_date, id_caso_temp, tipo_persona, persona_victima, institucion], async (err, results) => {
 
         if (err) {
