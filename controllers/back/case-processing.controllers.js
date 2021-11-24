@@ -14,7 +14,7 @@ let getFormVersion = (req, res) => {
 
 let getInvolverFormVersion = (req, res) => {
 
-  let version = parseFloat("1.4");
+  let version = parseFloat("1.6");
 
   return res.status(200).json({ version });
 }
@@ -799,7 +799,7 @@ let getPersonInvolvedForm = async (req, res) => {
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: ['V', 'A'],
           question_type: "closed",
-          question: "Persona Victima",
+          question: "Persona Víctima",
           answers: [
             { answer_id: 'I', answer: 'Individual' },
             { answer_id: 'C', answer: 'Colectivo' },
@@ -1063,7 +1063,21 @@ let getPersonInvolvedForm = async (req, res) => {
           question: "Dirección",
         },
         {
+          question_id: "enable_med_notification",
+          required: 1,
+          question_type: "closed",
+          question: "¿Se ingresará un medio de notificación o se dejerá pendiente?",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
+        },
+        {
           question_id: "med_rec_notificacion",
+          dependent: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "enable_med_notification",
+          dependent_answer: "S",
           question_type: "closed_multiple",
           question: "Medio de Notificación",
           answers: [
@@ -1082,7 +1096,7 @@ let getPersonInvolvedForm = async (req, res) => {
           dependent_question_id: "med_rec_notificacion",
           dependent_answer: 0,
           question_type: "open",
-          question: "Telefono",
+          question: "Teléfono",
         },
         {
           question_id: "fax",
@@ -1126,8 +1140,22 @@ let getPersonInvolvedForm = async (req, res) => {
       section_title: "Grupos en Condición de Vulnerabilidad",
       questions: [
         {
+          question_id: "enable_grp_vulnerable",
+          required: 1,
+          question_type: "closed",
+          question: "¿Se ingresará un grupo en condiciones de vulnerabilidad o se dejerá pendiente?",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
+        },
+        {
           question_id: "id_grp_vulnerable",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 4,
+          dependent_question_id: "enable_grp_vulnerable",
+          dependent_answer: "S",
           question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup
@@ -1149,7 +1177,7 @@ let getPersonInvolvedForm = async (req, res) => {
           question_type: "area",
           required: 1,
           limit: 200,
-          question: "Institucion",
+          question: "Institución",
         },
         {
           question_id: "id_pais_ins_rep",
@@ -1908,7 +1936,10 @@ let getPersonInvolvedById = async (req, res) => {
     INNER JOIN admi_grp_vulnerable AS gv   ON gv.id_grp_vulnerable = gt.id_grp_vulnerable
     WHERE gt.id_per_rel = $1`, [id_persona_temp]);
     vulnerableGroupSelected = vulnerableGroupSelected.rows[0].id_grp_vulnerable;
-
+    
+    var countvulnerableGroup = await db.query('SELECT COUNT(id_grp_vulnerable) AS grp_vulnerable  FROM tcdh_grp_vul_temp WHERE id_per_rel = $1', [id_persona_temp]);
+    countvulnerableGroup = countvulnerableGroup.rows[0].grp_vulnerable;
+  
     var sexualOrientation = await db.query(`SELECT id_ori_sexual::integer AS answer_id, descripcion AS answer FROM admi_ori_sexual WHERE est_reg = 'A' ORDER BY id_ori_sexual ASC`);
     sexualOrientation = sexualOrientation.rows;
 
@@ -1945,9 +1976,6 @@ let getPersonInvolvedById = async (req, res) => {
 
     var typeZone = await db.query('SELECT id_zona::integer AS answer_id, nombre_zona AS answer FROM sat_zonas WHERE estado = 1 ORDER BY id_zona ASC');
     typeZone = typeZone.rows;
-
-    console.log('Medio de notificacion');
-
 
 
     var medNotificationTempArray = [];
@@ -2012,7 +2040,7 @@ let getPersonInvolvedById = async (req, res) => {
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "V",
           question_type: "closed",
-          question: "Persona Victima",
+          question: "Persona Víctima",
           answer: personInvolved != null ? personInvolved.persona_victima : null,
           answers: [
             { answer_id: 'I', answer: 'Individual' },
@@ -2249,7 +2277,22 @@ let getPersonInvolvedById = async (req, res) => {
           answer: personInvolved != null ? personInvolved.domicilio : null
         },
         {
+          question_id: "enable_med_notification",
+          required: 1,
+          question_type: "closed",
+          question: "¿Se ingresará un medio de notificación o se dejerá pendiente?",
+          answer: personInvolved.med_rec_notificacion != null ? "S" : "N",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
+        },
+        {
           question_id: "med_rec_notificacion",
+          dependent: 1,
+          dependent_section_id: 3,
+          dependent_question_id: "enable_med_notification",
+          dependent_answer: "S",
           question_type: "closed_multiple",
           question: "Medio de Notificación",
           answer: medNotificationTempArray != null ? medNotificationTempArray : null,
@@ -2272,8 +2315,23 @@ let getPersonInvolvedById = async (req, res) => {
       section_title: "Grupos en Condición de Vulnerabilidad",
       questions: [
         {
+          question_id: "enable_grp_vulnerable",
+          required: 1,
+          question_type: "closed",
+          question: "¿Se ingresará un grupo en condiciones de vulnerabilidad o se dejerá pendiente?",
+          answer: countvulnerableGroup != 0 ? "S": "N",
+          answers: [
+            { answer_id: "S", answer: "Si" },
+            { answer_id: "N", answer: "No" }
+          ]
+        },
+        {
           question_id: "id_grp_vulnerable",
           required: 1,
+          dependent: 1,
+          dependent_section_id: 4,
+          dependent_question_id: "enable_grp_vulnerable",
+          dependent_answer: "S",
           question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answer: vulnerableGroupSelected != undefined ? vulnerableGroupSelected : null,
@@ -2293,7 +2351,7 @@ let getPersonInvolvedById = async (req, res) => {
       section_title: "Información de Institución",
       questions: [
         {
-          question_id: "institucion",
+          question_id: "institución",
           question_type: "area",
           required: 1,
           question: "Institucion",

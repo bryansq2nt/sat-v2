@@ -1357,3 +1357,31 @@ funcion: createPersonInvolvedForm
 error: ReferenceError: correo_electronico is not defined
 --------------------------------------------------------------------------------------------
 
+2021.11.19, 16:40:43.0525 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.19, 16:40:52.0829 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.19, 16:41:33.0227 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_tip_discapacidad»
+--------------------------------------------------------------------------------------------
+
+2021.11.19, 16:41:36.0841 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_tip_discapacidad»
+--------------------------------------------------------------------------------------------
+
