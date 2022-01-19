@@ -1385,3 +1385,52 @@ funcion: getPersonInvolvedForm
 error: error: no existe la relación «admi_cat_tip_discapacidad»
 --------------------------------------------------------------------------------------------
 
+2022.01.05, 20:15:36.0359 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: falta una entrada para la tabla «u» en la cláusula FROM
+--------------------------------------------------------------------------------------------
+
+2022.01.05, 20:16:32.0097 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la columna u.id_perfil
+--------------------------------------------------------------------------------------------
+
+2022.01.05, 20:38:20.0394 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la columna u.correo
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 16:28:54.0128 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 16:32:10.0216 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 16:34:53.0189 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 17:05:14.0574 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'id_pais' of undefined
+--------------------------------------------------------------------------------------------
+

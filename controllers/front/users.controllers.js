@@ -4,12 +4,25 @@ const dateFormat = require('dateformat');
 
 let usersList = async (req, res) => {
     try {
-        let userInSession = req.user.id_perfil;
-        console.log()
-        await db.query(`SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.usuario, u.fec_nacimiento, u.correo, u.clave, u.estado_reg, u.id_perfil, up.descripcion AS perfil
-        FROM usuario AS u
-        INNER JOIN perfil AS up ON up.id_perfil = u.id_perfil
-        WHERE u.id_perfil != $1`,[userInSession], (err, results) => {
+        
+        //let userInSession = req.user.id_perfil;
+        let userInSession = req.user.id_usuario;
+        
+        await db.query(
+            /*
+            `SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.usuario, u.fec_nacimiento, u.correo, u.clave, u.estado_reg, u.id_perfil, up.descripcion AS perfil
+            FROM usuario AS u
+            INNER JOIN perfil AS up ON up.id_perfil = u.id_perfil
+            WHERE u.id_perfil != $1`*/
+            `
+            SELECT id_usuario, usuario, nombre,
+		            apellido, fec_nacimiento, correo_electronico AS correo, 
+		            clave, est_usuario AS estado_reg, telefono AS perfil
+            FROM segd_usuario AS u
+            WHERE u.id_usuario != $1
+            ORDER BY id_usuario ASC`
+            ,
+        [userInSession], (err, results) => {
             if (err) {
                 log('src/controllers/front', 'users', 'usersList', err, false, req, res);
             } else {
@@ -27,8 +40,11 @@ let getById = async (req, res) => {
     const { id_usuario } = req.params;
     try {
 
-        let SIGIuser = await db.query(`SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.correo, u.id_perfil,
-        p.descripcion FROM usuario AS u INNER JOIN perfil AS p ON p.id_perfil = u.id_perfil WHERE u.id_usuario = $1`, [id_usuario]);
+        // let SIGIuser = await db.query(`SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.correo, u.id_perfil,
+        // p.descripcion FROM usuario AS u INNER JOIN perfil AS p ON p.id_perfil = u.id_perfil WHERE u.id_usuario = $1`, [id_usuario]);
+        // SIGIuser = SIGIuser.rows[0];
+
+        let SIGIuser = await db.query(`SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.correo_electronico AS correo FROM segd_usuario AS u WHERE u.id_usuario = $1`, [id_usuario]);
         SIGIuser = SIGIuser.rows[0];
 
         // Obtiene los permisos de Lectura y Edicion. Utilizada para Asignar permisos
@@ -43,7 +59,7 @@ let getById = async (req, res) => {
         let moduleWebAutorization = await db.query('SELECT id_modulo, nombre_modulo FROM sat_modulos WHERE tipo_modulo = 2 ORDER BY id_modulo ASC');
         moduleWebAutorization = moduleWebAutorization.rows;
 
-        // Obtiene los permisos de Lectura y Edicion. Utilizada para Actualizar permisos
+        // Obtiene los permisos de consulta, tecnico, supervisor y analista. Utilizada para Actualizar permisos
         let readAndModifyPermissions = await db.query('SELECT id_rol_permisos, nombre_permiso FROM sat_rol_app_permisos WHERE estado = 1 ORDER BY id_rol_permisos ASC');
         readAndModifyPermissions = readAndModifyPermissions.rows;
 
@@ -66,7 +82,7 @@ let getById = async (req, res) => {
             WHERE acc.id_usuario = $1`, [id_usuario]);
             userAuthorization = userAuthorization.rows[0];
 
-            // Obtener los permisos de moficacion y lectura del usuario 
+            // Obtener los permisos de consulta, tecnico, supervisor, analista del usuario. 
             for (let i = 0; i < readAndModifyPermissions.length; i++) {
                 readAndModifyPermissions[i].checked;
                 if (readAndModifyPermissions[i].id_rol_permisos == userAuthorization.id_rol_permisos) {

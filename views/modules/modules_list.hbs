@@ -22,6 +22,7 @@
                         <thead>
                             <tr>
                                 <th>T&iacute;tulo</th>
+                                <th>Tipo M&oacute;dulo</th>
                                 <th>Estado</th>
                                 <th>Modificar</th>
                             </tr>
@@ -30,6 +31,7 @@
                             {{#each modules}}
                             <tr>
                                 <td>{{nombre_modulo}}</td>
+                                <td>{{#tipoModulo tipo_modulo}}{{/tipoModulo}}</td>
                                 <td>{{#stateDetails estado}}{{/stateDetails}}</td>
                                 <td>
                                     <a href="/api-sat/modules/{{id_modulo}}/update-view" class="btn btn-secondary"

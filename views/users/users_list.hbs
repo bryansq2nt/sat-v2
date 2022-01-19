@@ -29,8 +29,8 @@
                                 <th>T&iacute;tulo del Usuario/a</th>
                                 <th>Nombre</th>
                                 <th>Apellido</th>
-                                <th>E-mail</th>
-                                <th>Perfil</th>
+                                {{!-- <th>E-mail</th>
+                                <th>Tel&eacute;fono</th> --}}
                                 <th>Modificar</th>
                             </tr>
                         </thead>
@@ -40,8 +40,6 @@
                                 <td>{{usuario}}</td>
                                 <td>{{nombre}}</td>
                                 <td>{{apellido}}</td>
-                                <td>{{correo}}</td>
-                                <td>{{perfil}}</td>
                                 <td>
                                     <a href="/api-sat/users/{{id_usuario}}/edit-view" class="btn btn-secondary"
                                         aria-pressed="false">

@@ -4,27 +4,13 @@ const dateFormat = require('dateformat');
 const sendemail = require('@lib/emails');
 
 let earlyAlertsList = async (req, res) => {
-  //const { offset } = req.query;
+
   try {
 
     let cod_usu_ing  = req.user.id_usuario;
-    let profile_user = req.user.id_perfil;
     let rol_user = req.user.role;
     let earlyAlerts;
 
-    // if(profile_user == 1){
-    //   earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, a.alerta_relacionada, a.enviada_analizar, 
-    //   a.alerta_padre, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
-    //   FROM sat_alerta_temprana AS a 
-	  //   LEFT JOIN sat_tipo_alerta AS ta ON ta.id_tipo_alerta = a.id_tipo_alerta
-	  //   INNER JOIN sat_criterio AS c ON c.id_criterio = a.id_criterio
-	  //   INNER JOIN sat_situacion_conflictiva AS sc ON sc.id_situacion_conflictiva = a.id_situacion_conflictiva
-    //   WHERE a.alerta_relacionada = false
-    //   ORDER BY a.id_alerta_temprana DESC`);
-    //   earlyAlerts = earlyAlerts.rows;
-    
-    // //Perfil Consulta
-    // }else 
     if(rol_user == 1){
 
       earlyAlerts = await db.query(`SELECT a.id_alerta_temprana, ta.nombre_alerta, sc.nombre_sit_conflictiva, c.nombre_criterio  
@@ -179,102 +165,6 @@ let createAlert = async (req, res) => {
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
-  // console.log('----------------------------------------------------------------------');
-  // console.log('id_tipo_fuente---:', id_tipo_fuente);
-  // console.log('id_fuente---:', id_fuente);
-  // console.log('titulo_noticia---:', titulo_noticia);
-  // console.log('nombre_medio_prensa---:', nombre_medio_prensa);
-  // console.log('paginas_prensa---:', paginas_prensa); 
-  // console.log('autor_prensa---:', autor_prensa);
-  // console.log('fecha_publicacion_prensa---:', fecha_publicacion_prensa);
-  //console.log('fotografia_prensa---++++++++++:', fotografia_prensa);
-  // console.log('nombre_medio_radio---:', nombre_medio_radio);
-  // console.log('canal_radio---:', canal_radio);
-  // console.log('nombre_programa_radio---:', nombre_programa_radio);
-  // console.log('fecha_emision_radio---:', fecha_emision_radio);
-  // console.log('titulo_redes---:', titulo_redes);
-  // console.log('nombre_red_social---:', nombre_red_social);
-  // console.log('url_red_social---:', url_red_social);
-  // console.log('fecha_pub_red_social---:', fecha_pub_red_social);
-  //console.log('pantalla_red_social---+++++++++:', pantalla_red_social);
-  // console.log('nombre_colectivo---:', nombre_colectivo);
-  // console.log('nombre_contacto_colectivo---:', nombre_contacto_colectivo);
-  // console.log('telefono_colectivo---:', telefono_colectivo);
-  // console.log('nombre_organismo---:', nombre_organismo);
-  // console.log('nombre_contacto_organismo---:', nombre_contacto_organismo);
-  // console.log('correo_organismo---:', correo_organismo);
-  // console.log('telefono_organismo---:', telefono_organismo);
-  // console.log('datos_organismo---:', datos_organismo);
-  // console.log('nombre_inst_gub---:', nombre_inst_gub);
-  // console.log('contacto_inst_gub---:', contacto_inst_gub);
-  // console.log('correo_inst_gub---:', correo_inst_gub);
-  // console.log('contacto_inst_gub---:', contacto_inst_gub);
-  // console.log('telefono_inst_gub---:', telefono_inst_gub);
-  // console.log('datos_inst_gub---:', datos_inst_gub);
-  // console.log('nombre_mensajeria---:', nombre_mensajeria);
-  // console.log('nombre_contacto_mensajeria---:', nombre_contacto_mensajeria);
-  // console.log('contacto_mensajeria---:', contacto_mensajeria);
-  // console.log('datos_mensajeria---:', datos_mensajeria);
-  //console.log('fotografia_mensajeria---:', fotografia_mensajeria);
-  // console.log('otras_detalle---:', otras_detalle);
-  // console.log('otras_adicionales---:', otras_adicionales);
-  // console.log('fecha_hechos---:', fecha_hechos);
-  // console.log('fecha_futura_hechos---:', fecha_futura_hechos);
-  // console.log('fecha_reporte---:', fecha_reporte);
-  // console.log('id_departamento---:', id_departamento);
-  // console.log('id_municipio---:', id_municipio);
-  // console.log('id_tipo_zona---:', id_tipo_zona);
-  // console.log('id_escenarios---:', id_escenarios);
-
-  // console.log('descripcion_hechos---:', descripcion_hechos);
-  // console.log('id_derecho---:', id_derecho);
-  // console.log('id_tematica_relacionada---:', id_tematica_relacionada);
-  // console.log('id_sub_tematica---:', id_sub_tematica);
-  // console.log('id_situacion_conflictiva---:', id_situacion_conflictiva);
-
-  // console.log('id_criterio---:', id_criterio);
-  // console.log('id_temporalidad---:', id_temporalidad);
-  // console.log('cantidad---:', cantidad);
-  // console.log('id_escenario---:', id_escenario);
-  // console.log('antecedentes_hecho---:', antecedentes_hecho);
-  // console.log('poblacion_afectada---:', poblacion_afectada);
-  // console.log('contraparte---:', contraparte);
-
-  // console.log('id_perfil_actor---:', id_perfil_actor);
-  // console.log('id_grupo_vulnerable---:', id_grupo_vulnerable);
-  // console.log('demanda_solicitud---:', demanda_solicitud);
-  // console.log('postura_autoridades', postura_autoridades);
-  // console.log('poblacion_ninos---:', poblacion_ninos);
-  // console.log('poblacion_ninas---:', poblacion_ninas);
-  // console.log('adolecentes_mujeres---:', adolecentes_mujeres);
-  // console.log('adolecentes_hombres---:', adolecentes_hombres);
-
-  // console.log('poblacion_hombres---:', poblacion_hombres);
-  // console.log('poblacion_mujeres---:', poblacion_mujeres);
-  // console.log('poblacion_hombre_mayor---:', poblacion_hombre_mayor);
-  // console.log('poblacion_mujer_mayor---:', poblacion_mujer_mayor);
-  // console.log('cantidad_aproximada---:', cantidad_aproximada);
-  // console.log('id_acciones_hecho---:', id_acciones_hecho);
-
-  // console.log('proteccion_vigente---:', proteccion_vigente);
-  // console.log('hubo_agresion---:', hubo_agresion);
-  // console.log('id_tipo_agresion---:', id_tipo_agresion);
-  // console.log('dialogo_conflicto---:', dialogo_conflicto);
-  // console.log('medida_conflicto---:', medida_conflicto);
-  // console.log('dialogo_roto_conflicto---:', dialogo_roto_conflicto);
-  // console.log('crisis_conflicto---:', crisis_conflicto);
-
-  // console.log('id_acciones_hecho_anterior---:', id_acciones_hecho_anterior);
-  // console.log('resolucion_conflicto---:', resolucion_conflicto);
-  // console.log('id_situacion_conflicto---:', id_situacion_conflicto);
-  // console.log('cant_persona_involucrada---:', cant_persona_involucrada);
-
-  // console.log('presencia_fuerza_publica---:', presencia_fuerza_publica);
-  // console.log('intervencion_fuerza_publica---:', intervencion_fuerza_publica);
-  // console.log('----------------------------------------------------------------------');
-
-  //---------------------------------------------------------------------------
-  //------------------------------- Imagenes 
 
   //imagen - prensa
   var fotoPrensa;

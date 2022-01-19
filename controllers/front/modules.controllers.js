@@ -5,8 +5,8 @@ const dateFormat = require('dateformat');
 let modulesList = async(req, res) => {
 
     try {
-        await db.query(`SELECT id_modulo, nombre_modulo, estado
-        FROM sat_modulos ORDER BY id_modulo ASC`, (err, results)=>{
+        await db.query(`SELECT id_modulo, nombre_modulo, tipo_modulo, estado
+        FROM sat_modulos ORDER BY tipo_modulo ASC`, (err, results)=>{
             if(err){
                 log('src/controllers/front', 'modules', 'modulesList', err, false, req, res);
             }else{
