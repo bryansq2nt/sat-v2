@@ -7,7 +7,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.2");
+  let version = parseFloat("1.3");
 
   return res.status(200).json({version});
 }
@@ -164,7 +164,7 @@ let getCrisisAlertsForm = async (req, res) => {
     var calification = await db.query(`SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1`);
     calification = calification.rows;
 
-    // Datos generales -- VERIFICADO
+    // Datos generales
     var generalData = {
       section_id: 15,
       bold_title: 1,
@@ -175,18 +175,59 @@ let getCrisisAlertsForm = async (req, res) => {
           question_type: "date",
           question: "Fecha Ingreso"
         },
-        // {
-        //   question_id: "id_tipo_via_entrada",
-        //   question_type: "closed",
-        //   question: "Tipo Via Entrada",
-        //   answers: entryType,
-        // },
+        {
+          question_id: "id_tipo_via_entrada",
+          question_type: "closed",
+          question: "Tipo Via Entrada",
+          answers: [
+            { answer_id: 'V', answer: 'Verbal' },
+            { answer_id: 'E', answer: 'Escrita' },
+            { answer_id: 'O', answer: 'De Oficio' },
+            { answer_id: 'N', answer: 'No Aplica' }
+          ]
+        },
         {
           question_id: "via_entrada",
           question_type: "open",
           question: "Via Entrada",
           answer: "Aplicacion Móvil",
           enabled: 0
+        },
+        {
+          question_id: "fuente_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Fuente de información"
+        },
+        {
+          question_id: "fecha_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha de la información"
+        },
+        {
+          question_id: "referencia_emision",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Referencia de emisión"
+        },
+        {
+          question_id: "fecha_recepción",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha Recepción"
         }
       ]
     };
@@ -240,7 +281,7 @@ let getCrisisAlertsForm = async (req, res) => {
     var personalInformation = {
       section_id: 18,
       bold_title: 1,
-      section_title: "Datos de personas solicitantes o afectadas: (individual o colectiva)",
+      section_title: "Datos de persona solicitante",
       questions: [
         {
           question_id: "nombre_solicitante",
@@ -296,7 +337,7 @@ let getCrisisAlertsForm = async (req, res) => {
         },
         {
           question_id: "id_grupo_vulnerabilidad",
-          question_type: "closed",
+          question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup
         },
@@ -346,6 +387,10 @@ let getCrisisAlertsForm = async (req, res) => {
     //PDDH
     var informationSource = {
       section_id: 19,
+      dependent: 1,
+      dependent_section_id: 15,
+      dependent_question_id: "id_tipo_via_entrada",
+      dependent_answer: "N",
       section_title: "Si PDDH actúa de oficio (no hay denunciante o solicitud de intervención), solo se registra datos de las personas afectadas; pero deberá ingresarse estos datos en la vía de entrada",
       questions: [
         {
@@ -410,7 +455,7 @@ let getCrisisAlertsForm = async (req, res) => {
     //Resumen del Hecho
     var factSummary = {
       section_id: 21,
-      section_title: "Datos de la atención a crisis",
+      section_title: "Detalle de los hechos",
       questions: [
         {
           question_id: "resumen_hecho",
@@ -418,23 +463,23 @@ let getCrisisAlertsForm = async (req, res) => {
           question_type: "area",
           question: "Resumen de los hechos",
           hint: "Escriba aqui..."
-        },
-        {
-          question_id: "id_calificacion",
-          question_type: "closed",
-          question: "Calificación",
-          answers: calification
-        },
-        {
-          question_id: "nombre_funcionario",
-          question_type: "open",
-          question: "Nombre funcionario/a"
-        },
-        {
-          question_id: "cargo",
-          question_type: "open",
-          question: "Cargo"
         }
+        // {
+        //   question_id: "id_calificacion",
+        //   question_type: "closed",
+        //   question: "Calificación",
+        //   answers: calification
+        // },
+        // {
+        //   question_id: "nombre_funcionario",
+        //   question_type: "open",
+        //   question: "Nombre funcionario/a"
+        // },
+        // {
+        //   question_id: "cargo",
+        //   question_type: "open",
+        //   question: "Cargo"
+        // }
       ]
 
     }
@@ -469,7 +514,7 @@ let getCrisisAlertsForm = async (req, res) => {
 
     }
 
-    sections.push(generalData, clasification, participants, personalInformation, informationSource, crisisInformation, factSummary, other);
+    sections.push(generalData, participants, personalInformation, factSummary, clasification);
 
     var formCrisisAlert = {
       form_id: 0,
@@ -572,13 +617,18 @@ let getById = async (req, res) => {
           question: "Fecha Ingreso",
           answer: crisisAttention.fecha_ingreso,
         },
-        // {
-        //   question_id: "id_tipo_via_entrada",
-        //   question_type: "closed",
-        //   question: "Tipo Via Entrada",
-        //   answers: entryType,
-        //   answer: Number.parseInt(crisisAttention.id_tipo_via_entrada)
-        // },
+        {
+          question_id: "id_tipo_via_entrada",
+          question_type: "closed",
+          question: "Tipo Via Entrada",
+          answer: crisisAttention.id_tipo_via_entrada,
+          answers: [
+            { answer_id: 'V', answer: 'Verbal' },
+            { answer_id: 'E', answer: 'Escrita' },
+            { answer_id: 'O', answer: 'De Oficio' },
+            { answer_id: 'N', answer: 'No Aplica' }
+          ]
+        },
         {
           question_id: "via_entrada",
           question_type: "open",
@@ -586,6 +636,47 @@ let getById = async (req, res) => {
           answer: "Aplicacion Móvil",
           enabled: 0,
           answer: crisisAttention.via_entrada
+        },
+        {
+          question_id: "fuente_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Fuente de información",
+          answer: crisisAttention.fuente_informacion
+        },
+        {
+          question_id: "fecha_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha de la información",
+          answer: crisisAttention.fecha_informacion
+          
+        },
+        {
+          question_id: "referencia_emision",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Referencia de emisión",
+          answer: crisisAttention.referencia_emision
+        },
+        {
+          question_id: "fecha_recepción",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha Recepción",
+          answer: crisisAttention.fecha_recepción
         }
       ]
     };
@@ -644,7 +735,7 @@ let getById = async (req, res) => {
     var personalInformation = {
       section_id: 18,
       bold_title: 1,
-      section_title: "Datos de personas solicitantes o afectadas: (individual o colectiva)",
+      section_title: "Datos de persona solicitante",
       questions: [
         {
           question_id: "nombre_solicitante",
@@ -702,10 +793,10 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_grupo_vulnerabilidad",
-          question_type: "closed",
+          question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup,
-          answer: Number.parseInt(crisisAttention.id_grupo_vulnerabilidad)
+          answer: crisisAttention.id_grupo_vulnerabilidad
         },
         {
           question_id: "id_zona_domicilio",
@@ -831,7 +922,7 @@ let getById = async (req, res) => {
     //Resumen del Hecho
     var factSummary = {
       section_id: 21,
-      section_title: "Datos de la atención a crisis",
+      section_title: "Detalle de los hechos",
       questions: [
         {
           question_id: "resumen_hecho",
@@ -839,26 +930,26 @@ let getById = async (req, res) => {
           question: "Resumen de los hechos",
           hint: "Escriba aqui...",
           answer: crisisAttention.resumen_hecho
-        },
-        {
-          question_id: "id_calificacion",
-          question_type: "closed",
-          question: "Calificación",
-          answers: calification,
-          answer: Number.parseInt(crisisAttention.id_calificacion)
-        },
-        {
-          question_id: "nombre_funcionario",
-          question_type: "open",
-          question: "Nombre funcionario/a",
-          answer: crisisAttention.nombre_funcionario
-        },
-        {
-          question_id: "cargo",
-          question_type: "open",
-          question: "Cargo",
-          answer: crisisAttention.cargo
         }
+        // {
+        //   question_id: "id_calificacion",
+        //   question_type: "closed",
+        //   question: "Calificación",
+        //   answers: calification,
+        //   answer: Number.parseInt(crisisAttention.id_calificacion)
+        // },
+        // {
+        //   question_id: "nombre_funcionario",
+        //   question_type: "open",
+        //   question: "Nombre funcionario/a",
+        //   answer: crisisAttention.nombre_funcionario
+        // },
+        // {
+        //   question_id: "cargo",
+        //   question_type: "open",
+        //   question: "Cargo",
+        //   answer: crisisAttention.cargo
+        // }
       ]
 
     }
@@ -897,7 +988,8 @@ let getById = async (req, res) => {
 
     }
 
-    sections.push(generalData, clasification, participants, personalInformation, informationSource, crisisInformation, factSummary, other);
+    //sections.push(generalData, clasification, personalInformation, informationSource, factSummary, crisisInformation, participants);
+    sections.push(generalData, participants, personalInformation, factSummary, clasification);
 
     var formCrisisAlert = {
       form_id: id_atencion_crisis,

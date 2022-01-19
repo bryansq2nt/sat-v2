@@ -620,7 +620,7 @@ CREATE TABLE sat_atencion_crisis(
     id_genero_solicitante NUMERIC, 
     id_orientacion_solicitante NUMERIC,
     id_ocupacion NUMERIC(2) NOT NULL, 
-    id_grupo_vulnerabilidad NUMERIC,     
+    id_grupo_vulnerabilidad NUMERIC[],     
     id_zona_domicilio NUMERIC, 
     id_departamento NUMERIC,  
     id_municipio NUMERIC,   
