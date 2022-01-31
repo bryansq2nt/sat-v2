@@ -221,7 +221,7 @@ let getCrisisAlertsForm = async (req, res) => {
           question: "Referencia de emisión"
         },
         {
-          question_id: "fecha_recepción",
+          question_id: "fecha_recepcion",
           dependent: 1,
           dependent_section_id: 15,
           dependent_question_id: "id_tipo_via_entrada",
@@ -669,14 +669,14 @@ let getById = async (req, res) => {
           answer: crisisAttention.referencia_emision
         },
         {
-          question_id: "fecha_recepción",
+          question_id: "fecha_recepcion",
           dependent: 1,
           dependent_section_id: 15,
           dependent_question_id: "id_tipo_via_entrada",
           dependent_answer: "O",
           question_type: "date",
           question: "Fecha Recepción",
-          answer: crisisAttention.fecha_recepción
+          answer: crisisAttention.fecha_recepcion
         }
       ]
     };
@@ -1013,7 +1013,7 @@ let createCrisisAlert = async (req, res) => {
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
     edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-    fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+    fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
     institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
 
@@ -1033,7 +1033,7 @@ let createCrisisAlert = async (req, res) => {
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento, 
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad, 
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion, 
-      fecha_informacion, referencia_emision, "fecha_recepción", id_poblacion, cantidad_aproximada, sector_poblacion_afectada, 
+      fecha_informacion, referencia_emision, "fecha_recepcion", id_poblacion, cantidad_aproximada, sector_poblacion_afectada, 
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros, 
       institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
@@ -1043,7 +1043,7 @@ let createCrisisAlert = async (req, res) => {
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-      fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+      fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
       institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod], (err, results) => {
         if (err) {
@@ -1070,7 +1070,7 @@ let updateCrisisAlert = async (req, res) => {
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
     edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-    fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+    fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
     institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
 
@@ -1086,14 +1086,14 @@ let updateCrisisAlert = async (req, res) => {
     await db.query(`UPDATE sat_atencion_crisis
     SET fecha_ingreso=$1, id_tipo_via_entrada=$2, via_entrada=$3, id_calidad_crisis=$4, id_naturaleza=$5, participante_nombre=$6, participante_dependencia=$7, participante_nivel=$8, nombre_solicitante=$9, id_documento_solicitante=$10, 
     fecha_nacimiento=$11, edad=$12, id_sexo_solicitante=$13, id_genero_solicitante=$14, id_orientacion_solicitante=$15, id_ocupacion=$16, id_grupo_vulnerabilidad=$17, id_zona_domicilio=$18, id_departamento=$19, id_municipio=$20, direccion=$21, 
-    id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepción=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
+    id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepcion=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
     nombre_notificacion_medio=$32, resumen_hecho=$33, id_calificacion=$34, nombre_funcionario=$35, cargo=$36, nombre_otros=$37, institucion_otros=$38, cargo_otros=$39, id_calificacion_otros=$40, 
     fecha_mod_reg=$41, cod_usu_ing=$42, cod_usu_mod=$43
     WHERE id_atencion_crisis = $44`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-      fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+      fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
       institucion_otros, cargo_otros, id_calificacion_otros, fecha_mod_reg, cod_usu_ing, cod_usu_mod, id_atencion_crisis], (err, results) => {
         if (err) {
@@ -1354,7 +1354,7 @@ let addRelatedCase = async (req,res) => {
 
 }
 
-//Enviar a Crisis
+//Analizar Atencion a Crisis
 let SendAlerttoAnalyze = async (req, res) =>{
   
   const {id_atencion_crisis} = req.params;
@@ -1382,6 +1382,36 @@ let SendAlerttoAnalyze = async (req, res) =>{
 
 };
 
+
+//Enviar Atencion a Crisis - SIGI
+let SendAtencionCrisisToSIGI = async (req, res) =>{
+  
+  const {id_atencion_crisis} = req.params;
+  console.log(id_atencion_crisis);
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar a analizar.", instance: "crisis-alert/SendAlerttoAnalyze" });
+
+    db.query('update sat_atencion_crisis_envio_SIGI set id_temp_atencion_crisis = $1', [id_atencion_crisis]);
+
+    await db.query('SELECT bussat_crisis_sigi()', (err, results)=>{
+      if(err){
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+
+        return res.status(200).json({
+          message: 'Atencion a Crisis enviada a SIGI'
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
 module.exports = {
   getCrisisAlertsForm,
   crisisAlertsList,
@@ -1396,5 +1426,6 @@ module.exports = {
   searchForRelatedCase,
   addRelatedCase,
   SendAlerttoAnalyze,
-  getFormVersion
+  getFormVersion,
+  SendAtencionCrisisToSIGI
 }

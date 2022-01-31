@@ -704,3 +704,10 @@ CREATE TABLE variable
     sigiidpersonatemp numeric(10,0),
     CONSTRAINT variable_pkey PRIMARY KEY (id_variable)
 );
+
+CREATE SEQUENCE seq_sat_atencion_crisis_envio_SIGI;
+CREATE TABLE sat_atencion_crisis_envio_SIGI (
+	id_atencion_crisis_sigi NUMERIC NOT NULL DEFAULT nextval('seq_sat_atencion_crisis_envio_SIGI'),
+	id_temp_atencion_crisis NUMERIC,
+	CONSTRAINT sat_atencion_crisis_envio_SIGI_pkey PRIMARY KEY (id_atencion_crisis_sigi)
+);
