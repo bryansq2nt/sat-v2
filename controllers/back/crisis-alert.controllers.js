@@ -1401,7 +1401,10 @@ let SendAtencionCrisisToSIGI = async (req, res) =>{
         return res.status(500).json(errorResponse.toJson());
       }else{
 
-        return res.status(200).json({
+        db.query(`UPDATE sat_atencion_crisis SET enviada_analizar = true 
+        WHERE id_atencion_crisis = $1`, [id_atencion_crisis]);
+
+          return res.status(200).json({
           message: 'Atencion a Crisis enviada a SIGI'
         });
       }
