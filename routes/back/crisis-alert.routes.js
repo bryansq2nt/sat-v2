@@ -21,7 +21,7 @@ router.get('/api/crisis/form/analyze/:id_atencion_crisis', usersTokenVerificatio
 router.put('/api/crisis/form/analyze/:id_atencion_crisis', usersTokenVerification, analyzeCrisisAlert);
 
 router.put('/api/crisis/:id_atencion_crisis/sendToAnalyze',usersTokenVerification, SendAlerttoAnalyze);
-router.post('/api/crisis/:id_atencion_crisis/send-to-sigi', usersTokenVerification, SendAtencionCrisisToSIGI); 
+router.put('/api/crisis/:id_atencion_crisis/send-to-sigi', usersTokenVerification, SendAtencionCrisisToSIGI); 
 
 
 

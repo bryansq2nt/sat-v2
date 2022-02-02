@@ -7,7 +7,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.3");
+  let version = parseFloat("1.4");
 
   return res.status(200).json({version});
 }
@@ -299,15 +299,13 @@ let getCrisisAlertsForm = async (req, res) => {
         {
           question_id: "fecha_nacimiento",
           question_type: "date",
-          required: 1,
           question: "Fecha de nacimiento"
         },
         {
           question_id: "edad",
-          question_type: "closed",
+          question_type: "numeric",
           question: "Edad aproximada",
-          required: 1,
-          answers: age
+          required: 1
         },
         {
           question_id: "id_sexo_solicitante",
@@ -758,10 +756,10 @@ let getById = async (req, res) => {
         },
         {
           question_id: "edad",
-          question_type: "closed",
+          question_type: "numeric",
           question: "Edad aproximada",
-          answers: age,
-          answer: Number.parseInt(crisisAttention.edad)
+          required: 1,
+          answer: crisisAttention.edad
         },
         {
           question_id: "id_sexo_solicitante",
@@ -1387,7 +1385,7 @@ let SendAlerttoAnalyze = async (req, res) =>{
 let SendAtencionCrisisToSIGI = async (req, res) =>{
   
   const {id_atencion_crisis} = req.params;
-  console.log(id_atencion_crisis);
+  console.log('Id enviada a SIGI de atencion a crisis: ', id_atencion_crisis);
   try {
 
     var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar a analizar.", instance: "crisis-alert/SendAlerttoAnalyze" });
@@ -1401,7 +1399,7 @@ let SendAtencionCrisisToSIGI = async (req, res) =>{
         return res.status(500).json(errorResponse.toJson());
       }else{
 
-        db.query(`UPDATE sat_atencion_crisis SET enviada_analizar = true 
+        db.query(`UPDATE sat_atencion_crisis SET analizada = true, enviada_analizar = true 
         WHERE id_atencion_crisis = $1`, [id_atencion_crisis]);
 
           return res.status(200).json({
