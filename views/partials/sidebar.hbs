@@ -60,6 +60,12 @@
                         <li><a href="/api-sat/early-alert/list">Alertas Registradas</a></li>
                     </ul>
                 </li>
+                <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="icon-Line-Chart"></i><span
+                            class="hide-menu">Indicadores de Contexto</span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="/api-sat/report/context-indicators">Ver Indicadores</a></li>
+                    </ul>
+                </li>
                 <li></li>
                 {{else}}
                 {{#siderbardOptionsAdministracion user.administracion}}
@@ -112,13 +118,20 @@
                         <li><a href="/api-sat/report/heat-map">Mapa de Calor</a></li>
                     </ul>
                 </li>
-                <li></li>
                 {{/siderbardOptionsDashboard}}
                 {{#siderbardOptionsAlert user.alert}}
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="icon-Bell"></i><span
                             class="hide-menu">Alertas</span></a>
                     <ul aria-expanded="false" class="collapse">
                         <li><a href="/api-sat/early-alert/list">Alertas Registradas</a></li>
+                    </ul>
+                </li>
+                {{/siderbardOptionsAlert}}
+                {{#siderbardOptionsAlert user.indContext}}
+                <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="icon-Line-Chart"></i><span
+                            class="hide-menu">Indicadores de Contexto</span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="/api-sat/report/context-indicators">Ver Indicadores</a></li>
                     </ul>
                 </li>
                 <li></li>

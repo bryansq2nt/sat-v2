@@ -1434,3 +1434,10 @@ funcion: createCaseProcessing
 error: TypeError: Cannot read property 'id_pais' of undefined
 --------------------------------------------------------------------------------------------
 
+2022.02.08, 21:12:20.0244 UTC -> 
+archivo: modules.controller
+ruta: src/controllers/front
+funcion: createModule
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+
