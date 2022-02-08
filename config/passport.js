@@ -63,7 +63,6 @@ module.exports = function (passport) {
                                 user.cat = 0;
                                 user.dashboard = 0;
                                 user.alert = 0;
-                                user.indContext = 0;
                                 user.role = user.id_rol_permisos;
 
                                 
@@ -86,9 +85,8 @@ module.exports = function (passport) {
                                                 user.dashboard = 1;
                                             } else if (authorizationModuls[i].id_modulo == 8) {
                                                 user.alert = 1;
-                                            } else if (authorizationModuls[i].id_modulo == 9) {
-                                                user.indContext = 1;
-                                            }
+                                            } 
+                                            
                                         }
                                     }
     
