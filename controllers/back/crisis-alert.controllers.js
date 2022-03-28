@@ -256,17 +256,61 @@ let getCrisisAlertsForm = async (req, res) => {
           answers: personalDocuments
         },
         {
-          question_id: "fecha_nacimiento",
-          question_type: "date",
+          question_id: "num_documento_1",
           required: 1,
-          question: "Fecha de nacimiento"
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: [4,3],
+          limit: 50,
+          question_type: "numeric_mask",
+          mask: maskDocuments[4].mascara,
+          question: "Núm. Documento"
+          
         },
         {
-          question_id: "edad",
-          question_type: "closed",
-          question: "Edad aproximada",
+          question_id: "num_documento_2",
           required: 1,
-          answers: age
+          dependent: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: 1,
+          limit: 50,
+          question_type: "numeric_mask",
+          mask: maskDocuments[1].mascara,
+          question: "Núm. Documento"
+          
+        },
+        {
+          question_id: "num_documento_3",
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: [0,5],
+          limit: 50,
+          question_type: "open",
+          question: "Núm. Documento"
+          
+        },
+        {
+          question_id: "num_documento_4",
+          required:1,
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: [2,7],
+          limit: 50,
+          question_type: "open",
+          question: "Núm. Documento"
+          
+        },
+        {
+          question_id: "fecha_nacimiento",
+          question_type: "date",
+          question: "Fecha de nacimiento"
         },
         {
           question_id: "id_sexo_solicitante",
@@ -659,18 +703,68 @@ let getById = async (req, res) => {
           answers: personalDocuments,
           answer: Number.parseInt(crisisAttention.id_documento_solicitante)
         },
+        
+        {
+          question_id: "num_documento_1",
+          required: 1,
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: [4,3],
+          limit: 50,
+          question_type: "numeric_mask",
+          mask: maskDocuments[4].mascara,
+          question: "Núm. Documento",
+          answer: crisisAttention.num_documento
+          
+        },
+        {
+          question_id: "num_documento_2",
+          required: 1,
+          dependent: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: 1,
+          limit: 50,
+          question_type: "numeric_mask",
+          mask: maskDocuments[1].mascara,
+          question: "Núm. Documento",
+          answer: crisisAttention.num_documento
+          
+        },
+        {
+          question_id: "num_documento_3",
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: [0,5],
+          limit: 50,
+          question_type: "open",
+          question: "Núm. Documento",
+          answer: crisisAttention.num_documento
+          
+        },
+        {
+          question_id: "num_documento_4",
+          required:1,
+          dependent: 1,
+          dependent_multiple: 1,
+          dependent_section_id: 18,
+          dependent_question_id: "id_documento_solicitante",
+          dependent_answer: [2,7],
+          limit: 50,
+          question_type: "open",
+          question: "Núm. Documento",
+          answer: crisisAttention.num_documento
+          
+        },
         {
           question_id: "fecha_nacimiento",
           question_type: "date",
           question: "Fecha de nacimiento",
           answer: crisisAttention.fecha_nacimiento
-        },
-        {
-          question_id: "edad",
-          question_type: "closed",
-          question: "Edad aproximada",
-          answers: age,
-          answer: Number.parseInt(crisisAttention.edad)
         },
         {
           question_id: "id_sexo_solicitante",
@@ -918,8 +1012,8 @@ let getById = async (req, res) => {
 
 let createCrisisAlert = async (req, res) => {
   const { id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
-    participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
-    edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
+    participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante,num_documento_1,num_documento_2,num_documento_3,num_documento_4, fecha_nacimiento,
+    id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
     fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
@@ -934,11 +1028,29 @@ let createCrisisAlert = async (req, res) => {
 
   try {
 
+    let num_documento = null;
+    if(id_documento_solicitante == 1){
+     num_documento = num_documento_2;
+    } else if(id_documento_solicitante == 2 || id_documento_solicitante == 7){
+     num_documento = num_documento_4;
+    }
+    else if(id_documento_solicitante == 3 || id_documento_solicitante == 4){
+     num_documento = num_documento_1;
+    } else if(id_documento_solicitante == 5){
+     num_documento = num_documento_3;
+    } 
+
+    let edad_aprox = null;
+    if(fecha_nacimiento != null){
+     edad_aprox = Number.parseInt(new Date().getFullYear()) - Number.parseInt(new Date(fecha_nacimiento).getFullYear());
+    }
+
+
     var errorResponse = new ErrorModel({ type: "createCrisisAlert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar guardar la Alerta a Crisis.", instance: "crisis-alert/createCrisisAlert" });
 
     await db.query(`INSERT INTO sat_atencion_crisis(
       fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre, 
-      participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento, 
+      participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, num_documento, fecha_nacimiento, 
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad, 
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion, 
       fecha_informacion, referencia_emision, "fecha_recepción", id_poblacion, cantidad_aproximada, sector_poblacion_afectada, 
@@ -947,9 +1059,9 @@ let createCrisisAlert = async (req, res) => {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, 
         $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, 
-        $39, $40, $41, $42)`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
-      participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
-      edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
+        $39, $40, $41, $42, $43)`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+      participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante,num_documento, fecha_nacimiento,
+      edad_aprox, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
       fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
@@ -975,8 +1087,8 @@ let createCrisisAlert = async (req, res) => {
 let updateCrisisAlert = async (req, res) => {
   const { id_atencion_crisis } = req.params;
   const { fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
-    participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
-    edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
+    participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante ,num_documento_1,num_documento_2,num_documento_3,num_documento_4,fecha_nacimiento,
+    id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
     fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
@@ -989,6 +1101,24 @@ let updateCrisisAlert = async (req, res) => {
     var cod_usu_ing = req.user.user_id;
     var cod_usu_mod = req.user.user_id;
 
+    let num_documento = null;
+    if(id_documento_solicitante == 1){
+     num_documento = num_documento_2;
+    } else if(id_documento_solicitante == 2 || id_documento_solicitante == 7){
+     num_documento = num_documento_4;
+    }
+    else if(id_documento_solicitante == 3 || id_documento_solicitante == 4){
+     num_documento = num_documento_1;
+    } else if(id_documento_solicitante == 5){
+     num_documento = num_documento_3;
+    } 
+
+    let edad_aprox = null;
+    if(fecha_nacimiento != null){
+     edad_aprox = Number.parseInt(new Date().getFullYear()) - Number.parseInt(new Date(fecha_nacimiento).getFullYear());
+    }
+
+
     var errorResponse = new ErrorModel({ type: "createCrisisAlert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar la Alerta a Crisis.", instance: "crisis-alert/updateCrisisAlert" });
 
     await db.query(`UPDATE sat_atencion_crisis
@@ -997,13 +1127,13 @@ let updateCrisisAlert = async (req, res) => {
     id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepción=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
     nombre_notificacion_medio=$32, resumen_hecho=$33, id_calificacion=$34, nombre_funcionario=$35, cargo=$36, nombre_otros=$37, institucion_otros=$38, cargo_otros=$39, id_calificacion_otros=$40, 
     fecha_mod_reg=$41, cod_usu_ing=$42, cod_usu_mod=$43
-    WHERE id_atencion_crisis = $44`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
+    WHERE id_atencion_crisis = $44, num_documento = $45`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
-      edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
+      edad_aprox, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
       fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
-      institucion_otros, cargo_otros, id_calificacion_otros, fecha_mod_reg, cod_usu_ing, cod_usu_mod, id_atencion_crisis], (err, results) => {
+      institucion_otros, cargo_otros, id_calificacion_otros, fecha_mod_reg, cod_usu_ing, cod_usu_mod, id_atencion_crisis, num_documento], (err, results) => {
         if (err) {
           console.log(err);
           errorResponse.detail = err.message;
