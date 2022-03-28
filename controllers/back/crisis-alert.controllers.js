@@ -7,7 +7,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.2");
+  let version = parseFloat("1.4");
 
   return res.status(200).json({version});
 }
@@ -164,7 +164,7 @@ let getCrisisAlertsForm = async (req, res) => {
     var calification = await db.query(`SELECT id_calidad_participa::integer AS answer_id, nombre_calidad_participa AS answer FROM sat_calidad_clasificacion_participa WHERE estado = 1`);
     calification = calification.rows;
 
-    // Datos generales -- VERIFICADO
+    // Datos generales
     var generalData = {
       section_id: 15,
       bold_title: 1,
@@ -175,18 +175,59 @@ let getCrisisAlertsForm = async (req, res) => {
           question_type: "date",
           question: "Fecha Ingreso"
         },
-        // {
-        //   question_id: "id_tipo_via_entrada",
-        //   question_type: "closed",
-        //   question: "Tipo Via Entrada",
-        //   answers: entryType,
-        // },
+        {
+          question_id: "id_tipo_via_entrada",
+          question_type: "closed",
+          question: "Tipo Via Entrada",
+          answers: [
+            { answer_id: 'V', answer: 'Verbal' },
+            { answer_id: 'E', answer: 'Escrita' },
+            { answer_id: 'O', answer: 'De Oficio' },
+            { answer_id: 'N', answer: 'No Aplica' }
+          ]
+        },
         {
           question_id: "via_entrada",
           question_type: "open",
           question: "Via Entrada",
           answer: "Aplicacion Móvil",
           enabled: 0
+        },
+        {
+          question_id: "fuente_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Fuente de información"
+        },
+        {
+          question_id: "fecha_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha de la información"
+        },
+        {
+          question_id: "referencia_emision",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Referencia de emisión"
+        },
+        {
+          question_id: "fecha_recepcion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha Recepción"
         }
       ]
     };
@@ -240,7 +281,7 @@ let getCrisisAlertsForm = async (req, res) => {
     var personalInformation = {
       section_id: 18,
       bold_title: 1,
-      section_title: "Datos de personas solicitantes o afectadas: (individual o colectiva)",
+      section_title: "Datos de persona solicitante",
       questions: [
         {
           question_id: "nombre_solicitante",
@@ -340,7 +381,7 @@ let getCrisisAlertsForm = async (req, res) => {
         },
         {
           question_id: "id_grupo_vulnerabilidad",
-          question_type: "closed",
+          question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup
         },
@@ -390,6 +431,10 @@ let getCrisisAlertsForm = async (req, res) => {
     //PDDH
     var informationSource = {
       section_id: 19,
+      dependent: 1,
+      dependent_section_id: 15,
+      dependent_question_id: "id_tipo_via_entrada",
+      dependent_answer: "N",
       section_title: "Si PDDH actúa de oficio (no hay denunciante o solicitud de intervención), solo se registra datos de las personas afectadas; pero deberá ingresarse estos datos en la vía de entrada",
       questions: [
         {
@@ -454,7 +499,7 @@ let getCrisisAlertsForm = async (req, res) => {
     //Resumen del Hecho
     var factSummary = {
       section_id: 21,
-      section_title: "Datos de la atención a crisis",
+      section_title: "Detalle de los hechos",
       questions: [
         {
           question_id: "resumen_hecho",
@@ -462,23 +507,23 @@ let getCrisisAlertsForm = async (req, res) => {
           question_type: "area",
           question: "Resumen de los hechos",
           hint: "Escriba aqui..."
-        },
-        {
-          question_id: "id_calificacion",
-          question_type: "closed",
-          question: "Calificación",
-          answers: calification
-        },
-        {
-          question_id: "nombre_funcionario",
-          question_type: "open",
-          question: "Nombre funcionario/a"
-        },
-        {
-          question_id: "cargo",
-          question_type: "open",
-          question: "Cargo"
         }
+        // {
+        //   question_id: "id_calificacion",
+        //   question_type: "closed",
+        //   question: "Calificación",
+        //   answers: calification
+        // },
+        // {
+        //   question_id: "nombre_funcionario",
+        //   question_type: "open",
+        //   question: "Nombre funcionario/a"
+        // },
+        // {
+        //   question_id: "cargo",
+        //   question_type: "open",
+        //   question: "Cargo"
+        // }
       ]
 
     }
@@ -513,7 +558,7 @@ let getCrisisAlertsForm = async (req, res) => {
 
     }
 
-    sections.push(generalData, clasification, participants, personalInformation, informationSource, crisisInformation, factSummary, other);
+    sections.push(generalData, participants, personalInformation, factSummary, clasification);
 
     var formCrisisAlert = {
       form_id: 0,
@@ -616,13 +661,18 @@ let getById = async (req, res) => {
           question: "Fecha Ingreso",
           answer: crisisAttention.fecha_ingreso,
         },
-        // {
-        //   question_id: "id_tipo_via_entrada",
-        //   question_type: "closed",
-        //   question: "Tipo Via Entrada",
-        //   answers: entryType,
-        //   answer: Number.parseInt(crisisAttention.id_tipo_via_entrada)
-        // },
+        {
+          question_id: "id_tipo_via_entrada",
+          question_type: "closed",
+          question: "Tipo Via Entrada",
+          answer: crisisAttention.id_tipo_via_entrada,
+          answers: [
+            { answer_id: 'V', answer: 'Verbal' },
+            { answer_id: 'E', answer: 'Escrita' },
+            { answer_id: 'O', answer: 'De Oficio' },
+            { answer_id: 'N', answer: 'No Aplica' }
+          ]
+        },
         {
           question_id: "via_entrada",
           question_type: "open",
@@ -630,6 +680,47 @@ let getById = async (req, res) => {
           answer: "Aplicacion Móvil",
           enabled: 0,
           answer: crisisAttention.via_entrada
+        },
+        {
+          question_id: "fuente_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Fuente de información",
+          answer: crisisAttention.fuente_informacion
+        },
+        {
+          question_id: "fecha_informacion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha de la información",
+          answer: crisisAttention.fecha_informacion
+          
+        },
+        {
+          question_id: "referencia_emision",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "open",
+          question: "Referencia de emisión",
+          answer: crisisAttention.referencia_emision
+        },
+        {
+          question_id: "fecha_recepcion",
+          dependent: 1,
+          dependent_section_id: 15,
+          dependent_question_id: "id_tipo_via_entrada",
+          dependent_answer: "O",
+          question_type: "date",
+          question: "Fecha Recepción",
+          answer: crisisAttention.fecha_recepcion
         }
       ]
     };
@@ -688,7 +779,7 @@ let getById = async (req, res) => {
     var personalInformation = {
       section_id: 18,
       bold_title: 1,
-      section_title: "Datos de personas solicitantes o afectadas: (individual o colectiva)",
+      section_title: "Datos de persona solicitante",
       questions: [
         {
           question_id: "nombre_solicitante",
@@ -796,10 +887,10 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_grupo_vulnerabilidad",
-          question_type: "closed",
+          question_type: "closed_multiple",
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup,
-          answer: Number.parseInt(crisisAttention.id_grupo_vulnerabilidad)
+          answer: crisisAttention.id_grupo_vulnerabilidad
         },
         {
           question_id: "id_zona_domicilio",
@@ -925,7 +1016,7 @@ let getById = async (req, res) => {
     //Resumen del Hecho
     var factSummary = {
       section_id: 21,
-      section_title: "Datos de la atención a crisis",
+      section_title: "Detalle de los hechos",
       questions: [
         {
           question_id: "resumen_hecho",
@@ -933,26 +1024,26 @@ let getById = async (req, res) => {
           question: "Resumen de los hechos",
           hint: "Escriba aqui...",
           answer: crisisAttention.resumen_hecho
-        },
-        {
-          question_id: "id_calificacion",
-          question_type: "closed",
-          question: "Calificación",
-          answers: calification,
-          answer: Number.parseInt(crisisAttention.id_calificacion)
-        },
-        {
-          question_id: "nombre_funcionario",
-          question_type: "open",
-          question: "Nombre funcionario/a",
-          answer: crisisAttention.nombre_funcionario
-        },
-        {
-          question_id: "cargo",
-          question_type: "open",
-          question: "Cargo",
-          answer: crisisAttention.cargo
         }
+        // {
+        //   question_id: "id_calificacion",
+        //   question_type: "closed",
+        //   question: "Calificación",
+        //   answers: calification,
+        //   answer: Number.parseInt(crisisAttention.id_calificacion)
+        // },
+        // {
+        //   question_id: "nombre_funcionario",
+        //   question_type: "open",
+        //   question: "Nombre funcionario/a",
+        //   answer: crisisAttention.nombre_funcionario
+        // },
+        // {
+        //   question_id: "cargo",
+        //   question_type: "open",
+        //   question: "Cargo",
+        //   answer: crisisAttention.cargo
+        // }
       ]
 
     }
@@ -991,7 +1082,8 @@ let getById = async (req, res) => {
 
     }
 
-    sections.push(generalData, clasification, participants, personalInformation, informationSource, crisisInformation, factSummary, other);
+    //sections.push(generalData, clasification, personalInformation, informationSource, factSummary, crisisInformation, participants);
+    sections.push(generalData, participants, personalInformation, factSummary, clasification);
 
     var formCrisisAlert = {
       form_id: id_atencion_crisis,
@@ -1015,7 +1107,7 @@ let createCrisisAlert = async (req, res) => {
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante,num_documento_1,num_documento_2,num_documento_3,num_documento_4, fecha_nacimiento,
     id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-    fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+    fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
     institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
 
@@ -1053,7 +1145,7 @@ let createCrisisAlert = async (req, res) => {
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, num_documento, fecha_nacimiento, 
       edad, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad, 
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion, 
-      fecha_informacion, referencia_emision, "fecha_recepción", id_poblacion, cantidad_aproximada, sector_poblacion_afectada, 
+      fecha_informacion, referencia_emision, "fecha_recepcion", id_poblacion, cantidad_aproximada, sector_poblacion_afectada, 
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros, 
       institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
@@ -1063,7 +1155,7 @@ let createCrisisAlert = async (req, res) => {
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante,num_documento, fecha_nacimiento,
       edad_aprox, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-      fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+      fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
       institucion_otros, cargo_otros, id_calificacion_otros, cod_usu_ing, cod_usu_mod], (err, results) => {
         if (err) {
@@ -1090,7 +1182,7 @@ let updateCrisisAlert = async (req, res) => {
     participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante ,num_documento_1,num_documento_2,num_documento_3,num_documento_4,fecha_nacimiento,
     id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
     id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-    fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+    fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
     grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
     institucion_otros, cargo_otros, id_calificacion_otros } = req.body;
 
@@ -1124,14 +1216,14 @@ let updateCrisisAlert = async (req, res) => {
     await db.query(`UPDATE sat_atencion_crisis
     SET fecha_ingreso=$1, id_tipo_via_entrada=$2, via_entrada=$3, id_calidad_crisis=$4, id_naturaleza=$5, participante_nombre=$6, participante_dependencia=$7, participante_nivel=$8, nombre_solicitante=$9, id_documento_solicitante=$10, 
     fecha_nacimiento=$11, edad=$12, id_sexo_solicitante=$13, id_genero_solicitante=$14, id_orientacion_solicitante=$15, id_ocupacion=$16, id_grupo_vulnerabilidad=$17, id_zona_domicilio=$18, id_departamento=$19, id_municipio=$20, direccion=$21, 
-    id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepción=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
+    id_otr_med_notificacion=$22, detalle_persona=$23, fuente_informacion=$24, fecha_informacion=$25, referencia_emision=$26, fecha_recepcion=$27, id_poblacion=$28, cantidad_aproximada=$29, sector_poblacion_afectada=$30, grupo_vulnerabilidad=$31, 
     nombre_notificacion_medio=$32, resumen_hecho=$33, id_calificacion=$34, nombre_funcionario=$35, cargo=$36, nombre_otros=$37, institucion_otros=$38, cargo_otros=$39, id_calificacion_otros=$40, 
     fecha_mod_reg=$41, cod_usu_ing=$42, cod_usu_mod=$43
     WHERE id_atencion_crisis = $44, num_documento = $45`, [fecha_ingreso, id_tipo_via_entrada, via_entrada, id_calidad_crisis, id_naturaleza, participante_nombre,
       participante_dependencia, participante_nivel, nombre_solicitante, id_documento_solicitante, fecha_nacimiento,
       edad_aprox, id_sexo_solicitante, id_genero_solicitante, id_orientacion_solicitante, id_ocupacion, id_grupo_vulnerabilidad,
       id_zona_domicilio, id_departamento, id_municipio, direccion, id_otr_med_notificacion, detalle_persona, fuente_informacion,
-      fecha_informacion, referencia_emision, fecha_recepción, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
+      fecha_informacion, referencia_emision, fecha_recepcion, id_poblacion, cantidad_aproximada, sector_poblacion_afectada,
       grupo_vulnerabilidad, nombre_notificacion_medio, resumen_hecho, id_calificacion, nombre_funcionario, cargo, nombre_otros,
       institucion_otros, cargo_otros, id_calificacion_otros, fecha_mod_reg, cod_usu_ing, cod_usu_mod, id_atencion_crisis, num_documento], (err, results) => {
         if (err) {
@@ -1392,7 +1484,7 @@ let addRelatedCase = async (req,res) => {
 
 }
 
-//Enviar a Crisis
+//Analizar Atencion a Crisis
 let SendAlerttoAnalyze = async (req, res) =>{
   
   const {id_atencion_crisis} = req.params;
@@ -1420,6 +1512,39 @@ let SendAlerttoAnalyze = async (req, res) =>{
 
 };
 
+
+//Enviar Atencion a Crisis - SIGI
+let SendAtencionCrisisToSIGI = async (req, res) =>{
+  
+  const {id_atencion_crisis} = req.params;
+  console.log('Id enviada a SIGI de atencion a crisis: ', id_atencion_crisis);
+  try {
+
+    var errorResponse = new ErrorModel({ type: "Crisis-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar a analizar.", instance: "crisis-alert/SendAlerttoAnalyze" });
+
+    db.query('update sat_atencion_crisis_envio_SIGI set id_temp_atencion_crisis = $1', [id_atencion_crisis]);
+
+    await db.query('SELECT bussat_crisis_sigi()', (err, results)=>{
+      if(err){
+        console.log(err.message);
+        errorResponse.detail = err.message;
+        return res.status(500).json(errorResponse.toJson());
+      }else{
+
+        db.query(`UPDATE sat_atencion_crisis SET analizada = true, enviada_analizar = true 
+        WHERE id_atencion_crisis = $1`, [id_atencion_crisis]);
+
+          return res.status(200).json({
+          message: 'Atencion a Crisis enviada a SIGI'
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json(errorResponse.toJson());
+  }
+
+};
+
 module.exports = {
   getCrisisAlertsForm,
   crisisAlertsList,
@@ -1434,5 +1559,6 @@ module.exports = {
   searchForRelatedCase,
   addRelatedCase,
   SendAlerttoAnalyze,
-  getFormVersion
+  getFormVersion,
+  SendAtencionCrisisToSIGI
 }

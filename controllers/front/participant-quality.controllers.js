@@ -27,7 +27,7 @@ let createParticipantQuality = async (req, res) => {
     
     var cod_usu_ing = req.user.id_usuario;
     var cod_usu_mod = req.user.id_usuario;
-    console.log('Esta entrandoa acaaaaa');
+
     try {
         await db.query(`INSERT INTO sat_calidad_clasificacion_participa(
             nombre_calidad_participa, cod_usu_ing, cod_usu_mod, estado)

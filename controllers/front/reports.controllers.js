@@ -43,10 +43,19 @@ let getHeatMap = async(req, res) =>{
     }
 };
 
+let getContextIndicators = async(req, res) =>{
+    try {
+        return res.render('reports/context_indicators');   
+    } catch (error) {
+        log('src/controllers/front', 'reports', 'getHeatMap', error, false, req, res);
+    }
+};
+
 module.exports = {
     reportIndicators,
     reportTypeAlert,
     reportPhasesConflict,
     reportConflictSituation,
-    getHeatMap
+    getHeatMap,
+    getContextIndicators
 }

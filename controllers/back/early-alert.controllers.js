@@ -6,7 +6,7 @@ const sendemail = require('@lib/emails');
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.2");
+  let version = parseFloat("1.3");
 
   return res.status(200).json({version});
 }
@@ -90,9 +90,10 @@ let earlyAlertsList = async (req, res) => {
 let getById = async (req, res) => {
   const { id_alerta_temprana } = req.params;
 
-  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la Alerta.", instance: "early-alert/getById" });
 
   try {
+
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener la Alerta.", instance: "early-alert/getById" });
 
     var early_alert = await db.query(`SELECT * FROM sat_alerta_temprana WHERE id_alerta_temprana = $1`, [id_alerta_temprana]);
     early_alert = early_alert.rows[0];
@@ -707,14 +708,12 @@ let getById = async (req, res) => {
         },
         {
           question_id: "adolecentes_mujeres",
-          //required: 1,
           question_type: "numeric",
           question: "Adolecentes Mujeres",
           answer: early_alert.adolecentes_mujeres
         },
         {
           question_id: "adolecentes_hombres",
-          //required: 1,
           question_type: "numeric",
           question: "Adolecentes Hombres",
           answer: early_alert.adolecentes_hombres
@@ -1583,13 +1582,11 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "adolecentes_mujeres",
-          required: 1,
           question_type: "numeric",
           question: "Adolecentes Mujeres"
         },
         {
           question_id: "adolecentes_hombres",
-          required: 1,
           question_type: "numeric",
           question: "Adolecentes Hombres"
         },
@@ -1958,18 +1955,15 @@ let createEarlyAlert = async (req, res) => {
     poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor,cantidad_aproximada, id_acciones_hecho,
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-    presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
-
-    console.log('------------', intervencion_fuerza_publica);
-
-    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
-    var cod_usu = 1
-  //var cod_usu = req.user.user_id;
-
-  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
-
+    presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;    
 
   try {
+
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
+    
+    var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
+    var cod_usu = req.user.user_id;
+
     var pais = await db.query(`SELECT id_pais FROM public.admi_pais WHERE codigo = 'SV'`);
     pais = pais.rows[0].id_pais;
 
@@ -2130,14 +2124,12 @@ let createEarlyAlert = async (req, res) => {
           }
         });
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json(errorResponse.toJson());
   }
 };
 
-
 let insertStats = async (id_departamento,id_municipio,fecha_hecho,fecha_ingreso, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto) => {
-  
-  
   
   if(id_criterio == 55){
     console.log('entro ------ criterio 55');
@@ -2269,12 +2261,12 @@ let insertStats = async (id_departamento,id_municipio,fecha_hecho,fecha_ingreso,
 
 }
 
-
 let getRelatedCases = async (req, res) => {
   const { id_alerta_temprana } = req.params;
-  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener los casos relacionados", instance: "Early-Alert/getRelatedCases" });
 
   try {
+    
+    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener los casos relacionados", instance: "Early-Alert/getRelatedCases" });
 
     await db.query(`SELECT id_alerta_temprana::integer AS form_id,
     CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed 

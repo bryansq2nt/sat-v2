@@ -620,7 +620,7 @@ CREATE TABLE sat_atencion_crisis(
     id_genero_solicitante NUMERIC, 
     id_orientacion_solicitante NUMERIC,
     id_ocupacion NUMERIC(2) NOT NULL, 
-    id_grupo_vulnerabilidad NUMERIC,     
+    id_grupo_vulnerabilidad NUMERIC[],     
     id_zona_domicilio NUMERIC, 
     id_departamento NUMERIC,  
     id_municipio NUMERIC,   
@@ -703,4 +703,11 @@ CREATE TABLE variable
     oldidcasotemp numeric,
     sigiidpersonatemp numeric(10,0),
     CONSTRAINT variable_pkey PRIMARY KEY (id_variable)
+);
+
+CREATE SEQUENCE seq_sat_atencion_crisis_envio_SIGI;
+CREATE TABLE sat_atencion_crisis_envio_SIGI (
+	id_atencion_crisis_sigi NUMERIC NOT NULL DEFAULT nextval('seq_sat_atencion_crisis_envio_SIGI'),
+	id_temp_atencion_crisis NUMERIC,
+	CONSTRAINT sat_atencion_crisis_envio_SIGI_pkey PRIMARY KEY (id_atencion_crisis_sigi)
 );

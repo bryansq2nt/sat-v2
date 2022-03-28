@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 
 const { isLoggedIn } = require('@middlewares/auth');
-const { reportIndicators, reportTypeAlert, reportPhasesConflict, reportConflictSituation, getHeatMap} = require('@controllers/front/reports.controllers');
+const { reportIndicators, reportTypeAlert, reportPhasesConflict, reportConflictSituation, getHeatMap, getContextIndicators} = require('@controllers/front/reports.controllers');
 
 // Get Report Indicators
 router.get('/api-sat/report/indicators', isLoggedIn, reportIndicators);
@@ -18,5 +18,8 @@ router.get('/api-sat/report/conflict-situation', isLoggedIn, reportConflictSitua
 
 // Get Heat Map 
 router.get('/api-sat/report/heat-map', isLoggedIn, getHeatMap);
+
+//Get context indicator
+router.get('/api-sat/report/context-indicators', isLoggedIn, getContextIndicators)
 
 module.exports = router;

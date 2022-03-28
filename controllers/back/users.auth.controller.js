@@ -12,7 +12,8 @@ const login = async (req, res) => {
 
     try {
 
-        await db.query(`SELECT u.id_usuario AS user_id, CONCAT(u.nombre,' ', u.apellido) AS name, u.usuario AS user_name, 
+        await db.query(
+        /*`SELECT u.id_usuario AS user_id, CONCAT(u.nombre,' ', u.apellido) AS name, u.usuario AS user_name, 
         up.descripcion AS position, u.correo AS email, u.genero AS gender, u.clave,
         json_agg( DISTINCT jsonb_build_object('role_id', pp.id_rol_permisos, 'name', pp.nombre_permiso)) AS roles,
         json_agg( DISTINCT jsonb_build_object('module_id', m.id_modulo, 'name', m.nombre_modulo)) AS modules
@@ -23,7 +24,22 @@ const login = async (req, res) => {
         INNER JOIN sat_permisos_modulos_usuario AS mu ON u.id_usuario = mu.id_usuario
         INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo
         WHERE u.usuario = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
-        GROUP BY user_id, name, user_name, position, email, gender, clave`, [user], async(err, results) => {
+        GROUP BY user_id, name, user_name, position, email, gender, clave`*/
+
+        `SELECT u.id_usuario AS user_id, CONCAT(u.nombre,' ', u.apellido) AS name, u.usuario AS user_name, 
+        u.correo_electronico AS email, u.clave, u.id_ins_usuario, u.id_depto_usuario, u.id_car_usuario, d.codigo,
+        json_agg( DISTINCT jsonb_build_object('role_id', pp.id_rol_permisos, 'name', pp.nombre_permiso)) AS roles,
+        json_agg( DISTINCT jsonb_build_object('module_id', m.id_modulo, 'name', m.nombre_modulo)) AS modules
+        FROM segd_usuario AS u
+        INNER JOIN sat_accesos_usuario AS ac ON u.id_usuario = ac.id_usuario
+        INNER JOIN sat_rol_app_permisos AS pp ON pp.id_rol_permisos = ac.id_rol_permisos
+        INNER JOIN sat_permisos_modulos_usuario AS mu ON u.id_usuario = mu.id_usuario
+        INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo
+        INNER JOIN admi_departamento as d ON d.id_departamento = u.id_depto_usuario
+        WHERE u.usuario = $1 AND u.est_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
+        GROUP BY user_id, name, user_name, email, u.id_ins_usuario, clave, codigo, u.id_depto_usuario, u.id_car_usuario`
+        , 
+        [user], async(err, results) => {
             if (err) {
                 console.log(err.message);
                 return res.status(500).json(errorResponse.toJson());
@@ -51,7 +67,7 @@ const login = async (req, res) => {
                 }else {
                     db.query('INSERT INTO sat_seguridad_token(id_usuario, token) VALUES ($1, $2)', [user.user_id, fcm_token]);
                 }
-                console.log(user);
+                
                 let token = jwt.sign({ user }, process.env.SEED, { expiresIn: Number(process.env.CADUCIDAD_TOKEN) });
 
                 return res.status(200).json({
@@ -114,7 +130,8 @@ const profile = async (req,res) => {
 
     try {
 
-        await db.query(`SELECT u.id_usuario AS user_id, CONCAT(u.nombre,' ', u.apellido) AS name, u.usuario AS user_name, 
+        await db.query(
+        /*`SELECT u.id_usuario AS user_id, CONCAT(u.nombre,' ', u.apellido) AS name, u.usuario AS user_name, 
         up.descripcion AS position, u.correo AS email, u.genero AS gender, u.clave,
         json_agg( DISTINCT jsonb_build_object('role_id', pp.id_rol_permisos, 'name', pp.nombre_permiso)) AS roles,
         json_agg( DISTINCT jsonb_build_object('module_id', m.id_modulo, 'name', m.nombre_modulo)) AS modules
@@ -125,7 +142,22 @@ const profile = async (req,res) => {
         INNER JOIN sat_permisos_modulos_usuario AS mu ON u.id_usuario = mu.id_usuario
         INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo
         WHERE u.correo = $1 AND u.estado_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
-        GROUP BY user_id, name, user_name, position, email, gender, clave`, [req.user.email], (err, results) => {
+        GROUP BY user_id, name, user_name, position, email, gender, clave`*/
+
+        `SELECT u.id_usuario AS user_id, CONCAT(u.nombre,' ', u.apellido) AS name, u.usuario AS user_name, 
+        u.correo_electronico AS email, u.clave,
+        json_agg( DISTINCT jsonb_build_object('role_id', pp.id_rol_permisos, 'name', pp.nombre_permiso)) AS roles,
+        json_agg( DISTINCT jsonb_build_object('module_id', m.id_modulo, 'name', m.nombre_modulo)) AS modules
+        FROM segd_usuario AS u
+        INNER JOIN sat_accesos_usuario AS ac ON u.id_usuario = ac.id_usuario
+        INNER JOIN sat_rol_app_permisos AS pp ON pp.id_rol_permisos = ac.id_rol_permisos
+        INNER JOIN sat_permisos_modulos_usuario AS mu ON u.id_usuario = mu.id_usuario
+        INNER JOIN sat_modulos AS m ON m.id_modulo = mu.id_modulo
+        WHERE u.usuario = $1 AND u.est_reg = 'A' AND ac.permiso_acceso_app = 1 AND m.tipo_modulo = 1
+        GROUP BY user_id, name, user_name, email, clave;`
+        , 
+        /*[req.user.email], (err, results) => {*/
+        [req.user.id_usuario], (err, results) => {
             if (err) {
                 console.log(err.message);
                 return res.status(500).json(errorResponse.toJson());

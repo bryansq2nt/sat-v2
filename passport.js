@@ -34,10 +34,9 @@ module.exports = function (passport) {
 
                     `SELECT u.id_usuario, u.usuario, u.nombre, u.apellido, u.usuario, u.fec_nacimiento, 
                     u.correo_electronico, u.usuario, u.clave, u.est_reg, u.id_usuario AS id_perfil, ac.permiso_acceso_web,
-                    ac.id_rol_permisos, u.id_ins_usuario, d.codigo
+                    ac.id_rol_permisos, u.id_ins_usuario
                     FROM segd_usuario AS u
                     INNER JOIN sat_accesos_usuario AS ac ON u.id_usuario = ac.id_usuario
-                    INNER JOIN admi_departamento as d ON d.id_departamento = u.id_depto_usuario
                     WHERE u.usuario = $1 AND u.est_reg = 'A' AND ac.permiso_acceso_web = 1`, [user], async (err, results) => {
                     if (err) {
                         console.log(err.stack);
@@ -83,10 +82,9 @@ module.exports = function (passport) {
                                                 user.cat = 1;
                                             } else if (authorizationModuls[i].id_modulo == 6) {
                                                 user.dashboard = 1;
-                                            } else if (authorizationModuls[i].id_modulo == 8) {
+                                            } else if (authorizationModuls[i].id_modulo == 7) {
                                                 user.alert = 1;
-                                            } 
-                                            
+                                            }
                                         }
                                     }
     

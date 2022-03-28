@@ -1357,3 +1357,87 @@ funcion: createPersonInvolvedForm
 error: ReferenceError: correo_electronico is not defined
 --------------------------------------------------------------------------------------------
 
+2021.11.19, 16:40:43.0525 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.19, 16:40:52.0829 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: Error: connect ETIMEDOUT 8.6.193.79:5432
+--------------------------------------------------------------------------------------------
+
+2021.11.19, 16:41:33.0227 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_tip_discapacidad»
+--------------------------------------------------------------------------------------------
+
+2021.11.19, 16:41:36.0841 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: getPersonInvolvedForm
+error: error: no existe la relación «admi_cat_tip_discapacidad»
+--------------------------------------------------------------------------------------------
+
+2022.01.05, 20:15:36.0359 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: falta una entrada para la tabla «u» en la cláusula FROM
+--------------------------------------------------------------------------------------------
+
+2022.01.05, 20:16:32.0097 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: usersList
+error: error: no existe la columna u.id_perfil
+--------------------------------------------------------------------------------------------
+
+2022.01.05, 20:38:20.0394 UTC -> 
+archivo: users.controller
+ruta: src/controllers/front
+funcion: getById
+error: error: no existe la columna u.correo
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 16:28:54.0128 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 16:32:10.0216 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 16:34:53.0189 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'user_id' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.01.07, 17:05:14.0574 UTC -> 
+archivo: case-processing.controller
+ruta: src/controllers/back
+funcion: createCaseProcessing
+error: TypeError: Cannot read property 'id_pais' of undefined
+--------------------------------------------------------------------------------------------
+
+2022.02.08, 21:12:20.0244 UTC -> 
+archivo: modules.controller
+ruta: src/controllers/front
+funcion: createModule
+error: error: desbordamiento de campo numeric
+--------------------------------------------------------------------------------------------
+

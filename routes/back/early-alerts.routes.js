@@ -4,7 +4,7 @@ const router = Router();
 const { usersTokenVerification } = require('@middlewares/token.middleware');
 const { earlyAlertsList, getById, getEarlyAlertForm, createEarlyAlert, updateEarlyAlert, getFormToAnalyze, analyzeEarlyAlert, searchEarlyAlert,  getRelatedCases, removeRelatedCase, searchForRelatedCase, addRelatedCase, SendAlerttoAnalyze, getFormVersion} = require('@controllers/back/early-alert.controllers');
 
-router.post('/api/alerts', createEarlyAlert);
+router.post('/api/alerts', usersTokenVerification, createEarlyAlert);
 router.get('/api/alerts', usersTokenVerification, earlyAlertsList);
 
 router.get('/api/alerts/search', usersTokenVerification, searchEarlyAlert);
