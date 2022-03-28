@@ -614,6 +614,7 @@ CREATE TABLE sat_atencion_crisis(
     participante_nivel VARCHAR(150),
     nombre_solicitante VARCHAR(50) NOT NULL,
     id_documento_solicitante INT NOT NULL, 
+    num_documento VARCHAR(50),
     fecha_nacimiento date,
     edad NUMERIC NOT NULL DEFAULT 0,
     id_sexo_solicitante NUMERIC,

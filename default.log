@@ -1441,3 +1441,31 @@ funcion: createModule
 error: error: desbordamiento de campo numeric
 --------------------------------------------------------------------------------------------
 
+2022.03.28, 17:00:15.0046 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: getCrisisAlertsForm
+error: ReferenceError: maskDocuments is not defined
+--------------------------------------------------------------------------------------------
+
+2022.03.28, 17:00:33.0056 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: getCrisisAlertsForm
+error: ReferenceError: maskDocuments is not defined
+--------------------------------------------------------------------------------------------
+
+2022.03.28, 17:01:20.0349 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: getCrisisAlertsForm
+error: ReferenceError: maskDocuments is not defined
+--------------------------------------------------------------------------------------------
+
+2022.03.28, 17:05:59.0892 UTC -> 
+archivo: crisis-alert.controller
+ruta: src/controllers/back
+funcion: getCrisisAlertsForm
+error: ReferenceError: maskDocuments is not defined
+--------------------------------------------------------------------------------------------
+
