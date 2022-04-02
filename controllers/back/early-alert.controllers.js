@@ -3,10 +3,16 @@ const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
 const sendemail = require('@lib/emails');
+const Form = require('../../models/form/form');
+const Section = require('../../models/form/section');
+const Question = require('../../models/form/question');
+const Answer = require('../../models/form/answer');
+
+
 
 let getFormVersion = (req,res) => {
 
-  let version = parseFloat("1.3");
+  let version = parseFloat("1.5");
 
   return res.status(200).json({version});
 }
@@ -163,13 +169,70 @@ let getById = async (req, res) => {
     actionsFact = actionsFact.rows;
 
 
+    /*var sections = [
+      new Section({
+        sectionId: "arguments_sections",
+        sectionTitle: "Arguments Sections",
+        questions: [
+          new Question({
+            sectionId: "arguments_sections",
+            questionId: "id_tipo_fuente",
+            required: true,
+            questionType: "closed",
+            hasChild: true,
+            principalChild: "id_fuente",
+            questionTitle: "Tipo de fuente",
+            answers: sourceType,
+            answer: Number.parseInt(early_alert.id_tipo_fuente)
+          })
+        ]
+
+      })
+    ];
+
+    var form = new Form({
+      formId : id_alerta_temprana,
+      sentToAnalyze: false,
+      analyzed: false,
+      sections,
+    });*/
+    
+    //---------- 5
+    var arguments_sections = {
+      section_id: "arguments_sections",
+      questions: [
+        {
+          question_id: "id_tipo_fuente",
+          required: true,
+          question_type: "closed",
+          has_child: true,
+          principal_child: "id_fuente",
+          question: "Tipo de fuente",
+          answers: sourceType,
+          answer: Number.parseInt(early_alert.id_tipo_fuente)
+        },
+        {
+          question_id: "id_fuente",
+          required: true,
+          question_type: "closed",
+          question: "Fuente",
+          answers: source,
+          answer: Number.parseInt(early_alert.id_fuente)
+        }
+
+      ]
+    }
+
     //Prensa Escrita
     var newspapers = {
-      section_id: 1,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "newspapers",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 1,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 1
+      },
       section_title: "Prensa escrita",
       questions: [
         {
@@ -213,11 +276,14 @@ let getById = async (req, res) => {
 
     //Radio Tv
     var radioAndTv = {
-      section_id: 2,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "radioAndTv",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 2,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 2
+      },
       section_title: "Radio/TV",
       questions: [
         {
@@ -249,16 +315,19 @@ let getById = async (req, res) => {
 
     //Social Media
     var socialMedia = {
-      section_id: 3,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "socialMedia",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [3, 4],
+      dependent_answer: {
+        "type": "containInt",
+        "answer": [3,4]
+      },
       section_title: "Redes sociales/medios digitales",
       questions: [
         {
           question_id: "titulo_redes",
-          required: 1,
+          required: true,
           question_type: "open",
           question: "Titulo de la noticia",
           answer: early_alert.titulo_redes
@@ -292,11 +361,14 @@ let getById = async (req, res) => {
 
     //Colectivos
     var collectives = {
-      section_id: 4,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "collectives",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [5, 6, 7],
+      dependent_answer: {
+        "type": "containInt",
+        "answer": [5,6,7]
+      },
       section_title: "Colectivos",
       questions: [
         {
@@ -322,11 +394,14 @@ let getById = async (req, res) => {
 
     //Organizacion Internacionales  
     var internationalOrganization = {
-      section_id: 5,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "internationalOrganization",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [12, 13, 16],
+      dependent_answer: {
+        "type": "containInt",
+        "answer": [12,13,16]
+      },
       section_title: "Organizaciones internacionales",
       questions: [
         {
@@ -364,11 +439,14 @@ let getById = async (req, res) => {
 
     //Sistema de mensajeria
     var messagingSystem = {
-      section_id: 6,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "messagingSystem",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 14,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 14
+      },
       section_title: "Sistemas de mensajería",
       questions: [
         {
@@ -406,11 +484,14 @@ let getById = async (req, res) => {
 
     //Insituciones Gubernamentales
     var governmentInstitutions = {
-      section_id: 66,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "governmentInstitutions",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [8, 9, 10, 11],
+      dependent_answer: {
+        "type": "containInt",
+        "answer": [8, 9, 10, 11],
+      },
       section_title: "Instituciones Gubernamentales",
       questions: [
         {
@@ -448,11 +529,14 @@ let getById = async (req, res) => {
 
     //Otras
     var other = {
-      section_id: 7,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "other",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 15,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 15
+      },
       section_title: "Otras",
       questions: [
         {
@@ -472,13 +556,13 @@ let getById = async (req, res) => {
 
     //Información relacionada al hecho
     var factInformation = {
-      section_id: 8,
+      section_id: "factInformation",
       section_title: "Información relacionada al hecho/situación/problema",
-      bold_title: 1,
+      bold_title: true,
       questions: [
         {
           question_id: "fecha_hechos",
-          question_type: "date_time_before",
+          question_type: "date",
           question: "Fecha y hora del hecho/Situación/Problema",
           answer: early_alert.fecha_hechos
         },
@@ -490,11 +574,14 @@ let getById = async (req, res) => {
         },
         {
           question_id: "fecha_reporte",
-          dependent: 1,
-          dependent_section_id: 8,
+          dependent: true,
+          dependent_section_id: "factInformation",
           dependent_question_id: "fecha_futura_hechos",
-          dependent_answer: true,
-          question_type: "date_after",
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
+          question_type: "date",
           question: "Fecha de reporte del hecho/Situación/Problema",
           answer: early_alert.fecha_reporte
         }
@@ -503,21 +590,21 @@ let getById = async (req, res) => {
 
     //Lugar especifico del hecho
     var specificPlace = {
-      section_id: 9,
+      section_id: "specificPlace",
       section_title: "Lugar específico del hecho/Situación/Problema",
       questions: [
         {
           question_id: "id_pais",
-          enabled: 0,
+          enabled: false,
           question_type: "open",
           question: "Pais",
           answer: "El Salvador"
         },
         {
           question_id: "id_departamento",
-          question_type: "closed_with_child",
-          required: 1,
-          has_child: 1,
+          question_type: "closed",
+          required: true,
+          has_child: true,
           principal_child: "id_municipio",
           question: "Departamento",
           answers: state,
@@ -546,7 +633,8 @@ let getById = async (req, res) => {
         },
         {
           question_id: "descripcion_hechos",
-          question_type: "area",
+          question_type: "open",
+          max_lines: 6,
           question: "Breve descripción del hecho/Situación/Problema",
           limit: 500,
           answer: early_alert.descripcion_hechos
@@ -561,10 +649,13 @@ let getById = async (req, res) => {
         {
           question_id: "id_temporalidad",
           question_type: "closed",
-          dependent: 1,
-          dependent_section_id: 8,
+          dependent: true,
+          dependent_section_id: "factInformation",
           dependent_question_id: "fecha_futura_hechos",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "Temporalidad",
           answers: temporality,
           answer: Number.parseInt(early_alert.id_temporalidad)
@@ -572,12 +663,15 @@ let getById = async (req, res) => {
         {
           question_id: "cantida",
           question_type: "numeric",
-          dependent: 1,
-          dependent_section_id: 8,
+          dependent: true,
+          dependent_section_id: "factInformation",
           dependent_question_id: "fecha_futura_hechos",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "Cantidad",
-          answer: early_alert.cantida
+          answer: early_alert.cantidad
         },
         {
           question_id: "id_escenario",
@@ -588,8 +682,8 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_tematica_relacionada",
-          question_type: "closed_with_child",
-          has_child: 1,
+          question_type: "closed",
+          has_child: true,
           principal_child: "id_sub_tematica",
           children: ["id_situacion_conflictiva","id_criterio"],
           question: "Temática",
@@ -598,8 +692,8 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_sub_tematica",
-          question_type: "closed_with_child",
-          has_child: 1,
+          question_type: "closed",
+          has_child: true,
           principal_child: "id_situacion_conflictiva",
           children: ["id_criterio"],
           question: "Sub Temática",
@@ -608,8 +702,8 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_situacion_conflictiva",
-          question_type: "closed_with_child",
-          has_child: 1,
+          question_type: "closed",
+          has_child: true,
           principal_child: "id_criterio",
           question: "Situación conflictiva",
           answers: conflictSituations,
@@ -624,7 +718,8 @@ let getById = async (req, res) => {
         },
         {
           question_id: "antecedentes_hecho",
-          question_type: "area",
+          question_type: "open",
+          max_lines: 6,
           question: "Antecedente del hecho/Situación/Problema",
           answer: early_alert.antecedentes_hecho
         }
@@ -633,7 +728,7 @@ let getById = async (req, res) => {
 
     //Partes Involucradas Directamente
     var partiesInvolved = {
-      section_id: 11,
+      section_id: "partiesInvolved",
       section_title: "Partes involucradas directamente",
       questions: [
         {
@@ -650,7 +745,8 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_perfil_actor",
-          question_type: "closed_multiple",
+          question_type: "closed",
+          multi_select: true,
           question: "Perfil de actores",
           answers: profileActors,
           answer: early_alert.id_perfil_actor
@@ -658,22 +754,25 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_grupo_vulnerable",
-          required: 1,
-          question_type: "closed_multiple",
+          required: true,
+          question_type: "closed",
+          multi_select: true,
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup,
           answer: early_alert.id_grupo_vulnerable
         },
         {
           question_id: "demanda_solicitud",
-          question_type: "area",
+          question_type: "open",
+          max_lines: 6,
           question: "Demanda o solicitud de la población afectada a las autoridades competentes",
           hint: "Escriba aqui...",
           answer: early_alert.demanda_solicitud
         },
         {
           question_id: "postura_autoridades",
-          question_type: "area",
+          question_type: "open",
+          max_lines: 6,
           question: "Postura de las autoridades y/o contrapartes",
           hint: "Escriba aqui...",
           answer: early_alert.postura_autoridades
@@ -683,15 +782,15 @@ let getById = async (req, res) => {
 
     //Población afectada Indeterminada/Determinada ****************
     var affectedPopulation = {
-      section_id: 12,
+      section_id: "affectedPopulation",
       section_title: "Población afectada Indeterminada/Determinada",
-      bold_title: 1,
+      bold_title: true,
       questions: []
     }
 
     //Poblacion Determinada
     var determinedPopulation = {
-      section_id: 13,
+      section_id: "determinedPopulation",
       section_title: "Población determinada",
       questions: [
         {
@@ -748,7 +847,7 @@ let getById = async (req, res) => {
 
     //Poblacion Determinada
     var numberPopulationDetermined = {
-      section_id: 14,
+      section_id: "numberPopulationDetermined",
       section_title: "Población indeterminada",
       questions: [
         {
@@ -762,12 +861,12 @@ let getById = async (req, res) => {
 
     //Valoracion de Fase de Conflicto
     var conflictPhaseAssessment = {
-      section_id: 15,
+      section_id: "conflictPhaseAssessment",
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
           question_id: "id_acciones_hecho", 
-          required: 0,
+          required: false,
           question_type: "closed",
           question: "Acciones del Hecho",
           answers: actionsFact,
@@ -775,85 +874,95 @@ let getById = async (req, res) => {
         },
         {
           question_id: "proteccion_vigente",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Existen medidas de protección vigentes? ",
           answer:early_alert.proteccion_vigente
         },
         {
           question_id: "hubo_agresion", 
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Se ha producido algún tipo de agresión?",
           answer: early_alert.hubo_agresion
         },
         {
           question_id: "id_tipo_agresion",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 15,
+          required: true,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "hubo_agresion",
-          dependent_answer: true,
-          question_type: "closed_multiple",
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
+          question_type: "closed",
+          multi_select: true,
           question: "Tipo de agresión",
           answers: aggresionType,
           answer: early_alert.id_tipo_agresion
         },
         {
           question_id: "dialogo_conflicto",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Existe disposición al diálogo?",
           answer: early_alert.dialogo_conflicto
         },
         {
           question_id: "medida_conflicto",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Se ha expresado/anunciado la realización de algún tipo de medida de presión?",
           answer: early_alert.medida_conflicto
         },
         {
           question_id: "dialogo_roto_conflicto",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Se rompió dialogo?",
           answer: early_alert.dialogo_roto_conflicto
         },
         {
           question_id: "crisis_conflicto",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Hubo crisis?",
           answer: early_alert.crisis_conflicto
         },
         {
           question_id: "id_acciones_hecho_anterior", 
-          required: 0,
+          required: false,
           question_type: "closed",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "crisis_conflicto",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "Acciones del Hecho Anterior",
           answers: actionsFact,
           answer: Number.parseInt(early_alert.id_acciones_hecho_anterior)
         },
         {
           question_id: "resolucion_conflicto",
-          required: 1,
+          required: true,
           question_type: "switch",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "crisis_conflicto",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "¿Hubo mecanismos de resolución del conflicto?",
           answer: early_alert.resolucion_conflicto
 
         },
         {
           question_id: "id_situacion_conflicto",
-          //required: 1,
+          //required: true,
           question_type: "closed",
           question: "Situación actual del conflicto",
           answers: conflictSituation,
@@ -861,26 +970,29 @@ let getById = async (req, res) => {
         },
         {
           question_id: "cant_persona_involucrada",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿A disminuido la cantidad de personas involucradas?",
           answer: early_alert.cant_persona_involucrada
         },
         {
           question_id: "presencia_fuerza_publica",
-          required: 1,
+          required: true,
           question_type: "switch",
           question: "¿Hubo Presencia de fuerzas públicas",
           answer: early_alert.presencia_fuerza_publica
         },
         {
           question_id: "intervencion_fuerza_publica",
-          required: 1,
+          required: true,
           question_type: "switch",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "presencia_fuerza_publica",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "¿Hubo Intervencion de fuerzas públicas",
           answer: early_alert.intervencion_fuerza_publica
         }
@@ -890,39 +1002,6 @@ let getById = async (req, res) => {
     // ---------2
     var sections = [];
 
-    // --------- 3
-    var array_questions = [];
-
-    //---------- 4
-    var argumentesArrayQuestionsOb1 = {
-      question_id: "id_tipo_fuente",
-      required: 1,
-      question_type: "closed_with_child",
-      has_child: 1,
-      principal_child: "id_fuente",
-      question: "Tipo de fuente",
-      answers: sourceType,
-      answer: Number.parseInt(early_alert.id_tipo_fuente)
-    }
-
-    
-
-    var argumentsArrayQuestionObj2 = {
-      question_id: "id_fuente",
-      required: 1,
-      question_type: "closed",
-      question: "Fuente",
-      answers: source,
-      answer: Number.parseInt(early_alert.id_fuente)
-    }
-
-    array_questions.push(argumentesArrayQuestionsOb1, argumentsArrayQuestionObj2);
-
-    //---------- 5
-    var arguments_sections = {
-      section_id: 0,
-      questions: array_questions
-    }
     sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
       governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,numberPopulationDetermined,
       conflictPhaseAssessment);
@@ -934,11 +1013,10 @@ let getById = async (req, res) => {
       sections: sections
     }
 
-    return res.status(200).json({
-      form: formEarlyAlert
-    })
+    return res.status(200).json({ form : formEarlyAlert});
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json(errorResponse.toJson());
   }
 };
@@ -1092,13 +1170,17 @@ let getEarlyAlertForm = async (req, res) => {
     var actionsFact = await db.query(`SELECT id_acciones_hecho::integer AS answer_id, nombre_hecho AS answer FROM sat_acciones_hecho WHERE estado = 1`);
     actionsFact = actionsFact.rows;
 
+    
     //Prensa Escrita
     var newspapers = {
-      section_id: 1,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "newspapers",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 1,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 1
+      },   
       section_title: "Prensa escrita",
       questions: [
           {
@@ -1136,11 +1218,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Radio Tv
     var radioAndTv = {
-      section_id: 2,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "radioAndTv",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 2,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 2
+      },
       section_title: "Radio/TV",
       questions: [
         {
@@ -1168,11 +1253,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Social Media
     var socialMedia = {
-      section_id: 3,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "socialMedia",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [3, 4],
+      dependent_answer: {
+        "type": "containInt",
+        "answer":[3, 4]
+      },
       section_title: "Redes sociales/medios digitales",
       questions: [
         {
@@ -1205,11 +1293,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Colectivos
     var collectives = {
-      section_id: 4,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "collectives",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [5, 6, 7],
+      dependent_answer: {
+        "type": "containInt",
+        "answer":[5, 6, 7]
+      },
       section_title: "Colectivos",
       questions: [
         {
@@ -1232,11 +1323,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Organizacion Internacionales  
     var internationalOrganization = {
-      section_id: 5,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "internationalOrganization",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [12, 13, 16],
+      dependent_answer: {
+        "type": "containInt",
+        "answer":[12, 13, 16]
+      },
       section_title: "Organizaciones internacionales",
       questions: [
         {
@@ -1269,11 +1363,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Sistema de mensajeria
     var messagingSystem = {
-      section_id: 6,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "messagingSystem",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 14,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 14
+      },
       section_title: "Sistemas de mensajería",
       questions: [
         {
@@ -1306,11 +1403,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Insituciones Gubernamentales
     var governmentInstitutions = {
-      section_id: 66,
-      dependent_multiple: 1,
-      dependent_section_id: 0,
+      section_id: "governmentInstitutions",
+      dependent_multiple: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: [8, 9, 10, 11],
+      dependent_answer: {
+        "type": "containInt",
+        "answer":[8, 9, 10, 11]
+      },
       section_title: "Instituciones Gubernamentales",
       questions: [
         {
@@ -1343,11 +1443,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Otras
     var other = {
-      section_id: 7,
-      dependent: 1,
-      dependent_section_id: 0,
+      section_id: "other",
+      dependent: true,
+      dependent_section_id: "arguments_sections",
       dependent_question_id: "id_fuente",
-      dependent_answer: 15,
+      dependent_answer: {
+        "type": "numeric",
+        "answer": 15
+      },
       section_title: "Otras",
       questions: [
         {
@@ -1365,14 +1468,14 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Información relacionada al hecho
     var factInformation = {
-      section_id: 8,
+      section_id: "factInformation",
       section_title: "Información relacionada al hecho/situación/problema",
-      bold_title: 1,
+      bold_title: true,
       questions: [
         {
           question_id: "fecha_hechos",
-          required: 1,
-          question_type: "date_time_before",
+          required: true,
+          question_type: "date",
           question: "Fecha y hora del hecho/Situación/Problema"
         },
         {
@@ -1382,11 +1485,14 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "fecha_reporte",
-          dependent: 1,
-          dependent_section_id: 8,
+          dependent: true,
+          dependent_section_id: "factInformation",
           dependent_question_id: "fecha_futura_hechos",
-          dependent_answer: true,
-          question_type: "date_after",
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
+          question_type: "date",
           question: "Fecha de reporte del hecho/Situación/Problema"
         }
       ]
@@ -1394,21 +1500,21 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Lugar especifico del hecho
     var specificPlace = {
-      section_id: 9,
+      section_id: "specificPlace",
       section_title: "Lugar específico del hecho/Situación/Problema",
       questions: [
         {
           question_id: "id_pais",
-          enabled: 0,
+          enabled: false,
           question_type: "open",
           question: "Pais",
           answer: "El Salvador"
         },
         {
           question_id: "id_departamento",
-          required: 1,
-          question_type: "closed_with_child",
-          has_child: 1,
+          required: true,
+          question_type: "closed",
+          has_child: true,
           principal_child: "id_municipio",
           question: "Departamento",
           answers: state
@@ -1416,7 +1522,7 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "id_municipio",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Municipio",
           answers: municipality
         },
@@ -1434,15 +1540,16 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "descripcion_hechos",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Breve descripción del hecho/Situación/Problema",
           limit: 500
         },
         {
           question_id: "id_derecho",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Derecho",
           answers: law
         },
@@ -1450,27 +1557,33 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "id_temporalidad",
           question_type: "closed",
-          dependent: 1,
-          dependent_section_id: 8,
+          dependent: true,
+          dependent_section_id: "factInformation",
           dependent_question_id: "fecha_futura_hechos",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "Temporalidad",
           answers: temporality
         },
         {
           question_id: "cantida",
           question_type: "numeric",
-          dependent: 1,
-          dependent_section_id: 8,
+          dependent: true,
+          dependent_section_id: "factInformation",
           dependent_question_id: "fecha_futura_hechos",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "Cantidad"
         },
         {
           question_id: "id_tematica_relacionada",
-          question_type: "closed_with_child",
-          has_child: 1,
-          required: 1,
+          question_type: "closed",
+          has_child: true,
+          required: true,
           principal_child: "id_sub_tematica",
           children: ["id_situacion_conflictiva","id_criterio"],
           question: "Temática",
@@ -1478,9 +1591,9 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_sub_tematica",
-          question_type: "closed_with_child",
-          has_child: 1,
-          required: 1,
+          question_type: "closed",
+          has_child: true,
+          required: true,
           principal_child: "id_situacion_conflictiva",
           children: ["id_criterio"],
           question: "Sub Temática",
@@ -1488,23 +1601,24 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_situacion_conflictiva",
-          question_type: "closed_with_child",
-          has_child: 1,
-          required: 1,
+          question_type: "closed",
+          has_child: true,
+          required: true,
           principal_child: "id_criterio",
           question: "Situación conflictiva",
           answers: conflictSituations
         },
         {
           question_id: "id_criterio",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Criterio",
           answers: criteria
         },
         {
           question_id: "antecedentes_hecho",
-          question_type: "area",
+          question_type: "open",
+          max_lines: 6,
           question: "Antecedente del hecho/Situación/Problema"
         }
       ]
@@ -1512,45 +1626,49 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Partes Involucradas Directamente
     var partiesInvolved = {
-      section_id: 11,
+      section_id: "partiesInvolved",
       section_title: "Partes involucradas directamente",
       questions: [
         {
           question_id: "poblacion_afectada",
           question_type: "open",
-          required: 1,
+          required: true,
           question: "Población afectada"
         },
         {
           question_id: "contraparte",
           question_type: "open",
-          required: 1,
+          required: true,
           question: "Contraparte"
         },
         {
           question_id: "id_perfil_actor",
-          question_type: "closed_multiple",
-          required: 1,
+          question_type: "closed",
+          multi_select: true,
+          required: true,
           question: "Perfil de actores",
           answers: profileActors
         },
         {
           question_id: "id_grupo_vulnerable",
-          required: 1,
-          question_type: "closed_multiple",
+          required: true,
+          question_type: "closed",
+          multi_select: true,
           question: "Grupos en condición de vulnerabilidad",
           answers: vulnerableGroup
         },
         {
           question_id: "demanda_solicitud",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Demanda o solicitud de la población afectada a las autoridades competentes",
           hint: "Escriba aqui..."
         },
         {
           question_id: "postura_autoridades",
-          question_type: "area",
+          question_type: "open",
+          max_lines: 6,
           question: "Postura de las autoridades y/o contrapartes",
           hint: "Escriba aqui..."
         }
@@ -1559,15 +1677,15 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Población afectada Indeterminada/Determinada ****************
     var affectedPopulation = {
-      section_id: 12,
+      section_id: "affectedPopulation",
       section_title: "Población afectada Indeterminada/Determinada",
-      bold_title: 1,
+      bold_title: true,
       questions: []
     }
 
     //Poblacion Determinada
     var determinedPopulation = {
-      section_id: 13,
+      section_id: "determinedPopulation",
       section_title: "Población determinada",
       questions: [
         {
@@ -1616,13 +1734,13 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Poblacion Determinada
     var numberPopulationDetermined = {
-      section_id: 14,
+      section_id: "numberPopulationDetermined",
       section_title: "Población indeterminada",
       questions: [
         {
           question_id: "cantidad_aproximada",
           question_type: "numeric",
-          //required: 1,
+          //required: true,
           question: "Cantidad aproximada"
         }
       ]
@@ -1630,12 +1748,12 @@ let getEarlyAlertForm = async (req, res) => {
 
     //Valoracion de Fase de Conflicto
     var conflictPhaseAssessment = {
-      section_id: 15,
+      section_id: "conflictPhaseAssessment",
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
           question_id: "id_acciones_hecho", 
-          required: 0,
+          required: false,
           question_type: "closed",
           question: "Acciones del Hecho",
           answers: actionsFact
@@ -1652,11 +1770,15 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_tipo_agresion",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "hubo_agresion",
-          dependent_answer: true,
-          question_type: "closed_multiple",
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
+          question_type: "closed",
+          multi_select: true,
           question: "Tipo de agresión",
           answers: aggresionType
         },
@@ -1682,22 +1804,28 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "id_acciones_hecho_anterior", 
-          required: 0,
+          required: false,
           question_type: "closed",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "crisis_conflicto",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "Acciones del Hecho Anterior",
           answers: actionsFact
         },
         {
           question_id: "resolucion_conflicto",
           question_type: "switch",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "crisis_conflicto",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "¿Hubo mecanismos de resolución del conflicto?"
         },
         {
@@ -1719,10 +1847,13 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "intervencion_fuerza_publica",
           question_type: "switch",
-          dependent: 1,
-          dependent_section_id: 15,
+          dependent: true,
+          dependent_section_id: "conflictPhaseAssessment",
           dependent_question_id: "presencia_fuerza_publica",
-          dependent_answer: true,
+          dependent_answer: {
+            "type": "boolean",
+            "answer": true
+          },
           question: "¿Hubo Intervencion de fuerzas públicas"
         }
       ]
@@ -1737,9 +1868,9 @@ let getEarlyAlertForm = async (req, res) => {
     //---------- 4
     var argumentesArrayQuestionsOb1 = {
       question_id: "id_tipo_fuente",
-      required: 1,
-      question_type: "closed_with_child",
-      has_child: 1,
+      required: true,
+      question_type: "closed",
+      has_child: true,
       principal_child: "id_fuente",
       question: "Tipo de Fuente",
       answers: sourceType
@@ -1747,7 +1878,7 @@ let getEarlyAlertForm = async (req, res) => {
 
     var argumentsArrayQuestionObj2 = {
       question_id: "id_fuente",
-      required: 1,
+      required: true,
       question_type: "closed",
       question: "Fuente",
       answers: source
@@ -1755,9 +1886,10 @@ let getEarlyAlertForm = async (req, res) => {
 
     array_questions.push(argumentesArrayQuestionsOb1, argumentsArrayQuestionObj2);
 
+    
     //---------- 5
     var arguments_sections = {
-      section_id: 0,
+      section_id: "arguments_sections",
       questions: array_questions
     }
     sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
@@ -1806,12 +1938,12 @@ let getFormToAnalyze = async (req,res) => {
 
 
     var section = {
-      section_id: 0,
+      section_id: "arguments_sections",
       questions: [
         {
           question_id: "id_fase_conflicto",
           question_type: "closed",
-          enabled: 0,
+          enabled: false,
           question: "Fases del conflicto",
           answers: fases_conflicto,
           answer: Number.parseInt(earlyAlert.id_fase_conflicto)
@@ -1819,7 +1951,7 @@ let getFormToAnalyze = async (req,res) => {
         {
           question_id: "id_tipo_alerta",
           question_type: "closed",
-          enabled: 0,
+          enabled: false,
           question: "Tipo de alerta",
           answers: tipos_alerta,
           answer: Number.parseInt(earlyAlert.id_tipo_alerta)
@@ -1833,8 +1965,9 @@ let getFormToAnalyze = async (req,res) => {
         },
         {
           question_id: "analisis",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Analisis",
           answer: earlyAlert.analisis
         },
@@ -1847,8 +1980,9 @@ let getFormToAnalyze = async (req,res) => {
         },
         {
           question_id: "texto_mensaje",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Texto en el Mensaje",
           answer: earlyAlert.texto_mensaje
         }
