@@ -1,20 +1,14 @@
 const db = require('@config/db');
-const log = require('@lib/catch-error');
 const ErrorModel = require('@models/errorResponse');
 const dateFormat = require('dateformat');
 const sendemail = require('@lib/emails');
-const Form = require('../../models/form/form');
-const Section = require('../../models/form/section');
-const Question = require('../../models/form/question');
-const Answer = require('../../models/form/answer');
+const moment = require('moment');
 
+let getFormVersion = (req, res) => {
 
+  let version = parseFloat("2.0");
 
-let getFormVersion = (req,res) => {
-
-  let version = parseFloat("1.5");
-
-  return res.status(200).json({version});
+  return res.status(200).json({ version });
 }
 
 let earlyAlertsList = async (req, res) => {
@@ -29,8 +23,8 @@ let earlyAlertsList = async (req, res) => {
     let earlyAlerts;
 
     //Perfil Consulta
-    if(rol_user == 1){
-      
+    if (rol_user == 1) {
+
       earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
@@ -41,8 +35,8 @@ let earlyAlertsList = async (req, res) => {
       ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
       earlyAlerts = earlyAlerts.rows;
 
-    //Perfil Tecnico
-    }else if(rol_user == 2){
+      //Perfil Tecnico
+    } else if (rol_user == 2) {
 
       earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
@@ -56,9 +50,9 @@ let earlyAlertsList = async (req, res) => {
       earlyAlerts = earlyAlerts.rows;
 
 
-    //Perfil Supervisor
-    }else if(rol_user == 3){
-      
+      //Perfil Supervisor
+    } else if (rol_user == 3) {
+
       earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
       COALESCE( json_agg(json_build_object('form_id', sacr.id_hijo, 'analyzed', (SELECT CASE WHEN analizada IS null THEN false ELSE analizada END FROM sat_alerta_temprana WHERE id_alerta_temprana = sacr.id_hijo))) FILTER (WHERE sacr.id_padre IS NOT null),'[]') AS children
@@ -68,9 +62,9 @@ let earlyAlertsList = async (req, res) => {
       GROUP BY sat_alerta_temprana.id_alerta_temprana
       ORDER BY id_alerta_temprana DESC LIMIT 25 OFFSET $1`, [offset]);
       earlyAlerts = earlyAlerts.rows;
-    
-    //Perfil Analista
-    }else if(rol_user == 4){
+
+      //Perfil Analista
+    } else if (rol_user == 4) {
 
       earlyAlerts = await db.query(`SELECT id_alerta_temprana::numeric AS form_id,
       CASE WHEN analizada IS null THEN false ELSE analizada END AS analyzed, enviada_analizar AS sent_to_analyze,
@@ -84,10 +78,10 @@ let earlyAlertsList = async (req, res) => {
       earlyAlerts = earlyAlerts.rows;
     }
 
-  
+
     return res.status(200).json({ earlyAlerts });
-  
-  
+
+
   } catch (error) {
     return res.status(500).json(errorResponse.toJson());
   }
@@ -151,7 +145,7 @@ let getById = async (req, res) => {
     WHERE estado = 1 ORDER BY id_subtema ASC`);
     subTopics = subTopics.rows;
 
-    
+
     var conflictSituations = await db.query(`SELECT id_situacion_conflictiva::integer AS answer_id, nombre_sit_conflictiva AS answer, id_subtema AS to_compare
     FROM sat_situacion_conflictiva 
     WHERE estado = 1 ORDER BY id_situacion_conflictiva ASC`);
@@ -171,11 +165,11 @@ let getById = async (req, res) => {
 
     /*var sections = [
       new Section({
-        sectionId: "arguments_sections",
+        sectionId: "tipofuente",
         sectionTitle: "Arguments Sections",
         questions: [
           new Question({
-            sectionId: "arguments_sections",
+            sectionId: "tipofuente",
             questionId: "id_tipo_fuente",
             required: true,
             questionType: "closed",
@@ -196,17 +190,20 @@ let getById = async (req, res) => {
       analyzed: false,
       sections,
     });*/
-    
+
     //---------- 5
-    var arguments_sections = {
-      section_id: "arguments_sections",
+    var tipofuente = {
+      section_id: "tipofuente",
       questions: [
         {
           question_id: "id_tipo_fuente",
           required: true,
           question_type: "closed",
           has_child: true,
-          principal_child: "id_fuente",
+          principal_child: {
+            question_id: "id_fuente",
+            section_id: "tipofuente"
+          },
           question: "Tipo de fuente",
           answers: sourceType,
           answer: Number.parseInt(early_alert.id_tipo_fuente)
@@ -215,8 +212,9 @@ let getById = async (req, res) => {
           question_id: "id_fuente",
           required: true,
           question_type: "closed",
+          is_child: true,
           question: "Fuente",
-          answers: source,
+          all_answers: source,
           answer: Number.parseInt(early_alert.id_fuente)
         }
 
@@ -227,7 +225,7 @@ let getById = async (req, res) => {
     var newspapers = {
       section_id: "newspapers",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -278,7 +276,7 @@ let getById = async (req, res) => {
     var radioAndTv = {
       section_id: "radioAndTv",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -317,11 +315,11 @@ let getById = async (req, res) => {
     var socialMedia = {
       section_id: "socialMedia",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer": [3,4]
+        "answer": [3, 4]
       },
       section_title: "Redes sociales/medios digitales",
       questions: [
@@ -363,11 +361,11 @@ let getById = async (req, res) => {
     var collectives = {
       section_id: "collectives",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer": [5,6,7]
+        "answer": [5, 6, 7]
       },
       section_title: "Colectivos",
       questions: [
@@ -396,11 +394,11 @@ let getById = async (req, res) => {
     var internationalOrganization = {
       section_id: "internationalOrganization",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer": [12,13,16]
+        "answer": [12, 13, 16]
       },
       section_title: "Organizaciones internacionales",
       questions: [
@@ -441,7 +439,7 @@ let getById = async (req, res) => {
     var messagingSystem = {
       section_id: "messagingSystem",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -486,7 +484,7 @@ let getById = async (req, res) => {
     var governmentInstitutions = {
       section_id: "governmentInstitutions",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
@@ -531,7 +529,7 @@ let getById = async (req, res) => {
     var other = {
       section_id: "other",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -605,7 +603,10 @@ let getById = async (req, res) => {
           question_type: "closed",
           required: true,
           has_child: true,
-          principal_child: "id_municipio",
+          principal_child: {
+            question_id: "id_municipio",
+            section_id: "specificPlace"
+          },
           question: "Departamento",
           answers: state,
           answer: Number.parseInt(early_alert.id_departamento)
@@ -613,8 +614,9 @@ let getById = async (req, res) => {
         {
           question_id: "id_municipio",
           question_type: "closed",
+          is_child: true,
           question: "Municipio",
-          answers: municipality,
+          all_answers: municipality,
           answer: Number.parseInt(early_alert.id_municipio)
         },
         {
@@ -684,8 +686,20 @@ let getById = async (req, res) => {
           question_id: "id_tematica_relacionada",
           question_type: "closed",
           has_child: true,
-          principal_child: "id_sub_tematica",
-          children: ["id_situacion_conflictiva","id_criterio"],
+          principal_child: {
+            question_id: "id_sub_tematica",
+            section_id: "specificPlace"
+          },
+          children: [
+            {
+              question_id: "id_situacion_conflictiva",
+              section_id: "specificPlace"
+            },
+            {
+              question_id: "id_criterio",
+              section_id: "specificPlace"
+            }
+          ],
           question: "Temática",
           answers: topics,
           answer: Number.parseInt(early_alert.id_tematica_relacionada)
@@ -693,27 +707,41 @@ let getById = async (req, res) => {
         {
           question_id: "id_sub_tematica",
           question_type: "closed",
+          is_child : true,
           has_child: true,
-          principal_child: "id_situacion_conflictiva",
-          children: ["id_criterio"],
+          principal_child: {
+            question_id: "id_situacion_conflictiva",
+            section_id: "specificPlace"
+          },
+          children: [
+            {
+              question_id: "id_criterio",
+              section_id: "specificPlace"
+            }
+          ],
           question: "Sub Temática",
-          answers: subTopics,
+          all_answers: subTopics,
           answer: Number.parseInt(early_alert.id_sub_tematica)
         },
         {
           question_id: "id_situacion_conflictiva",
           question_type: "closed",
+          is_child: true,
           has_child: true,
-          principal_child: "id_criterio",
+          principal_child: {
+            question_id: "id_criterio",
+            section_id: "specificPlace"
+          },
           question: "Situación conflictiva",
-          answers: conflictSituations,
+          all_answers: conflictSituations,
           answer: Number.parseInt(early_alert.id_situacion_conflictiva)
         },
         {
           question_id: "id_criterio",
           question_type: "closed",
+          is_child: true,
           question: "Criterio",
-          answers: criteria,
+          all_answers: criteria,
           answer: Number.parseInt(early_alert.id_criterio)
         },
         {
@@ -750,7 +778,7 @@ let getById = async (req, res) => {
           question: "Perfil de actores",
           answers: profileActors,
           answer: early_alert.id_perfil_actor
-          
+
         },
         {
           question_id: "id_grupo_vulnerable",
@@ -865,22 +893,22 @@ let getById = async (req, res) => {
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
-          question_id: "id_acciones_hecho", 
+          question_id: "id_acciones_hecho",
           required: false,
           question_type: "closed",
           question: "Acciones del Hecho",
           answers: actionsFact,
-          answer:Number.parseInt(early_alert.id_acciones_hecho)
+          answer: Number.parseInt(early_alert.id_acciones_hecho)
         },
         {
           question_id: "proteccion_vigente",
           required: true,
           question_type: "switch",
           question: "¿Existen medidas de protección vigentes? ",
-          answer:early_alert.proteccion_vigente
+          answer: early_alert.proteccion_vigente
         },
         {
-          question_id: "hubo_agresion", 
+          question_id: "hubo_agresion",
           required: true,
           question_type: "switch",
           question: "¿Se ha producido algún tipo de agresión?",
@@ -931,7 +959,7 @@ let getById = async (req, res) => {
           answer: early_alert.crisis_conflicto
         },
         {
-          question_id: "id_acciones_hecho_anterior", 
+          question_id: "id_acciones_hecho_anterior",
           required: false,
           question_type: "closed",
           dependent: true,
@@ -962,7 +990,6 @@ let getById = async (req, res) => {
         },
         {
           question_id: "id_situacion_conflicto",
-          //required: true,
           question_type: "closed",
           question: "Situación actual del conflicto",
           answers: conflictSituation,
@@ -1002,8 +1029,8 @@ let getById = async (req, res) => {
     // ---------2
     var sections = [];
 
-    sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
-      governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation,numberPopulationDetermined,
+    sections.push(tipofuente, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
+      governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation, numberPopulationDetermined,
       conflictPhaseAssessment);
     //1
     var formEarlyAlert = {
@@ -1013,7 +1040,7 @@ let getById = async (req, res) => {
       sections: sections
     }
 
-    return res.status(200).json({ form : formEarlyAlert});
+    return res.status(200).json({ form: formEarlyAlert });
 
   } catch (error) {
     console.log(error);
@@ -1032,20 +1059,20 @@ let updateEarlyAlert = async (req, res) => {
     contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
     contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
     fecha_hechos, fecha_futura_hechos, fecha_reporte, id_pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
-    descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
-    id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
-    id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor,cantidad_aproximada, id_acciones_hecho, 
+    descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
+    id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
+    id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho,
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
     presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
-    var localDate =  new Date();
-    var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
-    var cod_usu_mod = req.user.user_id;
+  var localDate = new Date();
+  var fecha_mod_reg = dateFormat(localDate, 'yyyy-mm-dd HH:MM:ss');
+  var cod_usu_mod = req.user.user_id;
 
-    
-    var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar la Alerta.", instance: "early-alert/updateEarlyAlert" });
+
+  var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar actualizar la Alerta.", instance: "early-alert/updateEarlyAlert" });
 
 
   try {
@@ -1056,7 +1083,7 @@ let updateEarlyAlert = async (req, res) => {
 
     var pais = await db.query(`SELECT id_pais FROM public.admi_pais WHERE codigo = 'SV'`);
     pais = pais.rows[0].id_pais;
-  
+
     await db.query(`UPDATE sat_alerta_temprana
     SET id_tipo_fuente=$1, id_fuente=$2, titulo_noticia=$3, nombre_medio_prensa=$4, paginas_prensa=$5, autor_prensa=$6, 
     fecha_publicacion_prensa=$7, fotografia_prensa=$8, nombre_medio_radio=$9, canal_radio=$10, nombre_programa_radio=$11, 
@@ -1073,31 +1100,31 @@ let updateEarlyAlert = async (req, res) => {
     id_acciones_hecho=$71, proteccion_vigente=$72, hubo_agresion=$73, id_tipo_agresion=$74, dialogo_conflicto=$75, medida_conflicto=$76, dialogo_roto_conflicto=$77, 
     crisis_conflicto=$78, id_acciones_hecho_anterior=$79, resolucion_conflicto=$80, id_situacion_conflicto=$81, cant_persona_involucrada=$82, presencia_fuerza_publica=$83, 
     intervencion_fuerza_publica=$84, fecha_mod_reg=$85, cod_usu_mod=$86, cantidad_poblacion_afectada = $87
-    WHERE id_alerta_temprana = $88`, 
+    WHERE id_alerta_temprana = $88`,
       [id_tipo_fuente, id_fuente, titulo_noticia, nombre_medio_prensa, paginas_prensa, autor_prensa,
-      fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
-      fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
-      pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
-      nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
-      contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
-      contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
-      fecha_hechos, fecha_futura_hechos, fecha_reporte, pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
-      descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva, 
-      id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte, 
-      id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos,poblacion_ninas, adolecentes_mujeres, adolecentes_hombres, 
-      poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor,poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho, 
-      proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
-      id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-      presencia_fuerza_publica, intervencion_fuerza_publica, fecha_mod_reg, cod_usu_mod, cantidad_poblacion_afectada, id_alerta_temprana], (err, results) => {
-      if (err) {
-        console.log(err);
-        errorResponse.detail = err.message;
-        return res.status(500).json(errorResponse.toJson());
-      } 
-      var earlyAlert = results.rows[0];
-      return res.status(200).json({earlyAlert});
+        fecha_publicacion_prensa, fotografia_prensa, nombre_medio_radio, canal_radio, nombre_programa_radio,
+        fecha_emision_radio, titulo_redes, nombre_red_social, url_red_social, fecha_pub_red_social,
+        pantalla_red_social, nombre_colectivo, nombre_contacto_colectivo, telefono_colectivo, nombre_organismo,
+        nombre_contacto_organismo, correo_organismo, telefono_organismo, datos_organismo, nombre_inst_gub,
+        contacto_inst_gub, correo_inst_gub, telefono_inst_gub, datos_inst_gub, nombre_mensajeria, nombre_contacto_mensajeria,
+        contacto_mensajeria, datos_mensajeria, fotografia_mensajeria, otras_detalle, otras_adicionales,
+        fecha_hechos, fecha_futura_hechos, fecha_reporte, pais, id_departamento, id_municipio, id_tipo_zona, id_escenarios,
+        descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
+        id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
+        id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
+        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho,
+        proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
+        id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
+        presencia_fuerza_publica, intervencion_fuerza_publica, fecha_mod_reg, cod_usu_mod, cantidad_poblacion_afectada, id_alerta_temprana], (err, results) => {
+          if (err) {
+            console.log(err);
+            errorResponse.detail = err.message;
+            return res.status(500).json(errorResponse.toJson());
+          }
+          var earlyAlert = results.rows[0];
+          return res.status(200).json({ earlyAlert });
 
-    });
+        });
 
   } catch (error) {
     return res.status(500).json(errorResponse.toJson());
@@ -1153,7 +1180,7 @@ let getEarlyAlertForm = async (req, res) => {
     WHERE estado = 1 ORDER BY id_subtema ASC`);
     subTopics = subTopics.rows;
 
-    
+
     var conflictSituations = await db.query(`SELECT id_situacion_conflictiva::integer AS answer_id, nombre_sit_conflictiva AS answer, id_subtema AS to_compare
     FROM sat_situacion_conflictiva 
     WHERE estado = 1 ORDER BY id_situacion_conflictiva ASC`);
@@ -1170,20 +1197,48 @@ let getEarlyAlertForm = async (req, res) => {
     var actionsFact = await db.query(`SELECT id_acciones_hecho::integer AS answer_id, nombre_hecho AS answer FROM sat_acciones_hecho WHERE estado = 1`);
     actionsFact = actionsFact.rows;
 
-    
+    var sections = [];
+
+    var tipofuente = {
+      section_id: "tipofuente",
+      questions: [
+        {
+          question_id: "id_tipo_fuente",
+          required: true,
+          question_type: "closed",
+          has_child: true,
+          principal_child: {
+            question_id: "id_fuente",
+            section_id: "tipofuente"
+          },
+          question: "Tipo de Fuente",
+          answers: sourceType
+        },
+        {
+          question_id: "id_fuente",
+          required: true,
+          question_type: "closed",
+          is_child: true,
+          question: "Fuente",
+          all_answers: source
+        },
+        
+      ]
+    }
+
     //Prensa Escrita
     var newspapers = {
       section_id: "newspapers",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
         "answer": 1
-      },   
+      },
       section_title: "Prensa escrita",
       questions: [
-          {
+        {
           question_id: "titulo_noticia",
           question_type: "open",
           question: "Titulo de la noticia"
@@ -1206,7 +1261,10 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "fecha_publicacion_prensa",
           question_type: "date",
-          question: "Fecha de publicación"
+          question: "Fecha de publicación",
+          type: "date",
+          max: moment().format("YYYY-MM-DD")
+          
         },
         {
           question_id: "fotografia_prensa",
@@ -1220,7 +1278,7 @@ let getEarlyAlertForm = async (req, res) => {
     var radioAndTv = {
       section_id: "radioAndTv",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -1245,8 +1303,10 @@ let getEarlyAlertForm = async (req, res) => {
         },
         {
           question_id: "fecha_emision_radio",
-          question_type: "date_time",
-          question: "Fecha y Hora de emisión"
+          question_type: "date",
+          question: "Fecha y Hora de emisión",
+          type: "datetime",
+          max: moment().format("YYYY-MM-DD")
         }
       ]
     }
@@ -1255,11 +1315,11 @@ let getEarlyAlertForm = async (req, res) => {
     var socialMedia = {
       section_id: "socialMedia",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer":[3, 4]
+        "answer": [3, 4]
       },
       section_title: "Redes sociales/medios digitales",
       questions: [
@@ -1281,7 +1341,9 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "fecha_pub_red_social",
           question_type: "date",
-          question: "Fecha de publicación"
+          question: "Fecha de publicación",
+          type: "date",
+          max: moment().format("YYYY-MM-DD")
         },
         {
           question_id: "pantalla_red_social",
@@ -1295,11 +1357,11 @@ let getEarlyAlertForm = async (req, res) => {
     var collectives = {
       section_id: "collectives",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer":[5, 6, 7]
+        "answer": [5, 6, 7]
       },
       section_title: "Colectivos",
       questions: [
@@ -1325,11 +1387,11 @@ let getEarlyAlertForm = async (req, res) => {
     var internationalOrganization = {
       section_id: "internationalOrganization",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer":[12, 13, 16]
+        "answer": [12, 13, 16]
       },
       section_title: "Organizaciones internacionales",
       questions: [
@@ -1356,7 +1418,8 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "datos_organismo",
           question_type: "open",
-          question: "Datos adicionales"
+          question: "Datos adicionales",
+          max_lines: 6
         }
       ]
     }
@@ -1365,7 +1428,7 @@ let getEarlyAlertForm = async (req, res) => {
     var messagingSystem = {
       section_id: "messagingSystem",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -1391,7 +1454,8 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "datos_mensajeria",
           question_type: "open",
-          question: "Datos adicionales"
+          question: "Datos adicionales",
+          max_lines: 6
         },
         {
           question_id: "fotografia_mensajeria",
@@ -1405,11 +1469,11 @@ let getEarlyAlertForm = async (req, res) => {
     var governmentInstitutions = {
       section_id: "governmentInstitutions",
       dependent_multiple: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "containInt",
-        "answer":[8, 9, 10, 11]
+        "answer": [8, 9, 10, 11]
       },
       section_title: "Instituciones Gubernamentales",
       questions: [
@@ -1436,7 +1500,8 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "datos_inst_gub",
           question_type: "open",
-          question: "Datos Adicionales"
+          question: "Datos Adicionales",
+          max_lines: 6
         }
       ]
     }
@@ -1445,7 +1510,7 @@ let getEarlyAlertForm = async (req, res) => {
     var other = {
       section_id: "other",
       dependent: true,
-      dependent_section_id: "arguments_sections",
+      dependent_section_id: "tipofuente",
       dependent_question_id: "id_fuente",
       dependent_answer: {
         "type": "numeric",
@@ -1456,12 +1521,14 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "otras_detalle",
           question_type: "open",
-          question: "Detalle"
+          question: "Detalle",
+          max_lines: 6
         },
         {
           question_id: "otras_adicionales",
           question_type: "open",
-          question: "Datos adicionales"
+          question: "Datos adicionales",
+          max_lines: 6
         }
       ]
     }
@@ -1476,7 +1543,9 @@ let getEarlyAlertForm = async (req, res) => {
           question_id: "fecha_hechos",
           required: true,
           question_type: "date",
-          question: "Fecha y hora del hecho/Situación/Problema"
+          question: "Fecha y hora del hecho/Situación/Problema",
+          type: "datetime",
+          max: moment().format("YYYY-MM-DD")
         },
         {
           question_id: "fecha_futura_hechos",
@@ -1515,16 +1584,20 @@ let getEarlyAlertForm = async (req, res) => {
           required: true,
           question_type: "closed",
           has_child: true,
-          principal_child: "id_municipio",
+          principal_child: {
+            question_id: "id_municipio",
+            section_id: "specificPlace"
+          },
           question: "Departamento",
           answers: state
         },
         {
           question_id: "id_municipio",
           question_type: "closed",
+          is_child: true,
           required: true,
           question: "Municipio",
-          answers: municipality
+          all_answers: municipality
         },
         {
           question_id: "id_tipo_zona",
@@ -1553,7 +1626,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "Derecho",
           answers: law
         },
-        
+
         {
           question_id: "id_temporalidad",
           question_type: "closed",
@@ -1584,36 +1657,62 @@ let getEarlyAlertForm = async (req, res) => {
           question_type: "closed",
           has_child: true,
           required: true,
-          principal_child: "id_sub_tematica",
-          children: ["id_situacion_conflictiva","id_criterio"],
+          principal_child: {
+            question_id: "id_sub_tematica",
+            section_id: "specificPlace"
+          },
+          children: [
+            {
+              question_id: "id_situacion_conflictiva",
+              section_id: "specificPlace"
+            },
+            {
+              question_id: "id_criterio",
+              section_id: "specificPlace"
+            }
+          ],
           question: "Temática",
           answers: topics
         },
         {
           question_id: "id_sub_tematica",
           question_type: "closed",
-          has_child: true,
           required: true,
-          principal_child: "id_situacion_conflictiva",
-          children: ["id_criterio"],
+          has_child: true,
+          is_child: true,
+          principal_child: {
+            question_id: "id_situacion_conflictiva",
+            section_id: "specificPlace"
+          },
+          children: [
+            {
+              question_id: "id_criterio",
+              section_id: "specificPlace"
+            }
+          ],
           question: "Sub Temática",
-          answers: subTopics
+          all_answers: subTopics
         },
         {
           question_id: "id_situacion_conflictiva",
           question_type: "closed",
-          has_child: true,
           required: true,
-          principal_child: "id_criterio",
+          has_child: true,
+          is_child: true,
+          principal_child: {
+            question_id: "id_criterio",
+            section_id: "specificPlace"
+          },
           question: "Situación conflictiva",
-          answers: conflictSituations
+          all_answers: conflictSituations
         },
         {
           question_id: "id_criterio",
           required: true,
           question_type: "closed",
+          is_child: true,
           question: "Criterio",
-          answers: criteria
+          all_answers: criteria
         },
         {
           question_id: "antecedentes_hecho",
@@ -1740,7 +1839,6 @@ let getEarlyAlertForm = async (req, res) => {
         {
           question_id: "cantidad_aproximada",
           question_type: "numeric",
-          //required: true,
           question: "Cantidad aproximada"
         }
       ]
@@ -1752,7 +1850,7 @@ let getEarlyAlertForm = async (req, res) => {
       section_title: "Valoración de fase del conflicto",
       questions: [
         {
-          question_id: "id_acciones_hecho", 
+          question_id: "id_acciones_hecho",
           required: false,
           question_type: "closed",
           question: "Acciones del Hecho",
@@ -1764,7 +1862,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "¿Existen medidas de protección vigentes? "
         },
         {
-          question_id: "hubo_agresion", 
+          question_id: "hubo_agresion",
           question_type: "switch",
           question: "¿Se ha producido algún tipo de agresión?"
         },
@@ -1803,7 +1901,7 @@ let getEarlyAlertForm = async (req, res) => {
           question: "¿Hubo crisis?"
         },
         {
-          question_id: "id_acciones_hecho_anterior", 
+          question_id: "id_acciones_hecho_anterior",
           required: false,
           question_type: "closed",
           dependent: true,
@@ -1859,47 +1957,18 @@ let getEarlyAlertForm = async (req, res) => {
       ]
     }
 
-    // ---------2
-    var sections = [];
 
-    // --------- 3
-    var array_questions = [];
-
-    //---------- 4
-    var argumentesArrayQuestionsOb1 = {
-      question_id: "id_tipo_fuente",
-      required: true,
-      question_type: "closed",
-      has_child: true,
-      principal_child: "id_fuente",
-      question: "Tipo de Fuente",
-      answers: sourceType
-    }
-
-    var argumentsArrayQuestionObj2 = {
-      question_id: "id_fuente",
-      required: true,
-      question_type: "closed",
-      question: "Fuente",
-      answers: source
-    }
-
-    array_questions.push(argumentesArrayQuestionsOb1, argumentsArrayQuestionObj2);
-
-    
-    //---------- 5
-    var arguments_sections = {
-      section_id: "arguments_sections",
-      questions: array_questions
-    }
-    sections.push(arguments_sections, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
+    sections.push(tipofuente, newspapers, radioAndTv, socialMedia, collectives, internationalOrganization, messagingSystem,
       governmentInstitutions, other, factInformation, specificPlace, partiesInvolved, affectedPopulation, determinedPopulation, numberPopulationDetermined,
       conflictPhaseAssessment);
-    //1
+
+
     var formEarlyAlert = {
       form_id: 0,
       sections: sections
     }
+
+    console.log(formEarlyAlert);
 
     return res.status(200).json({
       form: formEarlyAlert
@@ -1913,7 +1982,7 @@ let getEarlyAlertForm = async (req, res) => {
 
 };
 
-let getFormToAnalyze = async (req,res) => {
+let getFormToAnalyze = async (req, res) => {
   const { id_alerta_temprana } = req.params;
 
   try {
@@ -1938,7 +2007,7 @@ let getFormToAnalyze = async (req,res) => {
 
 
     var section = {
-      section_id: "arguments_sections",
+      section_id: "tipofuente",
       questions: [
         {
           question_id: "id_fase_conflicto",
@@ -2010,9 +2079,9 @@ let getFormToAnalyze = async (req,res) => {
 
 };
 
-let analyzeEarlyAlert = async (req,res) => {
+let analyzeEarlyAlert = async (req, res) => {
   const { id_alerta_temprana } = req.params;
-  const { id_accion_pddh, analisis, notificar, texto_mensaje} = req.body;
+  const { id_accion_pddh, analisis, notificar, texto_mensaje } = req.body;
 
   try {
 
@@ -2024,7 +2093,7 @@ let analyzeEarlyAlert = async (req,res) => {
 
     var correo_principal = administrativUnit.correo_prinicipal;
 
-    await db.query(`UPDATE sat_alerta_temprana SET analizada = true, id_accion_pddh = $1, analisis = $2, notificar = $3, texto_mensaje = $4 WHERE id_alerta_temprana = $5`, [id_accion_pddh,analisis, notificar, texto_mensaje, id_alerta_temprana], (err, results) => {
+    await db.query(`UPDATE sat_alerta_temprana SET analizada = true, id_accion_pddh = $1, analisis = $2, notificar = $3, texto_mensaje = $4 WHERE id_alerta_temprana = $5`, [id_accion_pddh, analisis, notificar, texto_mensaje, id_alerta_temprana], (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -2032,7 +2101,7 @@ let analyzeEarlyAlert = async (req,res) => {
         var earlyAlert = results.rows[0];
 
         //--- Envio de correo electronico
-          sendemail('"NOTIFICACIÓN DEL SISTEMA SAT" <correo@nextdeployed.com>', correo_principal, 'ANÁLISIS DE ALERTA', `Por este medio se le notifica que se ha asignado un caso desde el Sistema SAT, el cual se encuentra en la etapa de análisis del cual se considera usted debe tener conocimiento, por lo que puede ingresar al Sistema SAT para mayor detalle. Mensaje Ingresado ${texto_mensaje}`).then((result) => {
+        sendemail('"NOTIFICACIÓN DEL SISTEMA SAT" <correo@nextdeployed.com>', correo_principal, 'ANÁLISIS DE ALERTA', `Por este medio se le notifica que se ha asignado un caso desde el Sistema SAT, el cual se encuentra en la etapa de análisis del cual se considera usted debe tener conocimiento, por lo que puede ingresar al Sistema SAT para mayor detalle. Mensaje Ingresado ${texto_mensaje}`).then((result) => {
           console.log(result);
           console.log("correo enviado.");
         }, function (error) {
@@ -2049,13 +2118,13 @@ let analyzeEarlyAlert = async (req,res) => {
 
 };
 
-let searchEarlyAlert = async (req,res) => {
+let searchEarlyAlert = async (req, res) => {
   const { delegate } = req.query;
 
   try {
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar procesar su busqueda.", instance: "early-alert/searchEarlyAlert" });
 
-    await db.query(`SELECT id_alerta_temprana::integer AS form_id, analizada AS analyzed FROM sat_alerta_temprana WHERE texto_mensaje ILIKE '%${delegate}%'`,(err,results) => {
+    await db.query(`SELECT id_alerta_temprana::integer AS form_id, analizada AS analyzed FROM sat_alerta_temprana WHERE texto_mensaje ILIKE '%${delegate}%'`, (err, results) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json(errorResponse.toJson());
@@ -2066,7 +2135,7 @@ let searchEarlyAlert = async (req,res) => {
 
     });
 
-  } catch (e){
+  } catch (e) {
     return res.status(500).json(errorResponse.toJson());
   }
 
@@ -2086,15 +2155,15 @@ let createEarlyAlert = async (req, res) => {
     descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
     id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
     id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
-    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor,cantidad_aproximada, id_acciones_hecho,
+    poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, id_acciones_hecho,
     proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
     id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-    presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;    
+    presencia_fuerza_publica, intervencion_fuerza_publica } = req.body;
 
   try {
 
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar crear la Alerta.", instance: "early-alert/createEarlyAlert" });
-    
+
     var cantidad_poblacion_afectada = poblacion_ninos + poblacion_ninas + adolecentes_mujeres + adolecentes_hombres + poblacion_hombres + poblacion_mujeres + poblacion_hombre_mayor + poblacion_mujer_mayor + cantidad_aproximada;
     var cod_usu = req.user.user_id;
 
@@ -2133,10 +2202,10 @@ let createEarlyAlert = async (req, res) => {
         descripcion_hechos, id_derecho, id_tematica_relacionada, id_sub_tematica, id_situacion_conflictiva,
         id_criterio, id_temporalidad, cantidad, id_escenario, antecedentes_hecho, poblacion_afectada, contraparte,
         id_perfil_actor, id_grupo_vulnerable, demanda_solicitud, postura_autoridades, poblacion_ninos, poblacion_ninas, adolecentes_mujeres, adolecentes_hombres,
-        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada,cantidad_poblacion_afectada, id_acciones_hecho,
+        poblacion_hombres, poblacion_mujeres, poblacion_hombre_mayor, poblacion_mujer_mayor, cantidad_aproximada, cantidad_poblacion_afectada, id_acciones_hecho,
         proteccion_vigente, hubo_agresion, id_tipo_agresion, dialogo_conflicto, medida_conflicto, dialogo_roto_conflicto, crisis_conflicto,
         id_acciones_hecho_anterior, resolucion_conflicto, id_situacion_conflicto, cant_persona_involucrada,
-        presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu], async(err, results) => {
+        presencia_fuerza_publica, intervencion_fuerza_publica, cod_usu], async (err, results) => {
           if (err) {
             console.log(err);
             errorResponse.detail = err.message;
@@ -2151,13 +2220,13 @@ let createEarlyAlert = async (req, res) => {
             let lantenteEarlyAlert = await db.query(`SELECT id_alerta_temprana 
             from sat_alerta_temprana where (id_criterio = 1 or id_criterio =55  or (id_criterio =56 and cantidad_poblacion_afectada<15)  or id_criterio =61 or id_criterio =64 or id_criterio =40 or id_criterio =35 or id_criterio =3  or id_criterio =3 or (id_criterio =5 and id_temporalidad='1' and cantidad<13) or id_criterio =6 or id_criterio =7  or id_criterio =7 or id_criterio =17  or id_criterio =12 or id_criterio =14 or id_criterio =9  or id_criterio =36  or id_criterio =67  or id_criterio =75  or id_criterio =76  or id_criterio =49 or id_criterio =52 or id_criterio =21 or id_criterio =30 or id_criterio =71 or (id_criterio =74 and cantidad_poblacion_afectada<76) or id_criterio =26 or id_criterio =45) and id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
             lantenteEarlyAlert = lantenteEarlyAlert.rows[0];
-  
+
 
             //Obtener alerta temprana escalada 
             let escaladaEarlyAlert;
 
-            if(lantenteEarlyAlert == undefined){
-              escaladaEarlyAlert =  await db.query(`SELECT id_alerta_temprana 
+            if (lantenteEarlyAlert == undefined) {
+              escaladaEarlyAlert = await db.query(`SELECT id_alerta_temprana 
               from sat_alerta_temprana where ((id_criterio =56 and cantidad_poblacion_afectada>15) or id_criterio =57 or id_criterio =62 or id_criterio =65 or (id_criterio =44 and proteccion_vigente='false') or (id_criterio =35 and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>12 and cantidad<20) or (id_criterio =4 and id_temporalidad='2') or (id_criterio =34 and presencia_fuerza_publica='true')  or (id_criterio =18 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =20 and presencia_fuerza_publica='true' and dialogo_roto_conflicto='true') or (id_criterio =13 and presencia_fuerza_publica='true') or (id_criterio =16 and presencia_fuerza_publica='true') or (id_criterio =37 and presencia_fuerza_publica='true') or id_criterio =11  or id_criterio =68  or (id_criterio =76 and cantidad_poblacion_afectada<16)  or id_criterio =78 or id_criterio =50 or (id_criterio =51 and presencia_fuerza_publica='true') or id_criterio =53 or (id_criterio =54 and presencia_fuerza_publica='true') or id_criterio =22 or id_criterio =23 or (id_criterio =25 and presencia_fuerza_publica='true') or (id_criterio =31 and cantidad_poblacion_afectada>10 and cantidad_poblacion_afectada<15) or id_criterio =72 or (id_criterio =74 and  cantidad_poblacion_afectada>75 and cantidad_poblacion_afectada<161) or id_criterio =46) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
               escaladaEarlyAlert = escaladaEarlyAlert.rows[0];
             }
@@ -2166,7 +2235,7 @@ let createEarlyAlert = async (req, res) => {
             //Obtenet alerta vigente
 
             let vigenteAlert;
-            if(lantenteEarlyAlert == undefined && escaladaEarlyAlert == undefined){
+            if (lantenteEarlyAlert == undefined && escaladaEarlyAlert == undefined) {
               vigenteAlert = await db.query(`SELECT id_alerta_temprana 
               from sat_alerta_temprana where (id_criterio=63  or (id_criterio =66 and cantidad_poblacion_afectada>50) or (id_criterio =35 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =5 and id_temporalidad='1' and cantidad>20) or (id_criterio =4 and id_temporalidad='2' and cantidad=2)  or (id_criterio =34 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =18 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =20 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or (id_criterio =16 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')   or (id_criterio =37 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =76 and cantidad_poblacion_afectada>16)  or (id_criterio =51 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =78 or (id_criterio =54 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true')  or (id_criterio =25 and intervencion_fuerza_publica='true' and hubo_agresion='true' and presencia_fuerza_publica='true') or id_criterio =33 or (id_criterio =74 and cantidad_poblacion_afectada>160)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
               vigenteAlert = vigenteAlert.rows[0];
@@ -2176,7 +2245,7 @@ let createEarlyAlert = async (req, res) => {
             //Obtener alerta continua, 
             let continuaAlert;
 
-            if(lantenteEarlyAlert == undefined && escaladaEarlyAlert == undefined && vigenteAlert == undefined){
+            if (lantenteEarlyAlert == undefined && escaladaEarlyAlert == undefined && vigenteAlert == undefined) {
               continuaAlert = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where ((id_criterio = 35 and cant_persona_involucrada='true') or (id_criterio = 34 and cant_persona_involucrada='true') or (id_criterio = 18 and cant_persona_involucrada='true' and presencia_fuerza_publica='true' and crisis_conflicto='true')  or (id_criterio = 13 and cant_persona_involucrada='true')  or (id_criterio = 16 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 37 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio =76 and cantidad_poblacion_afectada<17) or (id_criterio = 51 and cant_persona_involucrada='true' and presencia_fuerza_publica='true')  or (id_criterio = 54 and cant_persona_involucrada='true' and presencia_fuerza_publica='true') or (id_criterio = 76 and cantidad_poblacion_afectada<161)) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
               continuaAlert = continuaAlert.rows[0];
             }
@@ -2194,17 +2263,17 @@ let createEarlyAlert = async (req, res) => {
               clasificada = true;
 
             } else {
-              if(!clasificada){
+              if (!clasificada) {
                 let escaladaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and cant_persona_involucrada='false' and presencia_fuerza_publica='true' and intervencion_fuerza_publica='false' and dialogo_roto_conflicto='true' and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
                 escaladaVerificationSecond = escaladaVerificationSecond.rows[0];
-  
+
                 if (escaladaVerificationSecond != undefined) {
                   db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='2', id_tipo_alerta='1' WHERE id_alerta_temprana=$1`, [escaladaVerificationSecond.id_alerta_temprana]);
                   clasificada = true;
 
                 }
               }
-             
+
 
             }
 
@@ -2215,16 +2284,16 @@ let createEarlyAlert = async (req, res) => {
 
             } else {
 
-             if(!clasificada){
-              let vigenteVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='true' and presencia_fuerza_publica='true' and intervencion_fuerza_publica='true' and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
-              vigenteVerificationSecond = vigenteVerificationSecond.rows[0];
+              if (!clasificada) {
+                let vigenteVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='true' and presencia_fuerza_publica='true' and intervencion_fuerza_publica='true' and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
+                vigenteVerificationSecond = vigenteVerificationSecond.rows[0];
 
-              if (vigenteVerificationSecond != undefined) {
-                db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='3', id_tipo_alerta='2' WHERE id_alerta_temprana=$1`, [vigenteVerificationSecond.id_alerta_temprana]);
-                clasificada = true;
+                if (vigenteVerificationSecond != undefined) {
+                  db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='3', id_tipo_alerta='2' WHERE id_alerta_temprana=$1`, [vigenteVerificationSecond.id_alerta_temprana]);
+                  clasificada = true;
 
+                }
               }
-             }
 
             }
 
@@ -2234,21 +2303,21 @@ let createEarlyAlert = async (req, res) => {
               clasificada = true;
 
             } else {
-              if(!clasificada){
-                let continuaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and presencia_fuerza_publica='false' and intervencion_fuerza_publica='false' and cant_persona_involucrada='true' and (id_situacion_conflicto=2 or id_situacion_conflicto=3 or id_situacion_conflicto=4) and  id_alerta_temprana=$1`,[earlyAlerts.id_alerta_temprana]);
+              if (!clasificada) {
+                let continuaVerificationSecond = await db.query(`SELECT id_alerta_temprana from public.sat_alerta_temprana where id_acciones_hecho_anterior<>null and id_acciones_hecho_anterior<>'1' and hubo_agresion='false' and presencia_fuerza_publica='false' and intervencion_fuerza_publica='false' and cant_persona_involucrada='true' and (id_situacion_conflicto=2 or id_situacion_conflicto=3 or id_situacion_conflicto=4) and  id_alerta_temprana=$1`, [earlyAlerts.id_alerta_temprana]);
                 continuaVerificationSecond = continuaVerificationSecond.rows[0];
-  
+
                 if (continuaVerificationSecond != undefined) {
                   db.query(`UPDATE sat_alerta_temprana SET id_fase_conflicto='4', id_tipo_alerta='3' WHERE id_alerta_temprana=$1`, [continuaVerificationSecond.id_alerta_temprana]);
                   clasificada = true;
 
                 }
               }
-              
+
             }
 
 
-            insertStats(id_departamento,id_municipio,fecha_hechos,fecha_hechos, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto);
+            insertStats(id_departamento, id_municipio, fecha_hechos, fecha_hechos, id_criterio, intervencion_fuerza_publica, proteccion_vigente, id_temporalidad, cantidad, cantidad_poblacion_afectada, hubo_agresion, presencia_fuerza_publica, crisis_conflicto, fecha_futura_hechos, cant_persona_involucrada, dialogo_roto_conflicto);
 
 
             return res.status(201).json({
@@ -2263,135 +2332,135 @@ let createEarlyAlert = async (req, res) => {
   }
 };
 
-let insertStats = async (id_departamento,id_municipio,fecha_hecho,fecha_ingreso, id_criterio, intervencion_fuerza_publica,proteccion_vigente,id_temporalidad,cantidad,cantidad_poblacion_afectada,hubo_agresion,presencia_fuerza_publica,crisis_conflicto,fecha_futura_hechos,cant_persona_involucrada,dialogo_roto_conflicto) => {
-  
-  if(id_criterio == 55){
+let insertStats = async (id_departamento, id_municipio, fecha_hecho, fecha_ingreso, id_criterio, intervencion_fuerza_publica, proteccion_vigente, id_temporalidad, cantidad, cantidad_poblacion_afectada, hubo_agresion, presencia_fuerza_publica, crisis_conflicto, fecha_futura_hechos, cant_persona_involucrada, dialogo_roto_conflicto) => {
+
+  if (id_criterio == 55) {
     console.log('entro ------ criterio 55');
-   await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-      VALUES (1, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
-      return;
-  } else if(id_criterio == 56 || id_criterio == 57){
-    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (1, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    await db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+      VALUES (1, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 61){
+  } else if (id_criterio == 56 || id_criterio == 57) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (2, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (1, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 62 && !intervencion_fuerza_publica ){
+  } else if (id_criterio == 61) {
+    db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
+    VALUES (2, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
+    return;
+  } else if (id_criterio == 62 && !intervencion_fuerza_publica) {
     console.log('entro con criterio 62 y verdadero');
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (2, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (2, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 62 && intervencion_fuerza_publica || id_criterio == 63 && intervencion_fuerza_publica){
+  } else if (id_criterio == 62 && intervencion_fuerza_publica || id_criterio == 63 && intervencion_fuerza_publica) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (2, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (2, $1, $2, 2, 3, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } 
-  else if(id_criterio == 44 && proteccion_vigente ){
+  }
+  else if (id_criterio == 44 && proteccion_vigente) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (4, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (4, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  }  else if(id_criterio == 7 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 6 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 35 && id_temporalidad == 21 && cantidad < 24){
+  } else if (id_criterio == 7 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 6 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 35 && id_temporalidad == 21 && cantidad < 24) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (5, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (5, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } 
+  }
   //Nunca se va a cumplir, validar esta verificacion
-  else if(id_criterio == 34 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && ( !crisis_conflicto || fecha_futura_hechos) || id_criterio == 35 && id_temporalidad == 2 && cantidad < 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad < 2){
+  else if (id_criterio == 34 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && (!crisis_conflicto || fecha_futura_hechos) || id_criterio == 35 && id_temporalidad == 2 && cantidad < 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad < 2) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (5, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (5, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  }  else if(id_criterio == 34 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 31 || id_criterio == 35 && id_temporalidad == 2 && cantidad > 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad > 1){
+  } else if (id_criterio == 34 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 31 || id_criterio == 35 && id_temporalidad == 2 && cantidad > 4 || id_criterio == 4 && id_temporalidad == 3 && cantidad > 1) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (5, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (5, $1, $2, 2, 3, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 34 && cant_persona_involucrada){
+  } else if (id_criterio == 34 && cant_persona_involucrada) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (5, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (5, $1, $2, 3, 4, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 17 && id_temporalidad == 2 && cantidad > 90){
+  } else if (id_criterio == 17 && id_temporalidad == 2 && cantidad > 90) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (6, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (6, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 18 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && (!crisis_conflicto && dialogo_roto_conflicto)){
+  } else if (id_criterio == 18 && !hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica) && (!crisis_conflicto && dialogo_roto_conflicto)) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (6, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (6, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 18 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica || id_criterio == 20 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica){
+  } else if (id_criterio == 18 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica || id_criterio == 20 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (6, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (6, $1, $2, 2, 3, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if((id_criterio == 18 || id_criterio == 20) && !hubo_agresion && crisis_conflicto && !presencia_fuerza_publica && (presencia_fuerza_publica && intervencion_fuerza_publica)){
+  } else if ((id_criterio == 18 || id_criterio == 20) && !hubo_agresion && crisis_conflicto && !presencia_fuerza_publica && (presencia_fuerza_publica && intervencion_fuerza_publica)) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (6, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (6, $1, $2, 3, 4, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 14 && id_temporalidad == 2 && cantidad < 60){
+  } else if (id_criterio == 14 && id_temporalidad == 2 && cantidad < 60) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (8, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (8, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 15 && id_temporalidad == 2 && cantidad < 30){
+  } else if (id_criterio == 15 && id_temporalidad == 2 && cantidad < 30) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (8, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (8, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 16 && fecha_futura_hechos || (!hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 8 ))){
+  } else if (id_criterio == 16 && fecha_futura_hechos || (!hubo_agresion && !presencia_fuerza_publica && (presencia_fuerza_publica && !intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 8))) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (8, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (8, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 16 && !fecha_futura_hechos && hubo_agresion && presencia_fuerza_publica && id_temporalidad == 2 && cantidad < 8){
+  } else if (id_criterio == 16 && !fecha_futura_hechos && hubo_agresion && presencia_fuerza_publica && id_temporalidad == 2 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (8, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (8, $1, $2, 2, 3, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 16 && !fecha_futura_hechos && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad == 2 && cantidad < 8){
+  } else if (id_criterio == 16 && !fecha_futura_hechos && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad == 2 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (8, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (8, $1, $2, 3, 4, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 36){
+  } else if (id_criterio == 36) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (9, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (9, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 11 && id_temporalidad == 2 && cantidad < 31){
+  } else if (id_criterio == 11 && id_temporalidad == 2 && cantidad < 31) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (9, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (9, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
     //*****
-  } else if(id_criterio == 37 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && !crisis_conflicto && dialogo_roto_conflicto && id_temporalidad ==2 && cantidad < 8){
+  } else if (id_criterio == 37 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && !crisis_conflicto && dialogo_roto_conflicto && id_temporalidad == 2 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (9, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (9, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 37 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad ==2 && cantidad < 8){
+  } else if (id_criterio == 37 && hubo_agresion && presencia_fuerza_publica && intervencion_fuerza_publica && id_temporalidad == 2 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (9, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (9, $1, $2, 2, 3, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 37 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad==2 && cantidad < 8){
+  } else if (id_criterio == 37 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && id_temporalidad == 2 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (9, $1, $2, 3, 4, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (9, $1, $2, 3, 4, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 68 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 76 && id_temporalidad == 2 && cantidad < 8){
+  } else if (id_criterio == 68 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 76 && id_temporalidad == 2 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (12, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (12, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 76 && cantidad_poblacion_afectada > 1 && cantidad_poblacion_afectada < 16 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 78 && cantidad < 8){
+  } else if (id_criterio == 76 && cantidad_poblacion_afectada > 1 && cantidad_poblacion_afectada < 16 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 78 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (12, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (12, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 76 && id_temporalidad == 2 && cantidad >15 || id_criterio == 78 && cantidad < 8){
+  } else if (id_criterio == 76 && id_temporalidad == 2 && cantidad > 15 || id_criterio == 78 && cantidad < 8) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (12, $1, $2, 2, 3, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (12, $1, $2, 2, 3, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 22 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 21 && id_temporalidad ==2 && cantidad < 30){
+  } else if (id_criterio == 22 && id_temporalidad == 2 && cantidad < 30 || id_criterio == 21 && id_temporalidad == 2 && cantidad < 30) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (17, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (17, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 25 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && !crisis_conflicto){
+  } else if (id_criterio == 25 && !hubo_agresion && !presencia_fuerza_publica || (presencia_fuerza_publica && !intervencion_fuerza_publica) && !crisis_conflicto) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (17, $1, $2, 1, 2, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (17, $1, $2, 1, 2, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  } else if(id_criterio == 46 && id_temporalidad ==2 && cantidad<8 || id_criterio == 47 && id_temporalidad == 2 && cantidad < 16){
+  } else if (id_criterio == 46 && id_temporalidad == 2 && cantidad < 8 || id_criterio == 47 && id_temporalidad == 2 && cantidad < 16) {
     db.query(`INSERT INTO public.sat_estadistica_indicadores(id_indicador, id_departamento, id_municipio, tipo_alerta, fase_conflicto, fecha_hecho, fecha_ingreso)
-    VALUES (19, $1, $2, 1, 1, $3, $4)`,[id_departamento,id_municipio,fecha_hecho,fecha_ingreso]);
+    VALUES (19, $1, $2, 1, 1, $3, $4)`, [id_departamento, id_municipio, fecha_hecho, fecha_ingreso]);
     return;
-  }        
+  }
 
 }
 
@@ -2399,7 +2468,7 @@ let getRelatedCases = async (req, res) => {
   const { id_alerta_temprana } = req.params;
 
   try {
-    
+
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar obtener los casos relacionados", instance: "Early-Alert/getRelatedCases" });
 
     await db.query(`SELECT id_alerta_temprana::integer AS form_id,
@@ -2422,20 +2491,20 @@ let getRelatedCases = async (req, res) => {
   }
 }
 
-let removeRelatedCase = async (req,res) => {
+let removeRelatedCase = async (req, res) => {
   const { id_padre, id_hijo } = req.params;
 
   var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar remover el caso relacionado.", instance: "Early-Alert/removeRelatedCase" });
 
   try {
 
-    await db.query(`DELETE FROM sat_alerta_temprana_relacionados WHERE id_padre = $1 AND id_hijo = $2`, [id_padre, id_hijo ], (err, results) => {
+    await db.query(`DELETE FROM sat_alerta_temprana_relacionados WHERE id_padre = $1 AND id_hijo = $2`, [id_padre, id_hijo], (err, results) => {
       if (err) {
         console.log(err.message);
         errorResponse.detail = err.message;
         return res.status(500).json(errorResponse.toJson());
       } else {
-        
+
         return res.status(200).json();
       }
     });
@@ -2459,16 +2528,16 @@ let searchForRelatedCase = async (req, res) => {
     AND id_alerta_temprana::TEXT LIKE '${delegate}%'
     ORDER BY id_alerta_temprana ASC
     `,
-     (err, results) => {
-      if (err) {
-        console.log(err.message);
-        return res.status(500).json(errorResponse.toJson());
-      }
+      (err, results) => {
+        if (err) {
+          console.log(err.message);
+          return res.status(500).json(errorResponse.toJson());
+        }
 
-      var earlyAlerts = results.rows;
-      return res.status(200).json({ earlyAlerts });
+        var earlyAlerts = results.rows;
+        return res.status(200).json({ earlyAlerts });
 
-    });
+      });
 
   } catch (e) {
     return res.status(500).json(errorResponse.toJson());
@@ -2477,14 +2546,14 @@ let searchForRelatedCase = async (req, res) => {
 
 }
 
-let addRelatedCase = async (req,res) => {
+let addRelatedCase = async (req, res) => {
   const { id_padre, id_hijo } = req.params;
 
   var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al intentar agregar el caso relacionado.", instance: "Early-Alert/addRelatedCase" });
 
   try {
 
-    await db.query(`INSERT INTO sat_alerta_temprana_relacionados (id_padre,id_hijo) VALUES ($1,$2) RETURNING *`, [id_padre, id_hijo ], (err, results) => {
+    await db.query(`INSERT INTO sat_alerta_temprana_relacionados (id_padre,id_hijo) VALUES ($1,$2) RETURNING *`, [id_padre, id_hijo], (err, results) => {
       if (err) {
         console.log(err.message);
         errorResponse.detail = err.message;
@@ -2492,8 +2561,8 @@ let addRelatedCase = async (req,res) => {
       } else {
 
         var result = results.rows[0];
-        
-        return res.status(200).json({result});
+
+        return res.status(200).json({ result });
       }
     });
   } catch (error) {
@@ -2503,21 +2572,21 @@ let addRelatedCase = async (req,res) => {
 }
 
 //Enviar Alerta a Analizar
-let SendAlerttoAnalyze = async (req, res) =>{
-  
-  const {id_alerta_temprana} = req.params;
+let SendAlerttoAnalyze = async (req, res) => {
+
+  const { id_alerta_temprana } = req.params;
 
   try {
 
     var errorResponse = new ErrorModel({ type: "Early-Alert", title: "Falló la función", status: 500, detail: "Lo sentimos ocurrió un error al enviar a analizar la Alerta.", instance: "early-alert/SendAlerttoAnalyze" });
 
     await db.query(`UPDATE sat_alerta_temprana SET enviada_analizar = true 
-    WHERE id_alerta_temprana = $1 RETURNING*`, [id_alerta_temprana], (err, results)=>{
-      if(err){
+    WHERE id_alerta_temprana = $1 RETURNING*`, [id_alerta_temprana], (err, results) => {
+      if (err) {
         console.log(err.message);
         errorResponse.detail = err.message;
         return res.status(500).json(errorResponse.toJson());
-      }else{
+      } else {
         var Alert = results.rows[0];
         return res.status(200).json({
           Alert
