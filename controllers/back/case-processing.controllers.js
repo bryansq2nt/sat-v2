@@ -73,23 +73,27 @@ let getCaseProcessingForm = async (req, res) => {
 
     // Seccion --- Via de entrada
     var meansEntry = {
-      section_id: 1,
-      bold_title: 1,
+      section_id: "meansEntry",
+      bold_title: true,
       section_title: "Via de Entrada",
       questions: [
         {
           question_id: "fec_hora",
-          question_type: "date_time_before",
-          required: 1,
+          question_type: "date",
+          max: moment().format("YYYY-MM-DD"),
+          required: true,
           answer: registration_date,
           question: "Fecha de ingreso"
         },
         {
           question_id: "tipo_via_entrada",
-          required: 1,
-          question_type: "closed_with_child",
-          has_child: 1,
-          principal_child: "via_entrada",
+          required: true,
+          question_type: "closed",
+          has_child: true,
+          principal_child: {
+            question_id: "via_entrada",
+            section_id: "meansEntry"
+          },
           question: "Tipo Vía Entrada",
           answers: [
             { answer_id: 'V', answer: 'Verbal' },
@@ -125,61 +129,81 @@ let getCaseProcessingForm = async (req, res) => {
         //Se cambio el orden que estaba, estaba antes de fuente. 
         {
           question_id: "otra_via_entrada",
-          dependent: 1,
-          dependent_section_id: 1,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "via_entrada",
-          dependent_answer: 'O',
-          question_type: "area",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
+          question_type: "open",
+          max_lines: 6,
           question: "Otra vía Entrada"
         },
         {
           question_id: "fuente",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "open",
           question: "Fuente Emisión"
         },
         {
           question_id: "fec_emision",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "date_before",
           question: "Fecha Emisión"
         },
         {
           question_id: "tit_emision",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "open",
           question: "Título Emisión"
         },
         {
           question_id: "fec_recepcion",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "date_before",
           question: "Fecha Recepción"
         },
         {
           question_id: "otra_via_entrada",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
-          question_type: "area",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
+          question_type: "open",
+          max_lines: 6,
           question: "Otra vía Entrada"
         }
       ]
@@ -189,19 +213,19 @@ let getCaseProcessingForm = async (req, res) => {
 
     //Lugar y Hecho
     var institutionInformation = {
-      section_id: 3,
+      section_id: "institutionInformation",
       section_title: "Lugar y Hecho",
       questions: [
         {
           question_id: "fec_hecho",
           question_type: "date_time_before",
-          required: 1,
+          required: true,
           question: "Fecha y Hora Hecho"
         },
         {
           question_id: "fec_hor_hecho_aprox",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Fecha y Hora Hecho ES",
           answers: [
             { answer_id: 'A', answer: 'Fecha y Hora Exacta' },
@@ -212,38 +236,44 @@ let getCaseProcessingForm = async (req, res) => {
         },
         {
           question_id: "id_pais_hecho",
-          required:1,
-          question_type: "closed_searchable_case_processing",
+          required: true,
+          question_type: "closed_searchable_case_processing",//NO TOCAR
           question: "Pais",
           answer: "EL SALVADOR",
           answers: country
         },
         {
           question_id: "id_depto_hecho",
-          required:1,
-          question_type: "closed_with_child",
-          has_child: 1,
-          principal_child: "id_mun_hecho",
+          required: true,
+          question_type: "closed",
+          has_child: true,
+          principal_child: {
+            question_id: "id_mun_hecho",
+            section_id: "institutionInformation"
+          },
           question: "Departamento",
           answers: state
         },
         {
           question_id: "id_mun_hecho",
-          required:1,
+          required: true,
+          is_child: true,
           question_type: "closed",
           question: "Municipio",
-          answers: municipality
+          all_answers: municipality
         },
         {
           question_id: "lugar",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          required: true,
+          max_lines: 6,
           question: "Lugar del Hecho",
         },
         {
           question_id: "hecho",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Descripcíon del Hecho",
         }
 
@@ -369,23 +399,26 @@ let getCaseProcesingById = async (req, res) => {
 
     // Seccion --- Via de entrada
     var meansEntry = {
-      section_id: 1,
-      bold_title: 1,
+      section_id: "meansEntry",
+      bold_title: true,
       section_title: "Via de Entrada",
       questions: [
         {
           question_id: "fec_hora",
           question_type: "date_time_before",
-          required: 1,
+          required: true,
           question: "Fecha de ingreso",
           answer: caseProcessing.fec_hora
         },
         {
           question_id: "tipo_via_entrada",
-          required: 1,
-          question_type: "closed_with_child",
-          has_child: 1,
-          principal_child: "via_entrada",
+          required: true,
+          question_type: "closed",
+          has_child: true,
+          principal_child: {
+            question_id: "via_entrada",
+            section_id: "meansEntry"
+          },
           question: "Tipo Vía Entrada",
           answer: caseProcessing.tipo_via_entrada,
           answers: [
@@ -398,8 +431,9 @@ let getCaseProcesingById = async (req, res) => {
           question_id: "via_entrada",
           question_type: "closed",
           question: "Via Entrada",
+          is_child: true,
           answer: caseProcessing.via_entrada,
-          answers: [
+          all_answers: [
             { answer_id: 'P', answer: 'Persona', to_compare: "V" },
             { answer_id: 'T', answer: 'Telefonica', to_compare: "V" },
             { answer_id: 'O', answer: 'Otra', to_compare: "V" },
@@ -422,32 +456,41 @@ let getCaseProcesingById = async (req, res) => {
         },
         {
           question_id: "otra_via_entrada",
-          dependent: 1,
-          dependent_section_id: 1,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "OV",
+          dependent_answer: {
+            type: "text",
+            answer: "OV"
+          },
           question_type: "open",
           question: "Otra vía Entrada",
           answer: caseProcessing.otra_via_entrada
         },
         {
           question_id: "fuente",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "open",
           question: "Fuente Emisión",
           answer: caseProcessing.fuente
         },
         {
           question_id: "fec_emision",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "date",
           question: "Fecha Emisión",
           answer: caseProcessing.fec_emision
@@ -455,34 +498,47 @@ let getCaseProcesingById = async (req, res) => {
         },
         {
           question_id: "tit_emision",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
           question_type: "open",
           question: "Título Emisión",
           answer: caseProcessing.tit_emision
         },
         {
           question_id: "fec_recepcion",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
-          question_type: "date_after",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
+          question_type: "date",
+          min: moment().format("YYYY-MM-DD"),
+          type: "date",
+          format: "DD-MM-YYYY",
           question: "Fecha Recepción",
           answer: caseProcessing.fec_recepcion
         },
         {
           question_id: "otra_via_entrada",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_via_entrada",
-          dependent_answer: "O",
-          question_type: "area",
+          dependent_answer: {
+            type: "text",
+            answer: 'O'
+          },
+          question_type: "open",
+          max_lines: 6,
           question: "Otra vía Entrada",
           answer: caseProcessing.otra_via_entrada
         }
@@ -492,20 +548,21 @@ let getCaseProcesingById = async (req, res) => {
 
     //Lugar y Hecho
     var institutionInformation = {
-      section_id: 3,
+      section_id: "institutionInformation",
       section_title: "Lugar y Hecho",
       questions: [
         {
           question_id: "fec_hecho",
-          question_type: "date_time",
-          required: 1,
+          question_type: "date",
+          type: "datetime",
+          required: true,
           question: "Fecha y Hora Hecho",
           answer: caseProcessing.fec_hecho
         },
         {
           question_id: "fec_hor_hecho_aprox",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Fecha y Hora Hecho ES",
           answer: caseProcessing.fec_hor_hecho_aprox,
           answers: [
@@ -518,7 +575,7 @@ let getCaseProcesingById = async (req, res) => {
         {
           question_id: "id_pais_hecho",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Pais",
           //answer: Number.parseInt(caseProcessing.id_pais_hecho),
           answer: 62,
@@ -526,9 +583,12 @@ let getCaseProcesingById = async (req, res) => {
         },
         {
           question_id: "id_depto_hecho",
-          question_type: "closed_with_child",
-          has_child: 1,
-          principal_child: "id_mun_hecho",
+          question_type: "closed",
+          has_child: true,
+          principal_child: {
+            question_id: "id_mun_hecho",
+            section_id: "institutionInformation"
+          },
           question: "Departamento",
           answer: Number.parseInt(caseProcessing.id_depto_hecho),
           answers: state
@@ -536,21 +596,24 @@ let getCaseProcesingById = async (req, res) => {
         {
           question_id: "id_mun_hecho",
           question_type: "closed",
+          is_child: true,
           question: "Municipio",
           answer: Number.parseInt(caseProcessing.id_mun_hecho),
-          answers: municipality
+          all_answers: municipality
         },
         {
           question_id: "lugar",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Lugar del Hecho",
           answer: caseProcessing.lugar
         },
         {
           question_id: "hecho",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Descripcíon del Hecho",
           answer: caseProcessing.hecho
         }
@@ -730,12 +793,12 @@ let getPersonInvolvedForm = async (req, res) => {
 
     // Seccion --- Denunciante
     var whistleblower = {
-      section_id: 1,
+      section_id: "meansEntry",
       section_title: "Identificación de Tipo de Persona",
       questions: [
         {
           question_id: "tipo_rel_caso",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Tipo de Persona",
           answers: [
@@ -747,10 +810,10 @@ let getPersonInvolvedForm = async (req, res) => {
         //Se cambio el nombre
         {
           question_id: "tipo_persona",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_multiple: 1,
-          dependent_section_id: 1,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: ['D', 'A'],
           question_type: "closed",
@@ -762,10 +825,10 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "persona_victima",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_multiple: 1,
-          dependent_section_id: 1,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: ['V', 'A'],
           question_type: "closed",
@@ -777,7 +840,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "confidencial",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Confidencial",
           answers: [
@@ -805,28 +868,28 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "nombre",
           question_type: "open",
-          required: 1,
+          required: true,
           limit: 100,
           question: "Nombre"
         },
         {
           question_id: "apellido",
           question_type: "open",
-          required: 1,
+          required: true,
           limit: 100,
           question: "Apellido"
         },
         {
           question_id: "id_cat_doc_persona",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Doc. Presentado",
           answers: personalDocuments
         },
         {
           question_id: "num_documento_1",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_multiple: 1,
           dependent_section_id: 2,
           dependent_question_id: "id_cat_doc_persona",
@@ -839,8 +902,8 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "num_documento_2",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 2,
           dependent_question_id: "id_cat_doc_persona",
           dependent_answer: 1,
@@ -852,7 +915,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "num_documento_3",
-          dependent: 1,
+          dependent: true,
           dependent_multiple: 1,
           dependent_section_id: 2,
           dependent_question_id: "id_cat_doc_persona",
@@ -864,8 +927,8 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "num_documento_4",
-          required:1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_multiple: 1,
           dependent_section_id: 2,
           dependent_question_id: "id_cat_doc_persona",
@@ -882,7 +945,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         // {
         //   question_id: "edad_aprox",
-        //   required: 1,
+        //   required: true,
         //   question_type: "numeric",
         //   limit: 3,
         //   question: "Edad Aproximada"
@@ -896,7 +959,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "sexo",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Sexo",
           answers: [
@@ -916,14 +979,14 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_ori_sexual",
-          required: 1,
+          required: true,
           question_type: "closed_multiple",
           question: "Orientación Sexual",
           answers: sexualOrientation
         },
         {
           question_id: "lee",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Saber Leer",
           answers: [
@@ -934,7 +997,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "escribe",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Saber Escribir",
           answers: [
@@ -945,8 +1008,8 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_niv_academico",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 2,
           dependent_question_id: "escribe",
           dependent_answer: "S",
@@ -965,8 +1028,8 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_cat_tip_discapacidad",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 2,
           dependent_question_id: "discapacidad",
           dependent_answer: "S",
@@ -976,7 +1039,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_cat_pro_oficio",
-          required: 1,
+          required: true,
           question_type: "closed_searchable_case_processing",
           question: "Ocupación",
           answers: occupation
@@ -987,14 +1050,14 @@ let getPersonInvolvedForm = async (req, res) => {
 
     //Seccion --- Informacion de Ubicacion de la Persona
     var locationPerson = {
-      section_id: 3,
-      bold_title: 1,
+      section_id: "institutionInformation",
+      bold_title: true,
       section_title: "Información de Ubicación de la Persona",
       questions: [
         {
           question_id: "id_departamento",
-          question_type: "closed_with_child",
-          has_child: 1,
+          question_type: "closed",
+          has_child: true,
           principal_child: "id_municipio",
           question: "Departamento",
           answers: state
@@ -1002,13 +1065,15 @@ let getPersonInvolvedForm = async (req, res) => {
         {
           question_id: "id_municipio",
           question_type: "closed",
+          is_child: true,
           question: "Municipio",
-          answers: municipality
+          all_answers: municipality
         },
+        
         {
           question_id: "zona_domicilio",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Tipo de Zona",
           answers: [
             { answer_id: 'R', answer: 'Rural' },
@@ -1022,19 +1087,20 @@ let getPersonInvolvedForm = async (req, res) => {
         //   question_id: "id_documento_solicitante",
         //   question_type: "closed",
         //   question: "Documento de identificación",
-        //   required: 1,
+        //   required: true,
         //   answers: personalDocuments
         // },
         {
           question_id: "domicilio",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           limit: 500,
           question: "Dirección",
         },
         {
           question_id: "enable_med_notification",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "¿Se ingresará un medio de notificación o se dejerá pendiente?",
           answers: [
@@ -1044,8 +1110,8 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "med_rec_notificacion",
-          dependent: 1,
-          dependent_section_id: 3,
+          dependent: true,
+          dependent_section_id: "institutionInformation",
           dependent_question_id: "enable_med_notification",
           dependent_answer: "S",
           question_type: "closed_multiple",
@@ -1060,9 +1126,9 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "num_telefono",
-          dependent: 1,
+          dependent: true,
           dependent_multiple: 1,
-          dependent_section_id: 3,
+          dependent_section_id: "institutionInformation",
           dependent_question_id: "med_rec_notificacion",
           dependent_answer: 0,
           question_type: "open",
@@ -1070,9 +1136,9 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "fax",
-          dependent: 1,
+          dependent: true,
           dependent_multiple: 1,
-          dependent_section_id: 3,
+          dependent_section_id: "institutionInformation",
           dependent_question_id: "med_rec_notificacion",
           dependent_answer: 2,
           question_type: "open",
@@ -1080,9 +1146,9 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "correo_electronico",
-          dependent: 1,
+          dependent: true,
           dependent_multiple: 1,
-          dependent_section_id: 3,
+          dependent_section_id: "institutionInformation",
           dependent_question_id: "med_rec_notificacion",
           dependent_answer: 3,
           question_type: "open",
@@ -1090,11 +1156,12 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "dir_notificar",
-          question_type: "area",
-          required: 1,
-          dependent: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
+          dependent: true,
           dependent_multiple: 1,
-          dependent_section_id: 3,
+          dependent_section_id: "institutionInformation",
           dependent_question_id: "med_rec_notificacion",
           dependent_answer: 1,
           limit: 500,
@@ -1111,7 +1178,7 @@ let getPersonInvolvedForm = async (req, res) => {
       questions: [
         {
           question_id: "enable_grp_vulnerable",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "¿Se ingresará un grupo en condiciones de vulnerabilidad o se dejerá pendiente?",
           answers: [
@@ -1121,8 +1188,8 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_grp_vulnerable",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 4,
           dependent_question_id: "enable_grp_vulnerable",
           dependent_answer: "S",
@@ -1136,16 +1203,17 @@ let getPersonInvolvedForm = async (req, res) => {
     //Información de Institución
     var institutionInformation = {
       section_id: 5,
-      dependent: 1,
-      dependent_section_id: 1,
+      dependent: true,
+      dependent_section_id: "meansEntry",
       dependent_question_id: "tipo_persona",
       dependent_answer: "J",
       section_title: "Información de Institución",
       questions: [
         {
           question_id: "institucion",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           limit: 200,
           question: "Institución",
         },
@@ -1157,7 +1225,7 @@ let getPersonInvolvedForm = async (req, res) => {
         },
         {
           question_id: "id_cat_cal_actua",
-          //required: 1,
+          //required: true,
           question_type: "closed",
           question: "Calidad en que Actúa",
           answers: qualityOperates
@@ -1486,12 +1554,12 @@ let getPersonInvolvedById = async (req, res) => {
 
     // Seccion --- Denunciante
     var whistleblower = {
-      section_id: 1,
+      section_id: "meansEntry",
       section_title: "Identificación de Tipo de Persona",
       questions: [
         {
           question_id: "tipo_rel_caso",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Tipo de Persona",
           answer: personInvolved != null ? personInvolved.tipo_rel_caso : null,
@@ -1503,9 +1571,9 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "tipo_persona",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "D",
           question_type: "closed",
@@ -1518,9 +1586,9 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "persona_victima",
-          required: 1,
-          dependent: 1,
-          dependent_section_id: 1,
+          required: true,
+          dependent: true,
+          dependent_section_id: "meansEntry",
           dependent_question_id: "tipo_rel_caso",
           dependent_answer: "V",
           question_type: "closed",
@@ -1534,8 +1602,8 @@ let getPersonInvolvedById = async (req, res) => {
         //no seguardan en bases de datos
         {
           question_id: "confidencial",
-          required: 1,
-          required: 1,
+          required: true,
+          required: true,
           question_type: "closed",
           question: "Confidencial",
           answer: personInvolved != null ? personInvolved.confidencial : null,
@@ -1576,7 +1644,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "id_cat_doc_persona",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Doc. Presentado",
           answer: personInvolved != null ? Number.parseInt(personInvolved.id_cat_doc_persona) : null,
@@ -1584,7 +1652,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "num_documento",
-          required: 1,
+          required: true,
           question_type: "open",
           question: "Núm. Documento",
           answer: personInvolved != null ? personInvolved.num_documento : null
@@ -1606,7 +1674,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "sexo",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Sexo",
           answer: personInvolved != null ? personInvolved.sexo : null,
@@ -1617,7 +1685,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "lee",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Saber Leer",
           answer: personInvolved != null ? personInvolved.lee : null,
@@ -1629,7 +1697,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "escribe",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "Saber Escribir",
           answer: personInvolved != null ? personInvolved.escribe : null,
@@ -1651,7 +1719,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "id_ori_sexual",
-          required: 1,
+          required: true,
           question_type: "closed_multiple",
           question: "Orientación Sexual",
           answer: sexualOrientationSelected != undefined ? sexualOrientationSelected : null,
@@ -1659,14 +1727,14 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "edad_aprox",
-          required: 1,
+          required: true,
           question_type: "open",
           question: "Edad Aproximada",
           answer: personInvolved != null ? personInvolved.edad_aprox : null
         },
         {
           question_id: "id_cat_pro_oficio",
-          required: 1,
+          required: true,
           question_type: "closed_searchable_case_processing",
           question: "Ocupación",
           answer: personInvolved != null ? personInvolved.ocupacion : null,
@@ -1685,8 +1753,8 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "id_niv_academico",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 2,
           dependent_question_id: "escribe",
           dependent_answer: "S",
@@ -1697,8 +1765,8 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "id_cat_tip_discapacidad",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 2,
           dependent_question_id: "discapacidad",
           dependent_answer: "S",
@@ -1714,14 +1782,14 @@ let getPersonInvolvedById = async (req, res) => {
 
     //Seccion --- Informacion de Ubicacion de la Persona
     var locationPerson = {
-      section_id: 3,
-      bold_title: 1,
+      section_id: "institutionInformation",
+      bold_title: true,
       section_title: "Información de Ubicación de la Persona",
       questions: [
         {
           question_id: "id_departamento",
-          question_type: "closed_with_child",
-          has_child: 1,
+          question_type: "closed",
+          has_child: true,
           principal_child: "id_municipio",
           question: "Departamento",
           answer: personInvolved != null ? personInvolved.id_departamento : null,
@@ -1737,7 +1805,7 @@ let getPersonInvolvedById = async (req, res) => {
         {
           question_id: "zona_domicilio",
           question_type: "closed",
-          required: 1,
+          required: true,
           question: "Tipo de Zona",
           answer: personInvolved != null ? personInvolved.zona_domicilio : null,
           answers: [
@@ -1750,19 +1818,20 @@ let getPersonInvolvedById = async (req, res) => {
         //   question_id: "id_documento_solicitante",
         //   question_type: "closed",
         //   question: "Documento de identificación",
-        //   required: 1,
+        //   required: true,
         //   answers: personalDocuments
         // },
         {
           question_id: "domicilio",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Dirección",
           answer: personInvolved != null ? personInvolved.domicilio : null
         },
         {
           question_id: "enable_med_notification",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "¿Se ingresará un medio de notificación o se dejerá pendiente?",
           answer: personInvolved.med_rec_notificacion != null ? "S" : "N",
@@ -1773,8 +1842,8 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "med_rec_notificacion",
-          dependent: 1,
-          dependent_section_id: 3,
+          dependent: true,
+          dependent_section_id: "institutionInformation",
           dependent_question_id: "enable_med_notification",
           dependent_answer: "S",
           question_type: "closed_multiple",
@@ -1800,7 +1869,7 @@ let getPersonInvolvedById = async (req, res) => {
       questions: [
         {
           question_id: "enable_grp_vulnerable",
-          required: 1,
+          required: true,
           question_type: "closed",
           question: "¿Se ingresará un grupo en condiciones de vulnerabilidad o se dejerá pendiente?",
           answer: countvulnerableGroup != 0 ? "S": "N",
@@ -1811,8 +1880,8 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "id_grp_vulnerable",
-          required: 1,
-          dependent: 1,
+          required: true,
+          dependent: true,
           dependent_section_id: 4,
           dependent_question_id: "enable_grp_vulnerable",
           dependent_answer: "S",
@@ -1828,16 +1897,17 @@ let getPersonInvolvedById = async (req, res) => {
     //Información de Institución
     var institutionInformation = {
       section_id: 5,
-      dependent: 1,
-      dependent_section_id: 1,
+      dependent: true,
+      dependent_section_id: "meansEntry",
       dependent_question_id: "persona_denunciante",
       dependent_answer: "J",
       section_title: "Información de Institución",
       questions: [
         {
           question_id: "institución",
-          question_type: "area",
-          required: 1,
+          question_type: "open",
+          max_lines: 6,
+          required: true,
           question: "Institucion",
           answer: personInvolved != null ? personInvolved.institucion : null
         },
@@ -1850,7 +1920,7 @@ let getPersonInvolvedById = async (req, res) => {
         },
         {
           question_id: "id_cat_cal_actua",
-          //required: 1,
+          //required: true,
           question_type: "closed",
           question: "Calidad en que Actúa",
           answer: personInvolved != null ? personInvolved.id_cat_cal_actua : null,
