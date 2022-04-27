@@ -285,7 +285,7 @@ let getCrisisAlertsForm = async (req, res) => {
 
     //Datos de personas solicitantes
     var personalInformation = {
-      section_id: 18,
+      section_id: "personalInformation",
       bold_title: 1,
       section_title: "Datos de persona solicitante",
       questions: [
@@ -361,10 +361,13 @@ let getCrisisAlertsForm = async (req, res) => {
         },
         {
           question_id: "edad",
-          dependent: 1,
-          dependent_section_id: 18,
+          dependent: true,
+          dependent_section_id: "personalInformation",
           dependent_question_id: "fecha_nacimiento",
-          question_type: "numeric_date_before_null",
+          dependent_answer: {
+            type: "clear"
+          },
+          question_type: "numeric",
           question: "Edad apróximada" 
         },
         {

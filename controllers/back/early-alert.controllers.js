@@ -6,7 +6,7 @@ const moment = require('moment');
 
 let getFormVersion = (req, res) => {
 
-  let version = parseFloat("2.0");
+  let version = parseFloat("2.3");
 
   return res.status(200).json({ version });
 }
